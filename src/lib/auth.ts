@@ -28,15 +28,26 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       async authorize(credentials) {
         // Aquí deberías implementar tu lógica de verificación de credenciales
         // Este es un ejemplo básico, en producción deberías verificar contra tu base de datos
-        if (credentials?.username === "usuario" && credentials?.password === "contraseña") {
-          return {
-            id: "1",
-            name: "Usuario Demo",
-            email: "usuario@ejemplo.com",
-            token: '123'
 
+        try {
+
+          const { email, password } = signInSchema.parse(credentials)
+
+          if (email === "usuario" && password === "contraseña") {
+            return {
+              id: "1",
+              name: "Usuario Demo",
+              email: "usuario@ejemplo.com",
+              token: '123'
+
+            }
+          }
+        } catch (err) {
+          if (err instanceof ZodError) {
+            console.log(err.errors)
           }
         }
+
         return null
       }
     })
