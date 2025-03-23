@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from "uuid"
 import type { Property, FilterOptions } from "@/lib/types"
 
 // Mock data based on the SQL schema
@@ -116,82 +117,6 @@ const mockProperties: Property[] = [
     is_approved: true,
     created_at: "2023-10-15T13:45:00Z",
   },
-  {
-    id: "550e8400-e29b-41d4-a716-446655440006",
-    owner_id: "f6g7h8i9-j0k1-l2m3-n4o5-p6q7r8s9t0u1",
-    title: "Development Land",
-    description:
-      "Prime development land in a growing area. Zoned for residential or mixed-use development. Utilities available at the property line. Great investment opportunity.",
-    price: 2000000,
-    location: "Seattle, WA",
-    area: 5000,
-    bedrooms: 0,
-    bathrooms: 0,
-    parking_spaces: 0,
-    property_type: "land",
-    status: "available",
-    is_deleted: false,
-    is_sold: false,
-    is_approved: true,
-    created_at: "2023-11-05T10:00:00Z",
-  },
-  {
-    id: "550e8400-e29b-41d4-a716-446655440007",
-    owner_id: "g7h8i9j0-k1l2-m3n4-o5p6-q7r8s9t0u1v2",
-    title: "Historic Townhouse",
-    description:
-      "Beautifully restored historic townhouse in a prestigious neighborhood. Features include original hardwood floors, crown molding, and a gourmet kitchen with modern appliances.",
-    price: 1100000,
-    location: "Boston, MA",
-    area: 210,
-    bedrooms: 3,
-    bathrooms: 2.5,
-    parking_spaces: 1,
-    property_type: "house",
-    status: "available",
-    is_deleted: false,
-    is_sold: false,
-    is_approved: true,
-    created_at: "2023-12-20T15:15:00Z",
-  },
-  {
-    id: "550e8400-e29b-41d4-a716-446655440008",
-    owner_id: "h8i9j0k1-l2m3-n4o5-p6q7-r8s9t0u1v2w3",
-    title: "Luxury Penthouse",
-    description:
-      "Spectacular penthouse with 360-degree city views. Features include a private elevator, chef's kitchen, and expansive terrace. Building amenities include concierge, valet parking, and spa.",
-    price: 3500000,
-    location: "San Francisco, CA",
-    area: 300,
-    bedrooms: 4,
-    bathrooms: 4.5,
-    parking_spaces: 3,
-    property_type: "apartment",
-    status: "available",
-    is_deleted: false,
-    is_sold: false,
-    is_approved: true,
-    created_at: "2024-01-10T12:30:00Z",
-  },
-  {
-    id: "550e8400-e29b-41d4-a716-446655440009",
-    owner_id: "i9j0k1l2-m3n4-o5p6-q7r8-s9t0u1v2w3x4",
-    title: "Ranch with Acreage",
-    description:
-      "Spacious ranch on 20 acres of land. Features include a main house, guest house, barn, and riding arena. Perfect for equestrian enthusiasts or those seeking privacy and space.",
-    price: 1750000,
-    location: "Denver, CO",
-    area: 400,
-    bedrooms: 5,
-    bathrooms: 3,
-    parking_spaces: 4,
-    property_type: "house",
-    status: "available",
-    is_deleted: false,
-    is_sold: false,
-    is_approved: true,
-    created_at: "2024-02-15T09:45:00Z",
-  },
 ]
 
 // Get all properties
@@ -225,5 +150,70 @@ export function getFilteredProperties(filters: FilterOptions): Property[] {
 
     return true
   })
+}
+
+// Create a new property
+export async function createProperty(propertyData: Partial<Property>): Promise<Property> {
+  // Simulate API delay
+  await new Promise((resolve) => setTimeout(resolve, 500))
+
+  const newProperty: Property = {
+    id: uuidv4(),
+    owner_id: propertyData.owner_id || "",
+    title: propertyData.title || "",
+    description: propertyData.description || "",
+    price: propertyData.price || 0,
+    location: propertyData.location || "",
+    area: propertyData.area || 0,
+    bedrooms: propertyData.bedrooms || 0,
+    bathrooms: propertyData.bathrooms || 0,
+    parking_spaces: propertyData.parking_spaces || 0,
+    property_type: propertyData.property_type || "house",
+    status: propertyData.status || "available",
+    is_deleted: false,
+    is_sold: propertyData.status === "sold",
+    is_approved: propertyData.is_approved || false,
+    created_at: new Date().toISOString(),
+  }
+
+  mockProperties.push(newProperty)
+  return newProperty
+}
+
+// Update an existing property
+export async function updateProperty(id: string, propertyData: Partial<Property>): Promise<Property | null> {
+  // Simulate API delay
+  await new Promise((resolve) => setTimeout(resolve, 500))
+
+  const index = mockProperties.findIndex((p) => p.id === id)
+  if (index === -1) return null
+
+  // Update property fields
+  mockProperties[index] = {
+    ...mockProperties[index],
+    ...propertyData,
+    // Update is_sold based on status
+    is_sold:
+      propertyData.status === "sold"
+        ? true
+        : propertyData.status === "available"
+          ? false
+          : mockProperties[index].is_sold,
+  }
+
+  return mockProperties[index]
+}
+
+// Delete a property (soft delete)
+export async function deleteProperty(id: string): Promise<boolean> {
+  // Simulate API delay
+  await new Promise((resolve) => setTimeout(resolve, 500))
+
+  const index = mockProperties.findIndex((p) => p.id === id)
+  if (index === -1) return false
+
+  // Soft delete
+  mockProperties[index].is_deleted = true
+  return true
 }
 
