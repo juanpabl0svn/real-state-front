@@ -1,4 +1,3 @@
-import { redirect } from "next/navigation"
 import PasswordForm from "@/components/password-form"
 
 export default async function ChangePasswordPage() {
