@@ -82,8 +82,9 @@ export async function fetchProperties() {
 }
 
 // Create a new property
-export async function createProperty(propertyData: Property) {
+export async function createProperty(_propertyData: Property) {
   try {
+    console.log("createProperty", _propertyData)
     // In a real application, you would insert into your database here
     // For example with Supabase:
     // const { data, error } = await supabase
@@ -109,8 +110,10 @@ export async function createProperty(propertyData: Property) {
 }
 
 // Update an existing property
-export async function updateProperty(id: string, propertyData: Property) {
+export async function updateProperty(_id: string, _propertyData: Property) {
   try {
+
+    console.log("updateProperty", _id, _propertyData)
     // In a real application, you would update your database here
     // For example with Supabase:
     // const { data, error } = await supabase
@@ -134,8 +137,9 @@ export async function updateProperty(id: string, propertyData: Property) {
 }
 
 // Delete a property (soft delete)
-export async function deleteProperty(id: string) {
+export async function deleteProperty(_id: string) {
   try {
+    console.log("deleteProperty", _id)
     // In a real application, you would update your database here
     // For example with Supabase:
     // const { data, error } = await supabase

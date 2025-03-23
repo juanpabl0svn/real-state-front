@@ -22,9 +22,10 @@ export function PropertiesDashboard() {
     setActiveTab("form");
   };
 
-  const handleFormSubmitSuccess = (property: Partial<Property>) => {
+  const handleFormSubmitSuccess = (_property: Partial<Property>) => {
     setActiveTab("list");
     setEditingProperty(null);
+    console.log("Property saved:", _property);
   };
 
   return (
