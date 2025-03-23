@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { Plus, Pencil, Trash2, Search, Filter } from "lucide-react"
+import { Pencil, Trash2, Search, Filter } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -63,11 +63,6 @@ export default function PropertiesAdminPage() {
     <div className="container mx-auto py-8 px-4">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
         <h1 className="text-3xl font-bold mb-4 md:mb-0">Property Management</h1>
-        <Button asChild>
-          <Link href="/admin/properties/create">
-            <Plus className="mr-2 h-4 w-4" /> Add Property
-          </Link>
-        </Button>
       </div>
 
       <Card className="mb-8">
