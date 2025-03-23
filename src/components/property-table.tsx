@@ -1,10 +1,22 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { useState, useEffect } from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,67 +26,78 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
-import { EditIcon, MoreHorizontalIcon, TrashIcon } from "lucide-react"
-import { formatCurrency } from "@/lib/utils"
-import { fetchProperties, deleteProperty } from "@/lib/actions"
+} from "@/components/ui/alert-dialog";
+import { EditIcon, MoreHorizontalIcon, TrashIcon } from "lucide-react";
+import { formatCurrency } from "@/lib/utils";
+import { fetchProperties, deleteProperty } from "@/lib/actions";
+import { Property } from "@/lib/types";
 
-export function PropertyTable({ onEdit }) {
-  const [properties, setProperties] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const [propertyToDelete, setPropertyToDelete] = useState(null)
+export function PropertyTable({
+  onEdit,
+}: {
+  onEdit: (property: Property) => void;
+}) {
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [propertyToDelete, setPropertyToDelete] = useState<Property | null>(
+    null
+  );
 
   useEffect(() => {
     const loadProperties = async () => {
       try {
-        const data = await fetchProperties()
-        setProperties(data)
+        const data = await fetchProperties();
+        setProperties(data);
       } catch (error) {
-        console.error("Failed to fetch properties:", error)
+        console.error("Failed to fetch properties:", error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    loadProperties()
-  }, [])
+    loadProperties();
+  }, []);
 
-  const handleDeleteClick = (property) => {
-    setPropertyToDelete(property)
-    setDeleteDialogOpen(true)
-  }
+  const handleDeleteClick = (property: Property) => {
+    setPropertyToDelete(property);
+    setDeleteDialogOpen(true);
+  };
 
   const confirmDelete = async () => {
-    if (!propertyToDelete) return
+    if (!propertyToDelete) return;
 
     try {
-      await deleteProperty(propertyToDelete.id)
-      setProperties(properties.filter((p) => p.id !== propertyToDelete.id))
+      await deleteProperty(propertyToDelete.id);
+      setProperties(properties.filter((p) => p.id !== propertyToDelete.id));
     } catch (error) {
-      console.error("Failed to delete property:", error)
+      console.error("Failed to delete property:", error);
     } finally {
-      setDeleteDialogOpen(false)
-      setPropertyToDelete(null)
+      setDeleteDialogOpen(false);
+      setPropertyToDelete(null);
     }
-  }
+  };
 
-  const getStatusBadge = (status) => {
-    const variants = {
+  const getStatusBadge = (status: string) => {
+    const variants: Record<string, string> = {
       available: "bg-green-100 text-green-800 hover:bg-green-100",
       sold: "bg-blue-100 text-blue-800 hover:bg-blue-100",
       reserved: "bg-yellow-100 text-yellow-800 hover:bg-yellow-100",
+    };
+
+    if (!variants[status]) {
+      return null;
     }
 
     return (
       <Badge className={variants[status] || ""} variant="outline">
         {status.charAt(0).toUpperCase() + status.slice(1)}
       </Badge>
-    )
-  }
+    );
+  };
 
   if (loading) {
-    return <div className="flex justify-center p-8">Loading properties...</div>
+    return <div className="flex justify-center p-8">Loading properties...</div>;
   }
 
   return (
@@ -103,9 +126,13 @@ export function PropertyTable({ onEdit }) {
             properties.map((property) => (
               <TableRow key={property.id}>
                 <TableCell className="font-medium">{property.title}</TableCell>
-                <TableCell className="capitalize">{property.property_type}</TableCell>
+                <TableCell className="capitalize">
+                  {property.property_type}
+                </TableCell>
                 <TableCell>{property.location}</TableCell>
-                <TableCell className="text-right">{formatCurrency(property.price)}</TableCell>
+                <TableCell className="text-right">
+                  {formatCurrency(property.price)}
+                </TableCell>
                 <TableCell>{getStatusBadge(property.status)}</TableCell>
                 <TableCell>{property.bedrooms}</TableCell>
                 <TableCell>{property.bathrooms}</TableCell>
@@ -143,19 +170,21 @@ export function PropertyTable({ onEdit }) {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete the property &quot;{propertyToDelete?.title}&quot;. This action cannot be
-              undone.
+              This will permanently delete the property &quot;
+              {propertyToDelete?.title}&quot;. This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground">
+            <AlertDialogAction
+              onClick={confirmDelete}
+              className="bg-destructive text-destructive-foreground"
+            >
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </div>
-  )
+  );
 }
-

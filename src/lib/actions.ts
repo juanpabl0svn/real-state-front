@@ -8,7 +8,7 @@ import { Property } from "./types"
 const MOCK_USER_ID = "550e8400-e29b-41d4-a716-446655440000"
 
 // Fetch all properties for the current user
-export async function fetchProperties() {
+export async function fetchProperties(): Promise<Property[]> {
   try {
     // In a real application, you would query your database here
     // For example with Supabase:
