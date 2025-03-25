@@ -37,7 +37,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 provider_id: 'c5ef8053-772b-4092-8aab-0b495a8ba198',
                 user_id: user.id
               }
-            }).then((provider) => {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              }).then((provider: any) => {
               return prisma.user_providers.findFirst({
                 where: {
                   id: provider.id
