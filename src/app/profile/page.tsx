@@ -1,5 +1,5 @@
 import UserProfile from "@/components/user-profile";
-import { auth } from "@/lib/auth";
+import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 
 export default async function ProfilePage() {

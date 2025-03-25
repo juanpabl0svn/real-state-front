@@ -1,14 +1,13 @@
 import LoginForm from "@/components/login-form"
-import { auth } from "@/lib/auth"
+import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 
 export default async function LoginPage() {
   // Verificar si el usuario ya está autenticado
   const session = await auth()
 
-  // Si ya está autenticado, redirigir al dashboard
   if (session) {
-    redirect("/dashboard")
+    redirect("/")
   }
 
   return (

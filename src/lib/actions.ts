@@ -190,7 +190,7 @@ export async function registerUser(formData: {
   try {
     // Here you would connect to your database and insert the user
     // This is a placeholder for the actual database insertion
-    console.log("Registering user:", { name, email, phone })
+    console.log("Registering user:", { name, email, phone, password })
 
     // Example of how you might insert into your PostgreSQL database:
     // const user = await db.query(
@@ -206,15 +206,4 @@ export async function registerUser(formData: {
     console.error("Error registering user:", error)
     throw new Error("Failed to register user. Please try again.")
   }
-}
-
-// This function would be used to hash the password before storing it
-async function hashPassword(password?: string): Promise<string | null> {
-  if (!password) return null
-
-  // In a real application, you would use a library like bcrypt
-  // For example: return await bcrypt.hash(password, 10)
-
-  // This is just a placeholder
-  return `hashed_${password}`
 }

@@ -50,7 +50,7 @@ export default function LoginForm() {
       }
 
       // Si la autenticación es exitosa, redirigir al dashboard
-      router.push("/dashboard")
+      router.push("/")
       router.refresh()
     } catch (err) {
       setError("Ocurrió un error al iniciar sesión. Por favor intenta de nuevo: " + err)
@@ -64,7 +64,7 @@ export default function LoginForm() {
     setError(null)
 
     try {
-      await signIn("google", { callbackUrl: "/dashboard" })
+      await signIn("google", { callbackUrl: "/" })
       // No necesitamos manejar la redirección aquí ya que Auth.js lo hace automáticamente
     } catch (err) {
       setError("Error al iniciar sesión con Google. Por favor intenta de nuevo: " + err)	

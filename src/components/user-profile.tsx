@@ -11,11 +11,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { UserCircle, Mail, Phone, Calendar, Shield, Key } from "lucide-react";
 import type { User } from "next-auth";
-// import type { User } from "@/lib/mock-data"
-
-// interface UserProfileProps {
-//   user: User
-// }
 
 export default function UserProfile({ user }: { user: User }) {
   const formatDate = (dateString: string) => {
@@ -95,7 +90,7 @@ export default function UserProfile({ user }: { user: User }) {
             <p className="flex items-center gap-2">
               <Calendar className="h-4 w-4 text-primary" />
               {/* {formatDate(user.created_at)} */}
-              2021-10-01
+              {formatDate('2025-03-20')}
             </p>
           </div>
         </div>
