@@ -3,6 +3,8 @@
 import { revalidatePath } from "next/cache"
 import { Property } from "./types"
 
+import { z } from "zod"
+
 // Mock user ID for demonstration purposes
 // In a real application, you would get this from authentication
 const MOCK_USER_ID = "550e8400-e29b-41d4-a716-446655440000"
@@ -161,3 +163,58 @@ export async function deleteProperty(_id: string) {
   }
 }
 
+
+// Define the schema for validation
+const UserSchema = z.object({
+  name: z.string().min(2),
+  email: z.string().email(),
+  password: z.string().min(8).optional(),
+  phone: z.string().optional(),
+})
+
+export async function registerUser(formData: {
+  name: string
+  email: string
+  password?: string
+  phone?: string
+}) {
+  // Validate the form data
+  const validatedFields = UserSchema.safeParse(formData)
+
+  if (!validatedFields.success) {
+    throw new Error("Invalid form data. Please check your inputs.")
+  }
+
+  const { name, email, password, phone } = validatedFields.data
+
+  try {
+    // Here you would connect to your database and insert the user
+    // This is a placeholder for the actual database insertion
+    console.log("Registering user:", { name, email, phone })
+
+    // Example of how you might insert into your PostgreSQL database:
+    // const user = await db.query(
+    //   `INSERT INTO users (name, email, password, phone, auth_method)
+    //    VALUES ($1, $2, $3, $4, 'email')
+    //    RETURNING id`,
+    //   [name, email, await hashPassword(password), phone]
+    // )
+
+    // For demonstration purposes, we'll just simulate a successful registration
+    return { success: true, message: "User registered successfully" }
+  } catch (error) {
+    console.error("Error registering user:", error)
+    throw new Error("Failed to register user. Please try again.")
+  }
+}
+
+// This function would be used to hash the password before storing it
+async function hashPassword(password?: string): Promise<string | null> {
+  if (!password) return null
+
+  // In a real application, you would use a library like bcrypt
+  // For example: return await bcrypt.hash(password, 10)
+
+  // This is just a placeholder
+  return `hashed_${password}`
+}

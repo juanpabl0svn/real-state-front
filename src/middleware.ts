@@ -7,7 +7,7 @@ export async function middleware(req: NextRequest) {
   const pathname = req.nextUrl.pathname
 
   // Rutas protegidas que requieren autenticación
-  const protectedRoutes = ["/dashboard"]
+  const protectedRoutes = ["/profile", "/properties"]
 
   // Rutas de autenticación (accesibles solo si NO está autenticado)
   const authRoutes = ["/login", "/register"]
@@ -23,13 +23,13 @@ export async function middleware(req: NextRequest) {
   // Verificar si es una ruta de autenticación y el usuario ya está autenticado
   const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route))
   if (isAuthRoute && session) {
-    return NextResponse.redirect(new URL("/dashboard", req.url))
+    return NextResponse.redirect(new URL("/", req.url))
   }
 
   return NextResponse.next()
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/login", "/register"],
+  matcher: ["/login", "/register"],
 }
 

@@ -31,6 +31,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         try {
 
+
+          return {
+            ...credentials
+          }
+
           const { email, password } = signInSchema.parse(credentials)
 
           if (email === "usuario" && password === "contraseña") {

@@ -4,6 +4,7 @@ import "./globals.css";
 import TansTackQueryProvider from "@/providers/TansTackQueryProvider";
 import Header from "@/components/header";
 import { Toaster } from "@/components/ui/toaster";
+import { SessionProvider } from "next-auth/react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,11 +32,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <TansTackQueryProvider>
-          <Header/>
-          {children}
-          <Toaster />
-        </TansTackQueryProvider>
+        <SessionProvider>
+          <TansTackQueryProvider>
+            <Header />
+            {children}
+            <Toaster />
+          </TansTackQueryProvider>
+        </SessionProvider>
       </body>
     </html>
   );
