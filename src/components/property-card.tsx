@@ -2,7 +2,7 @@ import Link from "next/link"
 import { BedDouble, Bath, Car, Ruler } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
-import type { Property } from "@/lib/types"
+import type { Property } from "@/types"
 
 interface PropertyCardProps {
   property: Property
@@ -13,7 +13,7 @@ export function PropertyCard({ property }: PropertyCardProps) {
     available: "bg-green-100 text-green-800",
     sold: "bg-red-100 text-red-800",
     reserved: "bg-yellow-100 text-yellow-800",
-  }[property.status]
+  }[property?.status ?? "available"]
 
   return (
     <Link href={`/properties/${property.id}`}>
@@ -47,7 +47,7 @@ export function PropertyCard({ property }: PropertyCardProps) {
             </div>
             <div className="flex flex-col items-center">
               <Ruler className="h-4 w-4 mb-1" />
-              <span>{property.area}m²</span>
+              <span>{Number(property.area).toLocaleString()}m²</span>
             </div>
           </div>
         </CardContent>
@@ -55,7 +55,7 @@ export function PropertyCard({ property }: PropertyCardProps) {
         <CardFooter className="p-4 pt-0 text-xs text-muted-foreground">
           <div className="flex justify-between w-full">
             <span className="capitalize">{property.property_type}</span>
-            <span>Listed: {new Date(property.created_at).toLocaleDateString()}</span>
+            <span>Listed: {property?.created_at?.toLocaleDateString() ?? "N/A"}</span>
           </div>
         </CardFooter>
       </Card>

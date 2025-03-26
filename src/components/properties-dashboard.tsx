@@ -6,7 +6,7 @@ import { PropertyForm } from "@/components/property-form";
 import { Button } from "@/components/ui/button";
 import { PlusIcon } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Property } from "@/lib/types";
+import { Property } from "@/types";
 
 export function PropertiesDashboard() {
   const [activeTab, setActiveTab] = useState("list");

@@ -10,7 +10,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import type { Property } from "@/lib/types"
+import type { Property } from "@/types"
 
 interface DeletePropertyDialogProps {
   open: boolean

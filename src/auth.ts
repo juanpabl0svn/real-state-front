@@ -19,7 +19,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               provider_user_id: sub
             },
             include: {
-              users: true
+              user: true
             }
           });
 
@@ -27,14 +27,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             const user = await prisma.users.create({
               data: {
                 email: profile.email,
-                name: profile.name
+                name: profile.name,
+                role: "user",
               }
             });
 
             provider = await prisma.user_providers.create({
               data: {
                 provider_user_id: sub,
-                provider_id: 'c5ef8053-772b-4092-8aab-0b495a8ba198',
+                provider_id: 1,
                 user_id: user.id
               }
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -44,13 +45,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                   id: provider.id
                 },
                 include: {
-                  users: true
+                  user: true
                 }
               });
             });
           }
 
-          if (!provider?.users) {
+          if (!provider?.user) {
             throw new Error("Failed to retrieve user data");
           }
 
@@ -58,7 +59,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             password: _,
             ...rest
-          } = provider.users;
+          } = provider.user;
 
           return {
             id: rest.id,

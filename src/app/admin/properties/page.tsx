@@ -1,63 +1,78 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import { Pencil, Trash2, Search, Filter } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { DeletePropertyDialog } from "@/components/delete-property-dialog"
-import { getAllProperties } from "@/lib/data"
-import type { Property } from "@/lib/types"
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { Pencil, Trash2, Search, Filter } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { DeletePropertyDialog } from "@/components/delete-property-dialog";
+import type { Property, PropertyTypes } from "@/types";
+import { getAllProperties } from "@/lib/actions";
 
 export default function PropertiesAdminPage() {
-  const [properties, setProperties] = useState<Property[]>([])
-  const [searchQuery, setSearchQuery] = useState("")
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const [propertyToDelete, setPropertyToDelete] = useState<Property | null>(null)
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [propertyToDelete, setPropertyToDelete] = useState<Property | null>(
+    null
+  );
 
   useEffect(() => {
-    // Fetch properties
-    const fetchedProperties = getAllProperties()
-    setProperties(fetchedProperties)
-  }, [])
+    (async () => {
+      const { data } = await getAllProperties();
+      setProperties(data);
+    })();
+  }, []);
 
   // Filter properties based on search query
   const filteredProperties = properties.filter(
     (property) =>
       property.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      property.location.toLowerCase().includes(searchQuery.toLowerCase()),
-  )
+      property.location.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   // Handle property deletion
   const handleDeleteClick = (property: Property) => {
-    setPropertyToDelete(property)
-    setDeleteDialogOpen(true)
-  }
+    setPropertyToDelete(property);
+    setDeleteDialogOpen(true);
+  };
 
   const handleDeleteConfirm = (id: string) => {
     // In a real app, this would call an API
-    setProperties(properties.filter((property) => property.id !== id))
-    setDeleteDialogOpen(false)
-    setPropertyToDelete(null)
-  }
+    setProperties(properties.filter((property) => property.id !== id));
+    setDeleteDialogOpen(false);
+    setPropertyToDelete(null);
+  };
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status: PropertyTypes) => {
     const statusStyles = {
       available: "bg-green-100 text-green-800 hover:bg-green-100",
       sold: "bg-red-100 text-red-800 hover:bg-red-100",
       reserved: "bg-yellow-100 text-yellow-800 hover:bg-yellow-100",
-    }
+    };
 
     return (
       <Badge className={statusStyles[status as keyof typeof statusStyles]}>
         {status.charAt(0).toUpperCase() + status.slice(1)}
       </Badge>
-    )
-  }
+    );
+  };
 
   return (
     <div className="container mx-auto py-8 px-4">
@@ -87,11 +102,21 @@ export default function PropertiesAdminPage() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => setSearchQuery("")}>All Properties</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSearchQuery("house")}>Houses</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSearchQuery("apartment")}>Apartments</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSearchQuery("land")}>Land</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSearchQuery("office")}>Offices</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSearchQuery("")}>
+                  All Properties
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSearchQuery("house")}>
+                  Houses
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSearchQuery("apartment")}>
+                  Apartments
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSearchQuery("land")}>
+                  Land
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSearchQuery("office")}>
+                  Offices
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -102,7 +127,9 @@ export default function PropertiesAdminPage() {
                 <TableRow>
                   <TableHead>Title</TableHead>
                   <TableHead>Type</TableHead>
-                  <TableHead className="hidden md:table-cell">Location</TableHead>
+                  <TableHead className="hidden md:table-cell">
+                    Location
+                  </TableHead>
                   <TableHead className="hidden md:table-cell">Price</TableHead>
                   <TableHead className="hidden md:table-cell">Status</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
@@ -112,21 +139,34 @@ export default function PropertiesAdminPage() {
                 {filteredProperties.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={6} className="text-center py-8">
-                      No properties found. Try a different search or add a new property.
+                      No properties found. Try a different search or add a new
+                      property.
                     </TableCell>
                   </TableRow>
                 ) : (
                   filteredProperties.map((property) => (
                     <TableRow key={property.id}>
-                      <TableCell className="font-medium">{property.title}</TableCell>
-                      <TableCell className="capitalize">{property.property_type}</TableCell>
-                      <TableCell className="hidden md:table-cell">{property.location}</TableCell>
-                      <TableCell className="hidden md:table-cell">${property.price.toLocaleString()}</TableCell>
-                      <TableCell className="hidden md:table-cell">{getStatusBadge(property.status)}</TableCell>
+                      <TableCell className="font-medium">
+                        {property.title}
+                      </TableCell>
+                      <TableCell className="capitalize">
+                        {property.property_type}
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        {property.location}
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        ${property.price.toLocaleString()}
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        {getStatusBadge(property.status)}
+                      </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
                           <Button variant="ghost" size="icon" asChild>
-                            <Link href={`/admin/properties/edit/${property.id}`}>
+                            <Link
+                              href={`/admin/properties/edit/${property.id}`}
+                            >
                               <Pencil className="h-4 w-4" />
                               <span className="sr-only">Edit</span>
                             </Link>
@@ -160,6 +200,5 @@ export default function PropertiesAdminPage() {
         />
       )}
     </div>
-  )
+  );
 }
-

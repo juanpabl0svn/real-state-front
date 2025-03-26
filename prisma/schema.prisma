@@ -7,18 +7,24 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum consultancies_status {
+  pending
+  accepted
+  rejected
+}
+
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model consultancies {
-  id               String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  user_id          String      @db.Uuid
-  consultancy_type String      @db.VarChar(20)
-  property_id      String?     @db.Uuid
-  status           String?     @default("pending") @db.VarChar(20)
-  request_date     DateTime?   @default(now()) @db.Timestamptz(6)
-  meeting_type     String      @db.VarChar(20)
-  meeting_date     DateTime    @db.Timestamptz(6)
-  properties       properties? @relation(fields: [property_id], references: [id], onUpdate: NoAction)
-  users            users       @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  id               String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id          String               @db.Uuid
+  consultancy_type String               @db.VarChar(20)
+  property_id      String?              @db.Uuid
+  status           consultancies_status
+  request_date     DateTime?            @default(now()) @db.Timestamptz(6)
+  meeting_type     String               @db.VarChar(20)
+  meeting_date     DateTime             @db.Timestamptz(6)
+  properties       properties?          @relation(fields: [property_id], references: [id], onUpdate: NoAction)
+  user             users                @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model notifications {
@@ -28,7 +34,7 @@ model notifications {
   data       Json
   is_read    Boolean?  @default(false)
   created_at DateTime? @default(now()) @db.Timestamptz(6)
-  users      users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user       users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
@@ -39,7 +45,20 @@ model otp_codes {
   expires_at DateTime? @default(dbgenerated("(CURRENT_TIMESTAMP + '00:30:00'::interval)")) @db.Timestamptz(6)
   is_used    Boolean?  @default(false)
   created_at DateTime? @default(now()) @db.Timestamptz(6)
-  users      users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user       users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+enum property_type {
+  house
+  apartment
+  land
+  office
+}
+
+enum property_status {
+  available
+  sold
+  deleted
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
@@ -48,39 +67,50 @@ model properties {
   owner_id       String          @db.Uuid
   title          String          @db.VarChar(255)
   description    String?
-  price          Decimal         @db.Decimal(12, 2)
+  price          Int             @db.Integer
   location       String          @db.VarChar(255)
-  area           Decimal         @db.Decimal(10, 2)
+  area           Int             @db.Integer
   bedrooms       Int             @db.SmallInt
   bathrooms      Int             @db.SmallInt
   parking_spaces Int?            @default(0) @db.SmallInt
-  property_type  String          @db.VarChar(50)
+  property_type  property_type
   status         String?         @default("available") @db.VarChar(20)
-  is_deleted     Boolean?        @default(false)
-  is_sold        Boolean?        @default(false)
-  is_approved    Boolean?        @default(false)
+  is_deleted     Boolean        @default(false)
+  is_sold        Boolean        @default(false)
+  is_approved    Boolean        @default(false)
   created_at     DateTime?       @default(now()) @db.Timestamptz(6)
   consultancies  consultancies[]
-  users          users           @relation(fields: [owner_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user           users           @relation(fields: [owner_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+enum social_media_providers_name {
+  facebook
+  google
+  twitter
 }
 
 model social_media_providers {
-  id             String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name           String           @unique @db.VarChar(50)
-  created_at     DateTime?        @default(now()) @db.Timestamptz(6)
+  id             Int                         @id @default(autoincrement())
+  name           social_media_providers_name @unique
+  created_at     DateTime?                   @default(now()) @db.Timestamptz(6)
   user_providers user_providers[]
 }
 
 model user_providers {
   id                     String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   user_id                String                 @db.Uuid
-  provider_id            String                 @db.Uuid
+  provider_id            Int
   provider_user_id       String                 @db.VarChar(255)
   created_at             DateTime?              @default(now()) @db.Timestamptz(6)
   social_media_providers social_media_providers @relation(fields: [provider_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  users                  users                  @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user                   users                  @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@unique([user_id, provider_id, provider_user_id])
+}
+
+enum roles {
+  admin
+  user
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
@@ -90,7 +120,7 @@ model users {
   email          String           @unique @db.VarChar(100)
   password       String?
   phone          String?          @unique @db.VarChar(20)
-  role           String           @default("user") @db.VarChar(10)
+  role           roles
   auth_method    String?          @default("email") @db.VarChar(10)
   is_verified    Boolean?         @default(false)
   created_at     DateTime?        @default(now()) @db.Timestamptz(6)
