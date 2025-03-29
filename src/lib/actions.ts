@@ -124,10 +124,10 @@ export async function registerUser(formData: {
   if (!validatedFields.success) {
     throw new Error("Invalid form data. Please check your inputs.")
   }
+  validatedFields.data.password = hashPassword(validatedFields.data.password!)
 
-  let { name, email, password, phone } = validatedFields.data
+  const { name, email, password, phone } = validatedFields.data
 
-  password = hashPassword(password!)
 
   try {
 

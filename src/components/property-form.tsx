@@ -8,7 +8,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -71,7 +70,6 @@ export function PropertyForm({ property }: { property?: Property | null }) {
   const {
     mutate: executeUpsert,
     isPending,
-    isError,
   } = useMutation({
     mutationFn: upsertProperty,
     onSuccess: (data) => {
