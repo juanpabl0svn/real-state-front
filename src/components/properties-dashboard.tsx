@@ -22,11 +22,6 @@ export function PropertiesDashboard() {
     setActiveTab("form");
   };
 
-  const handleFormSubmitSuccess = (_property: Partial<Property>) => {
-    setActiveTab("list");
-    setEditingProperty(null);
-    console.log("Property saved:", _property);
-  };
 
   return (
     <div className="container mx-auto py-10">
@@ -51,8 +46,6 @@ export function PropertiesDashboard() {
         <TabsContent value="form">
           <PropertyForm
             property={editingProperty}
-            onSubmit={handleFormSubmitSuccess}
-            isSubmitting={true}
           />
         </TabsContent>
       </Tabs>

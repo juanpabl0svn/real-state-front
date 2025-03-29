@@ -29,6 +29,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 email: profile.email,
                 name: profile.name,
                 role: "user",
+                is_verified: true,
               }
             });
 
@@ -112,6 +113,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             password: _,
             ...rest
           } = user
+
+          generateOTP()
 
           return rest
 

@@ -19,8 +19,10 @@ export function formatCurrency(amount: number): string {
 }
 
 
-export function hashPassword(password: string) {
+export function hashPassword(password: string): string {
   const hashDigest = sha256(password);
   const hmacDigest = Base64.stringify(hmacSHA512(hashDigest, secret));
   return hmacDigest;
 }
+
+

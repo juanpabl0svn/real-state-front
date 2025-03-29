@@ -23,7 +23,7 @@ export default function LoginForm() {
       : searchParams.get("error"),
   )
   const [formData, setFormData] = useState({
-    username: "",
+    email: "",
     password: "",
   })
 
@@ -39,7 +39,7 @@ export default function LoginForm() {
 
     try {
       const result = await signIn("credentials", {
-        username: formData.username,
+        email: formData.email,
         password: formData.password,
         redirect: false,
       })
@@ -87,13 +87,13 @@ export default function LoginForm() {
         )}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="username">Usuario o Email</Label>
+            <Label htmlFor="email">Usuario o Email</Label>
             <Input
-              id="username"
-              name="username"
-              type="text"
+              id="email"
+              name="email"
+              type="email"
               required
-              value={formData.username}
+              value={formData.email}
               onChange={handleChange}
               disabled={isLoading}
             />

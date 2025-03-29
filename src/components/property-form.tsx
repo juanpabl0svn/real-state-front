@@ -23,24 +23,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
 import type { Property, PropertyStatus } from "@/types";
 
 import { FormValues, formSchema } from "@/lib/zod";
 import { useSession } from "next-auth/react";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
 
-
-interface PropertyFormProps {
-  property?: Property | null;
-  onSubmit: (data: Partial<Property>) => void;
-  isSubmitting: boolean;
-}
-
-export function PropertyForm({
-  property,
-  onSubmit,
-  isSubmitting,
-}: PropertyFormProps) {
+export function PropertyForm({ property }: { property?: Property | null }) {
   const { data: session } = useSession();
 
   const form = useForm<FormValues>({
@@ -73,12 +63,34 @@ export function PropertyForm({
         },
   });
 
+  const upsertProperty = async (propertyData: Partial<Property>) => {
+    const { data } = await axios.post(`/api/properties/upsert`, propertyData);
+    return data;
+  };
+
+  const {
+    mutate: executeUpsert,
+    isPending,
+    isError,
+  } = useMutation({
+    mutationFn: upsertProperty,
+    onSuccess: (data) => {
+      form.reset(data);
+      window.location.reload();
+    },
+    onError: (error) => {
+      console.error("Error upserting property:", error);
+    },
+  });
+
   const handleFormSubmit = (values: FormValues) => {
-    onSubmit({
+    console.log("Form values:", values);
+    const propertyData: Partial<Property> = {
       ...values,
       price: values.price,
       area: values.area,
-    });
+    };
+    executeUpsert(propertyData);
   };
 
   return (
@@ -240,44 +252,6 @@ export function PropertyForm({
                   </FormItem>
                 )}
               />
-
-              <FormField
-                control={form.control}
-                name="owner_id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Owner ID*</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      UUID of the property owner
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="is_approved"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                    <div className="space-y-1 leading-none">
-                      <FormLabel>Approved</FormLabel>
-                      <FormDescription>
-                        Mark this property as approved for listing
-                      </FormDescription>
-                    </div>
-                  </FormItem>
-                )}
-              />
             </div>
 
             <FormField
@@ -302,8 +276,8 @@ export function PropertyForm({
               <Button variant="outline" type="button" asChild>
                 <Link href="/admin/properties">Cancel</Link>
               </Button>
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting
+              <Button type="submit" disabled={isPending} onClick={() => form.trigger()}>
+                {isPending
                   ? "Saving..."
                   : property
                   ? "Update Property"

@@ -6,6 +6,7 @@ import type { Paginate, Property, PropertyTypes } from "../types"
 import { auth } from "@/auth"
 import { perPage, prisma } from "@/prisma"
 import { UserSchema } from "./zod"
+import { hashPassword } from "./utils"
 
 // Fetch all properties for the current user
 export async function fetchProperties(): Promise<Paginate<Property>> {
@@ -124,11 +125,13 @@ export async function registerUser(formData: {
     throw new Error("Invalid form data. Please check your inputs.")
   }
 
-  const { name, email, password, phone } = validatedFields.data
+  let { name, email, password, phone } = validatedFields.data
+
+  password = hashPassword(password!)
 
   try {
 
-    await prisma.users.create({
+    const user = await prisma.users.create({
       data: {
         name,
         email,
@@ -138,7 +141,7 @@ export async function registerUser(formData: {
       }
     })
 
-    return { success: true, message: "User registered successfully" }
+    return { success: true, message: "User registered successfully", user_id: user.id }
   } catch (error) {
     console.error("Error registering user:", error)
     throw new Error("Failed to register user. Please try again.")
@@ -227,4 +230,27 @@ export async function getAllProperties(): Promise<Paginate<Property>> {
     throw new Error("Failed to fetch properties")
   }
 
+}
+
+
+export async function generateOTP(user_id: string) {
+  try {
+
+    const code = Math.floor(100000 + Math.random() * 900000).toString()
+
+    const expires_at = new Date(Date.now() + 10 * 60 * 1000) // OTP valid for 10 minutes
+
+    await prisma.otp_codes.create({
+      data: {
+        user_id,
+        expires_at,
+        code
+      }
+    })
+
+    return { success: true }
+  } catch (error) {
+    console.error("Error generating OTP:", error)
+    throw new Error("Failed to generate OTP")
+  }
 }

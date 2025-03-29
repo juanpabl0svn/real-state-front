@@ -136,8 +136,8 @@ export default function Header() {
   const navItems = [
     { label: "Home", href: "/", icon: <Home className="h-4 w-4 mr-2" /> },
     {
-      label: "Explore",
-      href: "/explore",
+      label: "Mis propiedades",
+      href: "/properties",
       icon: <Search className="h-4 w-4 mr-2" />,
     },
   ];
