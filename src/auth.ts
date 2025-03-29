@@ -5,7 +5,6 @@ import { signInSchema } from "@/lib/zod"
 import { ZodError } from "zod"
 import { prisma } from "./prisma"
 import { hashPassword } from "./lib/utils"
-import { generateOTP } from "./lib/actions"
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
