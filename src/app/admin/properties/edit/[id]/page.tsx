@@ -25,20 +25,6 @@ export default function EditPropertyPage() {
     })();
   }, [id]);
 
-  const handleSubmit = async (data: Partial<Property>) => {
-    if (!property) return;
-
-    try {
-      // In a real app, this would be an API call
-      await updateProperty(property.id, data as Property);
-      router.push("/admin/properties");
-    } catch (error) {
-      console.error("Failed to update property:", error);
-      // Handle error (show toast, etc.)
-    } finally {
-    }
-  };
-
   if (isLoading) {
     return (
       <div className="container mx-auto py-16 px-4 flex justify-center">
