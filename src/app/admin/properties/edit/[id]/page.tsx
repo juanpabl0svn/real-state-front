@@ -6,10 +6,9 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { PropertyForm } from "@/components/property-form";
 import type { Property } from "@/types";
-import { getPropertyById, updateProperty } from "@/lib/actions";
+import { getPropertyById } from "@/lib/actions";
 
 export default function EditPropertyPage() {
-  const router = useRouter();
   const { id } = useParams();
   const [property, setProperty] = useState<Property | null>(null);
   const [isLoading, setIsLoading] = useState(true);
