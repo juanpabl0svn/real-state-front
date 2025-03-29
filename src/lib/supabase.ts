@@ -14,7 +14,7 @@ export const uploadImage = async (file: formidable.File, bucket: string = 'uploa
     const fileBuffer = fs.readFileSync(filePath);
 
     // Subimos el archivo al bucket en Supabase
-    const { data, error } = await supabase.storage
+    const { error } = await supabase.storage
       .from(bucket)
       .upload(`images/${fileName}`, fileBuffer, {
         contentType: file.mimetype || 'image/jpeg',
