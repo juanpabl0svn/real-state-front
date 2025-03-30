@@ -36,8 +36,8 @@ export default function PasswordForm({ userId }: PasswordFormProps) {
     e.preventDefault();
     setError(null);
     setSuccess(false);
-    
-    console.log(userId)
+
+    console.log(userId);
 
     // Validate passwords
     if (newPassword.length < 8) {

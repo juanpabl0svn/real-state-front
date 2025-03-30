@@ -47,7 +47,7 @@ export function PropertyTable({
   useEffect(() => {
     const loadProperties = async () => {
       try {
-        const {data} = await fetchProperties();
+        const { data } = await fetchProperties();
         setProperties(data);
       } catch (error) {
         console.error("Failed to fetch properties:", error);
@@ -133,7 +133,9 @@ export function PropertyTable({
                 <TableCell className="text-right">
                   {formatCurrency(property.price)}
                 </TableCell>
-                <TableCell>{getStatusBadge(property?.status ?? 'No status')}</TableCell>
+                <TableCell>
+                  {getStatusBadge(property?.status ?? "No status")}
+                </TableCell>
                 <TableCell>{property.bedrooms}</TableCell>
                 <TableCell>{property.bathrooms}</TableCell>
                 <TableCell className="text-right">

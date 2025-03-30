@@ -21,14 +21,8 @@ import { registerUser } from "@/lib/actions";
 import { toast } from "@/hooks/use-toast";
 import { signIn } from "next-auth/react";
 import { Separator } from "./ui/separator";
-import {
-  Card,
-  CardContent,
-} from "./ui/card";
+import { Card, CardContent } from "./ui/card";
 import { formSingUpSchema } from "@/lib/zod";
-
-
-
 
 export function RegisterForm() {
   const router = useRouter();

@@ -17,7 +17,6 @@ export const UserSchema = z.object({
   phone: z.string().optional(),
 })
 
-
 // Define the form schema with validation
 export const formSchema = z.object({
   title: z.string().min(3, { message: "Title must be at least 3 characters" }).max(255),
@@ -35,8 +34,6 @@ export const formSchema = z.object({
 })
 
 export type FormValues = z.infer<typeof formSchema>
-
-
 
 export const formSingUpSchema = z.object({
   name: z.string().min(2, {

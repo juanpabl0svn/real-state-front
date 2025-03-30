@@ -1,47 +1,61 @@
-"use client"
+"use client";
 
-import { useRouter, useSearchParams } from "next/navigation"
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export function PropertyFilters() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
   // Initialize state from URL params
-  const [propertyType, setPropertyType] = useState(searchParams.get("type") || "")
-  const [minPrice, setMinPrice] = useState(searchParams.get("minPrice") || "")
-  const [maxPrice, setMaxPrice] = useState(searchParams.get("maxPrice") || "")
-  const [minBedrooms, setMinBedrooms] = useState(searchParams.get("minBedrooms") || "")
-  const [status, setStatus] = useState(searchParams.get("status") || "available")
+  const [propertyType, setPropertyType] = useState(
+    searchParams.get("type") || ""
+  );
+  const [minPrice, setMinPrice] = useState(searchParams.get("minPrice") || "");
+  const [maxPrice, setMaxPrice] = useState(searchParams.get("maxPrice") || "");
+  const [minBedrooms, setMinBedrooms] = useState(
+    searchParams.get("minBedrooms") || ""
+  );
+  const [status, setStatus] = useState(
+    searchParams.get("status") || "available"
+  );
 
   // Apply filters
   const applyFilters = () => {
-    const params = new URLSearchParams()
+    const params = new URLSearchParams();
 
-    if (propertyType && propertyType !== "all") params.set("type", propertyType)
-    if (minPrice) params.set("minPrice", minPrice)
-    if (maxPrice) params.set("maxPrice", maxPrice)
-    if (minBedrooms && minBedrooms !== "any") params.set("minBedrooms", minBedrooms)
-    if (status && status !== "all") params.set("status", status)
+    if (propertyType && propertyType !== "all")
+      params.set("type", propertyType);
+    if (minPrice) params.set("minPrice", minPrice);
+    if (maxPrice) params.set("maxPrice", maxPrice);
+    if (minBedrooms && minBedrooms !== "any")
+      params.set("minBedrooms", minBedrooms);
+    if (status && status !== "all") params.set("status", status);
 
-    router.push(`/?${params.toString()}`)
-  }
+    router.push(`/?${params.toString()}`);
+  };
 
   // Reset filters
   const resetFilters = () => {
-    setPropertyType("")
-    setMinPrice("")
-    setMaxPrice("")
-    setMinBedrooms("")
-    setStatus("available")
-    router.push("/")
-  }
+    setPropertyType("");
+    setMinPrice("");
+    setMaxPrice("");
+    setMinBedrooms("");
+    setStatus("available");
+    router.push("/");
+  };
 
   return (
     <Card>
@@ -69,10 +83,20 @@ export function PropertyFilters() {
           <Label>Price Range</Label>
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <Input type="number" placeholder="Min" value={minPrice} onChange={(e) => setMinPrice(e.target.value)} />
+              <Input
+                type="number"
+                placeholder="Min"
+                value={minPrice}
+                onChange={(e) => setMinPrice(e.target.value)}
+              />
             </div>
             <div>
-              <Input type="number" placeholder="Max" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} />
+              <Input
+                type="number"
+                placeholder="Max"
+                value={maxPrice}
+                onChange={(e) => setMaxPrice(e.target.value)}
+              />
             </div>
           </div>
         </div>
@@ -124,6 +148,5 @@ export function PropertyFilters() {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
-

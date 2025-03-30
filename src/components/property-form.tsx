@@ -67,10 +67,7 @@ export function PropertyForm({ property }: { property?: Property | null }) {
     return data;
   };
 
-  const {
-    mutate: executeUpsert,
-    isPending,
-  } = useMutation({
+  const { mutate: executeUpsert, isPending } = useMutation({
     mutationFn: upsertProperty,
     onSuccess: (data) => {
       form.reset(data);
@@ -274,7 +271,11 @@ export function PropertyForm({ property }: { property?: Property | null }) {
               <Button variant="outline" type="button" asChild>
                 <Link href="/admin/properties">Cancel</Link>
               </Button>
-              <Button type="submit" disabled={isPending} onClick={() => form.trigger()}>
+              <Button
+                type="submit"
+                disabled={isPending}
+                onClick={() => form.trigger()}
+              >
                 {isPending
                   ? "Saving..."
                   : property

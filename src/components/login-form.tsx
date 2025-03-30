@@ -1,82 +1,97 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { signIn } from "next-auth/react"
-import { useSearchParams, useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Separator } from "@/components/ui/separator"
-import { AlertCircle, Loader2 } from "lucide-react"
-import { Alert, AlertDescription } from "@/components/ui/alert"
+import { useState } from "react";
+import { signIn } from "next-auth/react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { AlertCircle, Loader2 } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function LoginForm() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(
     searchParams.get("error") === "CredentialsSignin"
       ? "Credenciales inválidas. Por favor intenta de nuevo."
-      : searchParams.get("error"),
-  )
+      : searchParams.get("error")
+  );
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-  })
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError(null)
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
 
     try {
       const result = await signIn("credentials", {
         email: formData.email,
         password: formData.password,
         redirect: false,
-      })
+      });
 
       if (result?.error) {
-        setError("Usuario o contraseña incorrectos. Por favor intenta de nuevo.")
-        return
+        setError(
+          "Usuario o contraseña incorrectos. Por favor intenta de nuevo."
+        );
+        return;
       }
 
       // Si la autenticación es exitosa, redirigir al dashboard
-      router.push("/")
-      router.refresh()
+      router.push("/");
+      router.refresh();
     } catch (err) {
-      setError("Ocurrió un error al iniciar sesión. Por favor intenta de nuevo: " + err)
+      setError(
+        "Ocurrió un error al iniciar sesión. Por favor intenta de nuevo: " + err
+      );
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleGoogleSignIn = async () => {
-    setIsLoading(true)
-    setError(null)
+    setIsLoading(true);
+    setError(null);
 
     try {
-      await signIn("google", { callbackUrl: "/" })
+      await signIn("google", { callbackUrl: "/" });
       // No necesitamos manejar la redirección aquí ya que Auth.js lo hace automáticamente
     } catch (err) {
-      setError("Error al iniciar sesión con Google. Por favor intenta de nuevo: " + err)	
-      setIsLoading(false)
+      setError(
+        "Error al iniciar sesión con Google. Por favor intenta de nuevo: " + err
+      );
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <Card className="w-full">
       <CardHeader>
         <CardTitle>Iniciar Sesión</CardTitle>
-        <CardDescription>Ingresa tus credenciales para acceder a tu cuenta</CardDescription>
+        <CardDescription>
+          Ingresa tus credenciales para acceder a tu cuenta
+        </CardDescription>
       </CardHeader>
       <CardContent>
         {error && (
@@ -101,7 +116,10 @@ export default function LoginForm() {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="password">Contraseña</Label>
-              <a href="/forgot-password" className="text-xs text-primary hover:text-primary/90">
+              <a
+                href="/forgot-password"
+                className="text-xs text-primary hover:text-primary/90"
+              >
                 ¿Olvidaste tu contraseña?
               </a>
             </div>
@@ -132,11 +150,19 @@ export default function LoginForm() {
             <Separator className="w-full" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-card px-2 text-muted-foreground">O continuar con</span>
+            <span className="bg-card px-2 text-muted-foreground">
+              O continuar con
+            </span>
           </div>
         </div>
 
-        <Button variant="outline" type="button" className="w-full" onClick={handleGoogleSignIn} disabled={isLoading}>
+        <Button
+          variant="outline"
+          type="button"
+          className="w-full"
+          onClick={handleGoogleSignIn}
+          disabled={isLoading}
+        >
           <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
             <path
               d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -168,6 +194,5 @@ export default function LoginForm() {
         </p>
       </CardFooter>
     </Card>
-  )
+  );
 }
-
