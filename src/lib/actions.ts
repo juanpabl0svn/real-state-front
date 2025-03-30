@@ -131,14 +131,30 @@ export async function registerUser(formData: {
 
   try {
 
-    const user = await prisma.users.create({
-      data: {
-        name,
-        email,
-        password,
-        phone,
-        role: "user"
-      }
+    const user = await prisma.$transaction(async (prisma) => {
+      const newUser = await prisma.users.create({
+        data: {
+          name,
+          email,
+          password,
+          phone,
+          role: "user"
+        }
+      })
+
+      const expires_at = new Date(Date.now() + 10 * 60 * 1000)
+
+      const code = Math.floor(100000 + Math.random() * 900000).toString()
+
+      await prisma.otp_codes.create({
+        data: {
+          user_id: newUser.id,
+          expires_at,
+          code
+        }
+      })
+
+      return newUser
     })
 
     return { success: true, message: "User registered successfully", user_id: user.id }
@@ -230,27 +246,4 @@ export async function getAllProperties(): Promise<Paginate<Property>> {
     throw new Error("Failed to fetch properties")
   }
 
-}
-
-
-export async function generateOTP(user_id: string) {
-  try {
-
-    const code = Math.floor(100000 + Math.random() * 900000).toString()
-
-    const expires_at = new Date(Date.now() + 10 * 60 * 1000) // OTP valid for 10 minutes
-
-    await prisma.otp_codes.create({
-      data: {
-        user_id,
-        expires_at,
-        code
-      }
-    })
-
-    return { success: true }
-  } catch (error) {
-    console.error("Error generating OTP:", error)
-    throw new Error("Failed to generate OTP")
-  }
 }

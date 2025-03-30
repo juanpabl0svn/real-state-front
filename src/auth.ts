@@ -3,8 +3,8 @@ import GoogleProvider from "next-auth/providers/google"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { signInSchema } from "@/lib/zod"
 import { ZodError } from "zod"
-import { prisma } from "./prisma"
-import { hashPassword } from "./lib/utils"
+import { prisma } from "@/prisma"
+import { hashPassword } from "@/lib/utils"
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [

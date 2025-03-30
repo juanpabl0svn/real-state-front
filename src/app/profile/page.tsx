@@ -1,13 +1,5 @@
-import UserProfile from "@/components/user-profile";
-import { auth } from "@/auth";
-import { redirect } from "next/navigation";
+import ProfilePage from "@/views/profile/profile"
 
-export default async function ProfilePage() {
-  const session = await auth();
-
-  if (!session?.user){
-    return redirect('/')
-  }
-
-  return <UserProfile user={session?.user} />;
+export default async function Profile() {
+  return <ProfilePage/>
 }

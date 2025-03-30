@@ -1,3 +1,6 @@
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
+
 import Link from "next/link";
 import {
   Card,
@@ -10,9 +13,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { UserCircle, Mail, Phone, Calendar, Shield, Key } from "lucide-react";
-import type { User } from "next-auth";
 
-export default function UserProfile({ user }: { user: User }) {
+
+export default async function ProfilePage() {
+  const session = await auth();
+
+  if (!session?.user) {
+    return redirect("/");
+  }
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
@@ -26,7 +34,7 @@ export default function UserProfile({ user }: { user: User }) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <UserCircle className="h-6 w-6" />
-          {user.name}
+          {session.user.name}
         </CardTitle>
         <CardDescription>Your account information</CardDescription>
       </CardHeader>
@@ -36,14 +44,14 @@ export default function UserProfile({ user }: { user: User }) {
             <p className="text-sm font-medium text-muted-foreground">Email</p>
             <p className="flex items-center gap-2">
               <Mail className="h-4 w-4 text-primary" />
-              {user.email}
-              {/* {user.is_verified && ( */}
-                <Badge
-                  variant="outline"
-                  className="ml-2 bg-green-50 text-green-700 border-green-200"
-                >
-                  Verified
-                </Badge>
+              {session.user.email}
+              {/* {session.user.is_verified && ( */}
+              <Badge
+                variant="outline"
+                className="ml-2 bg-green-50 text-green-700 border-green-200"
+              >
+                Verified
+              </Badge>
             </p>
           </div>
 
@@ -51,7 +59,7 @@ export default function UserProfile({ user }: { user: User }) {
             <p className="text-sm font-medium text-muted-foreground">Phone</p>
             <p className="flex items-center gap-2">
               <Phone className="h-4 w-4 text-primary" />
-              {/* {user.phone || "Not provided"} */}
+              {/* {session.user.phone || "Not provided"} */}
               Not provided
             </p>
           </div>
@@ -60,13 +68,11 @@ export default function UserProfile({ user }: { user: User }) {
             <p className="text-sm font-medium text-muted-foreground">Role</p>
             <p className="flex items-center gap-2">
               <Shield className="h-4 w-4 text-primary" />
-              {/* <Badge variant={user.role === "admin" ? "default" : "secondary"}>
-                {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+              {/* <Badge variant={session.user.role === "admin" ? "default" : "secondary"}>
+                {session.user.role.charAt(0).toUpperCase() + session.user.role.slice(1)}
               </Badge> */}
 
-               <Badge variant={ "default"}>
-                Admin
-              </Badge> 
+              <Badge variant={"default"}>Admin</Badge>
             </p>
           </div>
 
@@ -76,10 +82,10 @@ export default function UserProfile({ user }: { user: User }) {
             </p>
             <p className="flex items-center gap-2">
               <Key className="h-4 w-4 text-primary" />
-              {/* {user.auth_method === "email"
+              {/* {session.user.auth_method === "email"
                 ? "Email & Password"
                 : "OAuth Provider"} */}
-                Email
+              Email
             </p>
           </div>
 
@@ -89,8 +95,8 @@ export default function UserProfile({ user }: { user: User }) {
             </p>
             <p className="flex items-center gap-2">
               <Calendar className="h-4 w-4 text-primary" />
-              {/* {formatDate(user.created_at)} */}
-              {formatDate('2025-03-20')}
+              {/* {formatDate(session.user.created_at)} */}
+              {formatDate("2025-03-20")}
             </p>
           </div>
         </div>

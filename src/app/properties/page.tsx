@@ -1,6 +1,6 @@
-import { PropertiesDashboard } from "@/components/properties-dashboard"
+"use client";
+import { PropertiesPage } from "@/views/properties/properties";
 
-export default function Home() {
-  return <PropertiesDashboard />
+export default function Properties() {
+  return <PropertiesPage />;
 }
-

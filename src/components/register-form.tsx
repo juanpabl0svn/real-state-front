@@ -25,26 +25,17 @@ import {
   Card,
   CardContent,
 } from "./ui/card";
+import { formSingUpSchema } from "@/lib/zod";
 
-const formSchema = z.object({
-  name: z.string().min(2, {
-    message: "Name must be at least 2 characters.",
-  }),
-  email: z.string().email({
-    message: "Please enter a valid email address.",
-  }),
-  password: z.string().min(8, {
-    message: "Password must be at least 8 characters.",
-  }),
-  phone: z.string().optional(),
-});
+
+
 
 export function RegisterForm() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof formSingUpSchema>>({
+    resolver: zodResolver(formSingUpSchema),
     defaultValues: {
       name: "",
       email: "",
@@ -53,7 +44,7 @@ export function RegisterForm() {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSingUpSchema>) {
     setIsLoading(true);
     try {
       await registerUser(values);
