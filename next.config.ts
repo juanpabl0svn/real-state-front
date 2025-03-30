@@ -11,6 +11,8 @@ const nextConfig: NextConfig = {
       net: false, // Ignore 'net' module
       fs: false,  // Ignore 'fs' module
       dns: false, // Ignore 'dns' module
+      child_process: false, // Ignore 'child_process' module
+      tls: false, // Ignore 'tls' module
     };
     return config;
   }
