@@ -280,16 +280,24 @@ export async function verifyOtp(user_id: string, code: string) {
       throw new Error("Invalid or expired OTP code")
     }
 
-    prisma.otp_codes.update(
-      {
-        where: {
-          id: otpRecord.id
-        },
-        data: {
-          is_used: true
-        }
+    await Promise.all([
+      prisma.otp_codes.update({
+      where: {
+        id: otpRecord.id
+      },
+      data: {
+        is_used: true
       }
-    )
+      }),
+      prisma.users.update({
+      where: {
+        id: user_id
+      },
+      data: {
+        is_verified: true
+      }
+      })
+    ])
 
     return { error: false, message: "OTP verified successfully" }
   } catch (error) {

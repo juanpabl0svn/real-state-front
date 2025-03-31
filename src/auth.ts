@@ -93,7 +93,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
           const user = await prisma.users.findFirst({
             where: {
-              email
+              email,
+              is_verified: true
             }
           })
 
