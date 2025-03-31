@@ -29,7 +29,7 @@ import { FormValues, formSchema } from "@/lib/zod";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 
-// import { createProperty } from "@/lib/actions";
+import { createProperty } from "@/lib/actions";
 
 export function PropertyForm({ property }: { property?: Property | null }) {
   // const { data: session } = useSession();
@@ -59,40 +59,38 @@ export function PropertyForm({ property }: { property?: Property | null }) {
           bathrooms: 0,
           parking_spaces: 0,
           status: "available" as PropertyStatus,
-          // is_approved: false,
-          // owner_id: session?.user?.id ?? "",
         },
   });
 
 
-  // const upsertProperty = async (propertyData: Partial<Property>) => {
-  //   const formData = Object.fromEntries(
-  //     Object.entries(propertyData).filter(([_, value]) => value !== undefined)
-  //   ) as {
-  //     title: string;
-  //     description?: string;
-  //     price: number;
-  //     location: string;
-  //     area: number;
-  //     bedrooms: number;
-  //     bathrooms: number;
-  //     parking_spaces?: number;
-  //     property_type: string;
-  //     status?: string;
-  //   };
-
-  //   return createProperty(formData);
-  // };
-
   const upsertProperty = async (propertyData: Partial<Property>) => {
-    const { data } = await axios.post(`/api/properties/upsert`, propertyData);
-    return data;
+    const formData = Object.fromEntries(
+      Object.entries(propertyData).filter(([_, value]) => value !== undefined)
+    ) as {
+      title: string;
+      description?: string;
+      price: number;
+      location: string;
+      area: number;
+      bedrooms: number;
+      bathrooms: number;
+      parking_spaces?: number;
+      property_type: string;
+      status?: string;
+    };
+
+    return createProperty(formData);
   };
+
+  // const upsertProperty = async (propertyData: Partial<Property>) => {
+  //   const { data } = await axios.post(`/api/properties/upsert`, propertyData);
+  //   return data;
+  // };
 
   const { mutate: executeUpsert, isPending } = useMutation({
     mutationFn: upsertProperty,
     onSuccess: (data) => {
-      form.reset(data);
+      // form.reset(data);
       window.location.reload();
     },
     onError: (error) => {

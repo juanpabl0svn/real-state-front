@@ -72,9 +72,17 @@ export async function createProperty(formData: {
 }) {
   const session = await auth();
 
-  if (!session?.user?.id) {
-    console.log(session)
+  if (!session?.user?.email) {
     throw new Error("User not authenticated or missing ID");
+  }
+  
+  const user = await prisma.users.findFirst({
+    where: { email: session.user.email },
+  });
+  console.log(user)
+
+  if (!user) {
+    throw new Error("User does not exist in the database");
   }
 
   const validatedFields = formSchema.safeParse(formData);
@@ -85,7 +93,7 @@ export async function createProperty(formData: {
   try {
     const property = await prisma.properties.create({
       data: {
-        owner_id: session.user.id,
+        owner_id: user.user_id,
         ...validatedFields.data,
       },
     });
@@ -197,7 +205,7 @@ export async function registerUser(formData: {
 
       await prisma.otp_codes.create({
         data: {
-          user_id: newUser.id,
+          user_id: newUser.user_id,
           expires_at,
           code
         }
@@ -208,7 +216,7 @@ export async function registerUser(formData: {
 
     sendOtpEmail(email, code)
 
-    return { error: false, message: "User registered successfully", user_id: user.id }
+    return { error: false, message: "User registered successfully", user_id: user.user_id }
   } catch (error) {
     console.error("Error registering user:", error)
     return {
@@ -326,20 +334,20 @@ export async function verifyOtp(user_id: string, code: string) {
 
     await Promise.all([
       prisma.otp_codes.update({
-      where: {
-        id: otpRecord.id
-      },
-      data: {
-        is_used: true
-      }
+        where: {
+          id: otpRecord.id
+        },
+        data: {
+          is_used: true
+        }
       }),
       prisma.users.update({
-      where: {
-        id: user_id
-      },
-      data: {
-        is_verified: true
-      }
+        where: {
+          user_id: user_id
+        },
+        data: {
+          is_verified: true
+        }
       })
     ])
 
