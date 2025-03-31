@@ -25,14 +25,14 @@ import {
 import type { Property, PropertyStatus } from "@/types";
 
 import { FormValues, formSchema } from "@/lib/zod";
-import { useSession } from "next-auth/react";
+// import { useSession } from "next-auth/react";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 
-import { createProperty } from "@/lib/actions";
+// import { createProperty } from "@/lib/actions";
 
 export function PropertyForm({ property }: { property?: Property | null }) {
-  const { data: session } = useSession();
+  // const { data: session } = useSession();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),

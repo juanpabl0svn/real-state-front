@@ -1,7 +1,6 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
-import { NextRequest, NextResponse } from "next/server";
 import type { Paginate, Property, PropertyTypes } from "../types"
 
 import { auth } from "@/auth"
