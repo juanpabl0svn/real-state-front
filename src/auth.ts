@@ -15,6 +15,7 @@ declare module "next-auth" {
       email?: string;
       phone?: string;
       is_verified?: boolean;
+      user_id?: string;
     } & DefaultSession["user"];
   }
 
@@ -24,6 +25,7 @@ declare module "next-auth" {
     name?: string | null;
     email?: string | null;
     phone?: string | null;
+    user_id?: string | null;
   }
 }
 
@@ -153,6 +155,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (user) {
         token.role = user.role;
         token.id = user.id;
+        token.user_id = user.id;
         token.name = user.name;
         token.email = user.email;
         token.phone = user.phone;
@@ -162,6 +165,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async session({ session, token }) {
       session.user.role = token.role as string;
       session.user.id = token.id as string;
+      session.user.user_id = token.user_id as string
       session.user.name = token.name as string;
       session.user.email = token.email as string;
       session.user.phone = token.phone as string;

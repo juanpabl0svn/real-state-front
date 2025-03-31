@@ -24,7 +24,7 @@ model consultancies {
   meeting_type     String               @db.VarChar(20)
   meeting_date     DateTime             @db.Timestamptz(6)
   properties       properties?          @relation(fields: [property_id], references: [id], onUpdate: NoAction)
-  user             users                @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user             users                @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model notifications {
@@ -34,7 +34,7 @@ model notifications {
   data       Json
   is_read    Boolean?  @default(false)
   created_at DateTime? @default(now()) @db.Timestamptz(6)
-  user       users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user       users     @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
@@ -45,7 +45,7 @@ model otp_codes {
   expires_at DateTime? @default(dbgenerated("(CURRENT_TIMESTAMP + '00:30:00'::interval)")) @db.Timestamptz(6)
   is_used    Boolean?  @default(false)
   created_at DateTime? @default(now()) @db.Timestamptz(6)
-  user       users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user       users     @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 enum property_type {
@@ -80,7 +80,7 @@ model properties {
   is_approved    Boolean         @default(false)
   created_at     DateTime?       @default(now()) @db.Timestamptz(6)
   consultancies  consultancies[]
-  user           users           @relation(fields: [owner_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user           users           @relation(fields: [owner_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 enum social_media_providers_name {
@@ -103,7 +103,7 @@ model user_providers {
   provider_user_id       String                 @db.VarChar(255)
   created_at             DateTime?              @default(now()) @db.Timestamptz(6)
   social_media_providers social_media_providers @relation(fields: [provider_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  user                   users                  @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user                   users                  @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
 
   @@unique([user_id, provider_id, provider_user_id])
 }
@@ -115,7 +115,7 @@ enum roles {
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model users {
-  id             String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id             String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name           String           @db.VarChar(100)
   email          String           @db.VarChar(100)
   password       String?
