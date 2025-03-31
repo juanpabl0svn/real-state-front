@@ -117,11 +117,10 @@ enum roles {
 model users {
   id             String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name           String           @db.VarChar(100)
-  email          String           @unique @db.VarChar(100)
+  email          String           @db.VarChar(100)
   password       String?
-  phone          String?          @unique @db.VarChar(20)
+  phone          String?          @db.VarChar(20)
   role           roles
-  auth_method    String?          @default("email") @db.VarChar(10)
   is_verified    Boolean?         @default(false)
   created_at     DateTime?        @default(now()) @db.Timestamptz(6)
   consultancies  consultancies[]

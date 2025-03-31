@@ -17,16 +17,26 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { registerUser } from "@/lib/actions";
+import { registerUser, verifyOtp } from "@/lib/actions";
 import { toast } from "@/hooks/use-toast";
 import { signIn } from "next-auth/react";
 import { Separator } from "./ui/separator";
-import { Card, CardContent } from "./ui/card";
-import { formSingUpSchema } from "@/lib/zod";
+import { Card, CardContent, CardHeader } from "./ui/card";
+import { formSingUpSchema, formOtpSchema } from "@/lib/zod";
+import { User } from "@/types";
 
 export function RegisterForm() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [seeOtp, setSeeOtp] = useState(false);
+  const [userData, setUserData] = useState<Partial<User> | null>(null);
+
+  const formOtp = useForm<z.infer<typeof formOtpSchema>>({
+    resolver: zodResolver(formOtpSchema),
+    defaultValues: {
+      otp: "",
+    },
+  });
 
   const form = useForm<z.infer<typeof formSingUpSchema>>({
     resolver: zodResolver(formSingUpSchema),
@@ -41,16 +51,46 @@ export function RegisterForm() {
   async function onSubmit(values: z.infer<typeof formSingUpSchema>) {
     setIsLoading(true);
     try {
-      await registerUser(values);
+      const user = await registerUser(values);
+      if (user.error) throw new Error("User with this email already exists.");
       toast({
         title: "Registration successful",
-        description: "Your account has been created successfully.",
+        description: "A code has been sent to your email for verification.",
       });
-      router.push("/login");
+      setSeeOtp(true);
+      setUserData({
+        email: values.email,
+        id: user.user_id,
+      });
     } catch (error) {
       console.error("Registration error:", error);
       toast({
         title: "Registration failed",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Something went wrong. Please try again.",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function onSubmitOtp(values: z.infer<typeof formOtpSchema>) {
+    setIsLoading(true);
+    try {
+      const otp = await verifyOtp(userData.id!, values.otp);
+
+      if (otp.error) throw new Error(otp.message);
+
+      toast({
+        title: "OTP verified",
+        description: otp.message,
+      });
+      router.push("/login");
+    } catch (error) {
+      toast({
+        title: "Verification failed",
         description:
           error instanceof Error
             ? error.message
@@ -64,7 +104,52 @@ export function RegisterForm() {
 
   const signInWithGoogle = async () => await signIn("google");
 
-  return (
+  return seeOtp ? (
+    <Card className="w-full">
+      <CardHeader>
+        <Button
+          variant="ghost"
+          onClick={() => setSeeOtp(false)}
+          className="w-16"
+        >
+          <span className="mr-2 text-gray">← Back</span>
+        </Button>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-6">
+          <h2 className="text-2xl font-bold">Verify your email number</h2>
+          <p className="text-muted-foreground">
+            We have sent a verification code to your email{" "}
+            <span className="text-gray-400">{userData?.email}</span> . Please
+            enter it below.
+          </p>
+          <Form {...formOtp}>
+            <form
+              onSubmit={formOtp.handleSubmit((data) => onSubmitOtp(data))}
+              className="space-y-6"
+            >
+              <FormField
+                control={formOtp.control}
+                name="otp"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>OTP</FormLabel>
+                    <FormControl>
+                      <Input placeholder="123456" maxLength={6} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? "Verifying..." : "Verify"}
+              </Button>
+            </form>
+          </Form>
+        </div>
+      </CardContent>
+    </Card>
+  ) : (
     <Card className="w-full">
       <CardContent>
         <Form {...form}>

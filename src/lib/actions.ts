@@ -3,10 +3,11 @@
 import { revalidatePath } from "next/cache"
 import type { Paginate, Property, PropertyTypes } from "../types"
 
-import { auth } from "@/auth"
+import { auth, signIn } from "@/auth"
 import { perPage, prisma } from "@/prisma"
 import { UserSchema } from "./zod"
 import { hashPassword } from "./utils"
+import { sendOtpEmail } from "@/nodemailer"
 
 // Fetch all properties for the current user
 export async function fetchProperties(): Promise<Paginate<Property>> {
@@ -126,11 +127,24 @@ export async function registerUser(formData: {
   }
   validatedFields.data.password = hashPassword(validatedFields.data.password!)
 
+  const existingUser = await prisma.users.findFirst({
+    where: {
+      email: validatedFields.data.email,
+      is_verified: true
+    }
+  })
+
+  if (existingUser) {
+    throw new Error("User with this email already exists.")
+  }
+
   const { name, email, password, phone } = validatedFields.data
 
+  const expires_at = new Date(Date.now() + 10 * 60 * 1000)
+
+  const code = Math.floor(100000 + Math.random() * 900000).toString()
 
   try {
-
     const user = await prisma.$transaction(async (prisma) => {
       const newUser = await prisma.users.create({
         data: {
@@ -142,9 +156,6 @@ export async function registerUser(formData: {
         }
       })
 
-      const expires_at = new Date(Date.now() + 10 * 60 * 1000)
-
-      const code = Math.floor(100000 + Math.random() * 900000).toString()
 
       await prisma.otp_codes.create({
         data: {
@@ -157,10 +168,15 @@ export async function registerUser(formData: {
       return newUser
     })
 
-    return { success: true, message: "User registered successfully", user_id: user.id }
+    sendOtpEmail(email, code)
+
+    return { error: false, message: "User registered successfully", user_id: user.id }
   } catch (error) {
     console.error("Error registering user:", error)
-    throw new Error("Failed to register user. Please try again.")
+    return {
+      error: true,
+      message: error instanceof Error ? error.message : "Failed to register user"
+    }
   }
 }
 
@@ -246,4 +262,41 @@ export async function getAllProperties(): Promise<Paginate<Property>> {
     throw new Error("Failed to fetch properties")
   }
 
+}
+
+
+export async function verifyOtp(user_id: string, code: string) {
+  try {
+
+    const otpRecord = await prisma.otp_codes.findFirst({
+      where: {
+        user_id,
+        code
+      }
+    })
+
+
+    if (!otpRecord) {
+      throw new Error("Invalid or expired OTP code")
+    }
+
+    prisma.otp_codes.update(
+      {
+        where: {
+          id: otpRecord.id
+        },
+        data: {
+          is_used: true
+        }
+      }
+    )
+
+    return { error: false, message: "OTP verified successfully" }
+  } catch (error) {
+    console.error("Error verifying OTP:", error)
+    return {
+      error: true,
+      message: error instanceof Error ? error.message : "Failed to verify OTP"
+    }
+  }
 }
