@@ -29,8 +29,6 @@ export const formSchema = z.object({
   parking_spaces: z.coerce.number().min(0, { message: "Parking spaces cannot be negative" }),
   property_type: z.enum(["house", "apartment", "land", "office"]),
   status: z.enum(["available", "sold", "reserved"]),
-  is_approved: z.boolean().default(false),
-  owner_id: z.string().uuid({ message: "Invalid owner ID format" }),
 })
 
 export type FormValues = z.infer<typeof formSchema>
