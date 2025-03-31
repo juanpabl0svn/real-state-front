@@ -31,3 +31,29 @@ export interface Paginate<T> {
   per_page: number
   total_pages: number
 }
+
+export interface AppStore {
+  tab: string | null
+  setTab: (tab: string | null) => void
+  isLoading: boolean
+  setLoading: (isLoading: boolean) => void
+  otpCode: string | null
+  setOtpCode: (otpCode: string | null) => void
+  data: any | null
+  setData: (data: any | null) => void
+}
+
+
+export const useAppStore = create<AppStore>((set) => ({
+  tab: null,
+  setTab: (tab) => set(() => ({ tab })),
+  isLoading: false,
+  setLoading: (isLoading) => set(() => ({ isLoading })),
+  otpCode: null,
+  setOtpCode: (otpCode) => set(() => ({ otpCode })),
+  data: null,
+  setData: (data) => set(() => ({ data })),
+}));
+
+
+
