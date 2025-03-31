@@ -68,7 +68,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             email: rest.email,
             phone: rest.phone,
             role: rest.role,
-            auth_method: rest.auth_method,
             is_verified: rest.is_verified,
             created_at: rest.created_at
           };

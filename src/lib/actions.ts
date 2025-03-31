@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache"
 import type { Paginate, Property, PropertyTypes } from "../types"
 
-import { auth, signIn } from "@/auth"
+import { auth } from "@/auth"
 import { perPage, prisma } from "@/prisma"
 import { UserSchema } from "./zod"
 import { hashPassword } from "./utils"
