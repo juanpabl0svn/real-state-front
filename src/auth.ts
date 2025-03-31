@@ -57,7 +57,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           }
 
           const {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             password: _,
             ...rest
           } = provider.user;
@@ -109,7 +108,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           }
 
           const {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             password: _,
             ...rest
           } = user

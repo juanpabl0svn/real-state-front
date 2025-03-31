@@ -1,12 +1,9 @@
 import { Prisma, $Enums } from '@prisma/client'
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export type Property = Prisma.propertiesGetPayload<{}>
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export type User = Prisma.UserGetPayload<{}>
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export type Notification = Prisma.NotificationGetPayload<{}>
 
 export type PropertyTypes = $Enums['PropertyType']
@@ -54,6 +51,5 @@ export const useAppStore = create<AppStore>((set) => ({
   data: null,
   setData: (data) => set(() => ({ data })),
 }));
-
 
 

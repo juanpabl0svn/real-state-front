@@ -22,7 +22,6 @@ export async function POST(request: Request) {
       },
     });
     return new Response(JSON.stringify(property), { status: 201 });
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (_err) {
     return new Response(JSON.stringify({ error: "Failed to create property" }), { status: 500 });
   }
