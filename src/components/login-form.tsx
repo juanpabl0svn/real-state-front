@@ -25,9 +25,9 @@ export default function LoginForm() {
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(
-    searchParams.get("error") === "CredentialsSignin"
-      ? "Credenciales inválidas. Por favor intenta de nuevo."
-      : searchParams.get("error")
+    searchParams.get("error") === "Configuration"
+      ? "Correo ya en uso. Para ingresar utiliza tus credenciales"
+      : null
   );
   const [formData, setFormData] = useState({
     email: "",
