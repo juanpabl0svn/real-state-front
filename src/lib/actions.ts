@@ -24,7 +24,7 @@ export async function fetchProperties(): Promise<Paginate<Property>> {
 
     const properties = await prisma.properties.findMany({
       where: {
-        owner_id: session.user.id!,
+        user_id: session.user.id!,
         is_deleted: false
       },
       skip: (page - 1) * perPage,
@@ -33,7 +33,7 @@ export async function fetchProperties(): Promise<Paginate<Property>> {
 
     const totalProperties = await prisma.properties.count({
       where: {
-        owner_id: session.user.id!,
+        user_id: session.user.id!,
         is_deleted: false
       }
     })
@@ -70,30 +70,33 @@ export async function createProperty(formData: {
   property_type: string;
   status?: string;
 }) {
-  const session = await auth();
-
-  if (!session?.user?.email) {
-    throw new Error("User not authenticated or missing ID");
-  }
-  
-  const user = await prisma.users.findFirst({
-    where: { email: session.user.email },
-  });
-  console.log(user)
-
-  if (!user) {
-    throw new Error("User does not exist in the database");
-  }
-
-  const validatedFields = formSchema.safeParse(formData);
-  if (!validatedFields.success) {
-    throw new Error("Invalid form data. Please check your inputs.");
-  }
 
   try {
+
+    const session = await auth();
+
+
+    if (!session?.user) {
+      throw new Error("User not authenticated or missing ID");
+    }
+
+    const user = await prisma.users.findFirst({
+      where: { user_id: session.user.user_id },
+    });
+
+    if (!user) {
+      throw new Error("User does not exist in the database");
+    }
+
+    const validatedFields = formSchema.safeParse(formData);
+
+    if (!validatedFields.success) {
+      throw new Error("Invalid form data. Please check your inputs.");
+    }
+
     const property = await prisma.properties.create({
       data: {
-        owner_id: user.user_id,
+        user_id: user.user_id,
         ...validatedFields.data,
       },
     });
@@ -120,7 +123,7 @@ export async function updateProperty(id: string, propertyData: Property) {
     await prisma.properties.update({
       where: {
         id,
-        owner_id: propertyData.owner_id
+        user_id: propertyData.user_id
       },
       data: propertyData
     })
@@ -272,7 +275,7 @@ export async function getFilteredProperties(filter: {
 }
 
 
-export async function getPropertyById(id: string): Promise<Property> {
+export async function getPropertyById(id: string): Promise<Property | null> {
   try {
 
     const property = await prisma.properties.findUnique({
@@ -288,7 +291,7 @@ export async function getPropertyById(id: string): Promise<Property> {
     return property;
   } catch (error) {
     console.error("Error fetching property:", error)
-    throw new Error("Failed to fetch property")
+    return null
   }
 }
 
@@ -311,7 +314,13 @@ export async function getAllProperties(): Promise<Paginate<Property>> {
     }
   } catch (error) {
     console.error("Error fetching properties:", error)
-    throw new Error("Failed to fetch properties")
+    return {
+      data: [],
+      page: 1,
+      per_page: 0,
+      total: 0,
+      total_pages: 0
+    }
   }
 
 }

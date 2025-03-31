@@ -1,4 +1,4 @@
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ArrowLeft, BedDouble, Bath, Car, Ruler, Home } from "lucide-react";
 import Link from "next/link";
@@ -13,16 +13,21 @@ export default function PropertyDetailsPage() {
   const { id } = useParams();
   const [property, setProperty] = useState<Property | null>(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     (async () => {
       if (id) {
         const fetchedProperty = await getPropertyById(id as string);
+        if (!fetchedProperty) {
+          router.push("/");
+          return;
+        }
         setProperty(fetchedProperty);
         setLoading(false);
       }
     })();
-  }, [id]);
+  }, [id, router]);
 
   if (loading) {
     return (

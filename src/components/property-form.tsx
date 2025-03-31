@@ -27,7 +27,6 @@ import type { Property, PropertyStatus } from "@/types";
 import { FormValues, formSchema } from "@/lib/zod";
 // import { useSession } from "next-auth/react";
 import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
 
 import { createProperty } from "@/lib/actions";
 
@@ -89,7 +88,7 @@ export function PropertyForm({ property }: { property?: Property | null }) {
 
   const { mutate: executeUpsert, isPending } = useMutation({
     mutationFn: upsertProperty,
-    onSuccess: (data) => {
+    onSuccess: () => {
       // form.reset(data);
       window.location.reload();
     },

@@ -60,7 +60,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               data: {
                 provider_user_id: sub,
                 provider_id: 1,
-                user_id: user.id
+                user_id: user.user_id
               }
 
             }).then((provider: any) => {
@@ -84,8 +84,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             ...rest
           } = provider.user;
 
+          console.log(rest)
+
           return {
-            id: rest.id,
+            user_id: rest.user_id,
             name: rest.name,
             email: rest.email,
             phone: rest.phone,
@@ -155,7 +157,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (user) {
         token.role = user.role;
         token.id = user.id;
-        token.user_id = user.id;
+        token.user_id = user.user_id;
         token.name = user.name;
         token.email = user.email;
         token.phone = user.phone;
