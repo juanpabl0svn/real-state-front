@@ -1,11 +1,12 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
+import { NextRequest, NextResponse } from "next/server";
 import type { Paginate, Property, PropertyTypes } from "../types"
 
 import { auth } from "@/auth"
 import { perPage, prisma } from "@/prisma"
-import { UserSchema } from "./zod"
+import { UserSchema, formSchema } from "./zod"
 import { hashPassword } from "./utils"
 import { sendOtpEmail } from "@/nodemailer"
 
@@ -17,6 +18,7 @@ export async function fetchProperties(): Promise<Paginate<Property>> {
     if (!session?.user) {
       throw new Error("User not authenticated")
     }
+
 
     const page = 1 // Default page number, you can pass this as a parameter
 
@@ -51,19 +53,50 @@ export async function fetchProperties(): Promise<Paginate<Property>> {
 }
 
 // Create a new property
-export async function createProperty(data: Property) {
+export async function createProperty(formData: {
+  title: string;
+  description?: string;
+  price: number;
+  location: string;
+  area: number;
+  bedrooms: number;
+  bathrooms: number;
+  parking_spaces?: number;
+  property_type: string;
+  status?: string;
+}) {
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    console.log(session)
+    throw new Error("User not authenticated or missing ID");
+  }
+
+  const validatedFields = formSchema.safeParse(formData);
+  if (!validatedFields.success) {
+    throw new Error("Invalid form data. Please check your inputs.");
+  }
+
   try {
+    const property = await prisma.properties.create({
+      data: {
+        owner_id: session.user.id,
+        ...validatedFields.data,
+      },
+    });
 
-    await prisma.properties.create({
-      data
-    })
-
-    // Revalidate the properties page to show the new data
-    revalidatePath("/")
-    return { success: true }
+    return {
+      error: false,
+      message: "Property created successfully",
+      property_id: property.id,
+    };
   } catch (error) {
-    console.error("Error creating property:", error)
-    throw new Error("Failed to create property")
+    console.error("Error creating property:", error);
+    return {
+      error: true,
+      message:
+        error instanceof Error ? error.message : "Failed to create property",
+    };
   }
 }
 

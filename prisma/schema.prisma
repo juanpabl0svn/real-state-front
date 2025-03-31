@@ -62,7 +62,7 @@ enum property_status {
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-model properties {
+model properties { 
   id             String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   owner_id       String          @db.Uuid
   title          String          @db.VarChar(255)
