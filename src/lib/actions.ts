@@ -47,7 +47,13 @@ export async function fetchProperties(): Promise<Paginate<Property>> {
     }
   } catch (error) {
     console.error("Error fetching properties:", error)
-    throw new Error("Failed to fetch properties")
+    return {
+      data: [],
+      page: 1,
+      per_page: 0,
+      total: 0,
+      total_pages: 0
+    }
   }
 }
 
@@ -247,7 +253,13 @@ export async function getFilteredProperties(filter: {
     }
   } catch (error) {
     console.error("Error fetching filtered properties:", error)
-    throw new Error("Failed to fetch filtered properties")
+    return {
+      data: [],
+      page: 1,
+      per_page: 0,
+      total: 0,
+      total_pages: 0
+    }
   }
 }
 

@@ -1,8 +1,13 @@
 import { PropertyList } from "@/components/property-list";
 import { PropertyFilters } from "@/components/property-filters";
 import { Suspense } from "react";
+import { auth } from "@/auth";
 
-export default function HomePage() {
+export default async function HomePage() {
+
+  const session = await auth();
+
+  console.log("Session", session);
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">

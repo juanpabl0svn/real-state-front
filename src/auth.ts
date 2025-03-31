@@ -1,10 +1,31 @@
-import NextAuth from "next-auth"
+import NextAuth, { DefaultSession } from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { signInSchema } from "@/lib/zod"
 import { ZodError } from "zod"
 import { prisma } from "@/prisma"
 import { hashPassword } from "@/lib/utils"
+
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id: string;
+      role?: string;
+      name?: string;
+      email?: string;
+      phone?: string;
+      is_verified?: boolean;
+    } & DefaultSession["user"];
+  }
+
+  interface User {
+    id?: string;
+    role?: string;
+    name?: string | null;
+    email?: string | null;
+    phone?: string | null;
+  }
+}
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -127,8 +148,29 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       }
     })
   ],
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.role = user.role;
+        token.id = user.id;
+        token.name = user.name;
+        token.email = user.email;
+        token.phone = user.phone;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      session.user.role = token.role as string;
+      session.user.id = token.id as string;
+      session.user.name = token.name as string;
+      session.user.email = token.email as string;
+      session.user.phone = token.phone as string;
+      return session;
+    },
+  },
   pages: {
     signIn: '/login',
     error: '/login', // Error code passed in query string as ?error=
-  }
+  },
+  secret: process.env.NEXTAUTH_SECRET,
 })
