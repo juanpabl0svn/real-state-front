@@ -75,11 +75,18 @@ export default function LoginForm() {
     setError(null);
 
     try {
-      await signIn("google", { callbackUrl: "/" });
+      const result = await signIn("google", { callbackUrl: "/" });
+
+      if (result?.error) {
+        setError(
+          "Este correo ya esta en uso y para ingresar digite sus credenciales"
+        );
+        return;
+      }
       // No necesitamos manejar la redirección aquí ya que Auth.js lo hace automáticamente
     } catch (err) {
       setError(
-        "Error al iniciar sesión con Google. Por favor intenta de nuevo: " + err
+        "Este correo ya esta en uso y para ingresar digite sus credenciales"
       );
       setIsLoading(false);
     }
