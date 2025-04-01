@@ -47,6 +47,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           });
 
           if (!provider) {
+
+            const userExists = await prisma.users.findFirst({
+              where: {
+                email: profile.email,
+                is_verified: true
+              }
+            });
+
+            if (userExists) {
+              throw new Error("User already exists")
+            }
+
             const user = await prisma.users.create({
               data: {
                 email: profile.email,
