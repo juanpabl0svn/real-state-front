@@ -24,7 +24,7 @@ export async function fetchProperties(): Promise<Paginate<Property>> {
 
     const properties = await prisma.properties.findMany({
       where: {
-        user_id: session.user.id!,
+        user_id: session.user.user_id!,
         is_deleted: false
       },
       skip: (page - 1) * perPage,
@@ -33,7 +33,7 @@ export async function fetchProperties(): Promise<Paginate<Property>> {
 
     const totalProperties = await prisma.properties.count({
       where: {
-        user_id: session.user.id!,
+        user_id: session.user.user_id!,
         is_deleted: false
       }
     })
