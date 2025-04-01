@@ -31,8 +31,11 @@ export async function sendEmail(email: string, subject: string, body: string) {
 }
 
 export async function sendOtpEmail(email: string, otp: string) {
-  const subject = "Vivea OTP verification";
-  const body = `
+
+  try {
+
+    const subject = "Vivea OTP verification";
+    const body = `
   <!DOCTYPE html>
   <html>
     <head>
@@ -91,5 +94,12 @@ export async function sendOtpEmail(email: string, otp: string) {
     </body>
   </html>
   `;
-  return await sendEmail(email, subject, body);
+    await sendEmail(email, subject, body);
+
+    return true;
+  }
+  catch (error) {
+    console.error("Error sending OTP email:", error);
+    return false;
+  }
 }

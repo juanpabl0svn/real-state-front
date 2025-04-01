@@ -217,7 +217,7 @@ export async function registerUser(formData: {
       return newUser
     })
 
-    sendOtpEmail(email, code)
+    await sendOtpEmail(email, code)
 
     return { error: false, message: "User registered successfully", user_id: user.user_id }
   } catch (error) {

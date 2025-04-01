@@ -96,8 +96,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             ...rest
           } = provider.user;
 
-          console.log(rest)
-
           return {
             user_id: rest.user_id,
             name: rest.name,
