@@ -110,7 +110,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           if (err instanceof Error) {
             console.log(err.message);
           }
-          throw new Error("Failed to process profile");
+          return {
+            error: 'Email already in use',
+          }
         }
       },
     }),
@@ -157,7 +159,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           } else if (err instanceof Error) {
             console.log(err.message)
           }
-          return null
+          return {
+            error: 'Usuario usuario y/o contraseña incorrectos',
+          }
         }
       }
     })
