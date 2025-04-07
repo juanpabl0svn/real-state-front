@@ -37,8 +37,6 @@ export default function PasswordForm({ userId }: PasswordFormProps) {
     setError(null);
     setSuccess(false);
 
-    console.log(userId);
-
     // Validate passwords
     if (newPassword.length < 8) {
       setError("New password must be at least 8 characters long");

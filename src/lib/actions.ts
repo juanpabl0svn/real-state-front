@@ -5,7 +5,7 @@ import type { Paginate, Property, PropertyTypes } from "../types"
 
 import { auth } from "@/auth"
 import { perPage, prisma } from "@/prisma"
-import { UserSchema, formSchema } from "./zod"
+import { userSchema, propertySchema } from "./zod"
 import { hashPassword } from "./utils"
 import { sendOtpEmail } from "@/nodemailer"
 
@@ -88,7 +88,7 @@ export async function createProperty(formData: {
       throw new Error("User does not exist in the database");
     }
 
-    const validatedFields = formSchema.safeParse(formData);
+    const validatedFields = propertySchema.safeParse(formData);
 
     if (!validatedFields.success) {
       throw new Error("Invalid form data. Please check your inputs.");
@@ -169,7 +169,7 @@ export async function registerUser(formData: {
   phone?: string
 }) {
   // Validate the form data
-  const validatedFields = UserSchema.safeParse(formData)
+  const validatedFields = userSchema.safeParse(formData)
 
   if (!validatedFields.success) {
     throw new Error("Invalid form data. Please check your inputs.")

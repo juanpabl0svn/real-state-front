@@ -133,11 +133,12 @@ export default function Header() {
   };
 
   const navItems = [
-    { label: "Home", href: "/", icon: <Home className="h-4 w-4 mr-2" /> },
+    { label: "Home", href: "/", icon: <Home className="h-4 w-4 mr-2" />, needsAuth: false },
     {
       label: "Mis propiedades",
       href: "/properties",
       icon: <Search className="h-4 w-4 mr-2" />,
+      needsAuth: true,
     },
   ];
 
@@ -151,7 +152,13 @@ export default function Header() {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-6 ml-6">
-            {navItems.map((item) => (
+            {navItems.map((item) => {
+
+              if (item.needsAuth && !data?.user) {
+                return null;  
+              }
+              
+              return (
               <Link
                 key={item.href}
                 href={item.href}
@@ -160,7 +167,7 @@ export default function Header() {
                 {item.icon}
                 {item.label}
               </Link>
-            ))}
+            )})}
           </nav>
         </div>
 

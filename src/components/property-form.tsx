@@ -24,17 +24,20 @@ import {
 } from "@/components/ui/select";
 import type { Property, PropertyStatus } from "@/types";
 
-import { FormValues, formSchema } from "@/lib/zod";
+import { propertySchema, PropertyFormSchema } from "@/lib/zod";
 // import { useSession } from "next-auth/react";
 import { useMutation } from "@tanstack/react-query";
 
 import { createProperty } from "@/lib/actions";
+import useNumber from "@/hooks/use-number";
 
 export function PropertyForm({ property }: { property?: Property | null }) {
   // const { data: session } = useSession();
 
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+  useNumber()
+
+  const form = useForm<PropertyFormSchema>({
+    resolver: zodResolver(propertySchema),
     defaultValues: property
       ? {
           ...property,
@@ -97,8 +100,7 @@ export function PropertyForm({ property }: { property?: Property | null }) {
     },
   });
 
-  const handleFormSubmit = (values: FormValues) => {
-    console.log("Form values:", values);
+  const handleFormSubmit = (values: PropertyFormSchema) => {
     const propertyData: Partial<Property> = {
       ...values,
       price: values.price,

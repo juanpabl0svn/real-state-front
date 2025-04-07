@@ -22,24 +22,29 @@ import { toast } from "@/hooks/use-toast";
 import { signIn } from "next-auth/react";
 import { Separator } from "./ui/separator";
 import { Card, CardContent, CardHeader } from "./ui/card";
-import { formSingUpSchema, formOtpSchema } from "@/lib/zod";
 import { User } from "@/types";
+import {
+  userSchema,
+  OtpFormSchema,
+  UserFormSchema,
+  otpSchema,
+} from "@/lib/zod";
+import { useAppStore } from "@/stores/app-store";
 
 export function RegisterForm() {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
   const [seeOtp, setSeeOtp] = useState(false);
-  const [userData, setUserData] = useState<Partial<User> | null>(null);
+  const { isLoading, setLoading, setData, data } = useAppStore();
 
-  const formOtp = useForm<z.infer<typeof formOtpSchema>>({
-    resolver: zodResolver(formOtpSchema),
+  const formOtp = useForm<OtpFormSchema>({
+    resolver: zodResolver(otpSchema),
     defaultValues: {
       otp: "",
     },
   });
 
-  const form = useForm<z.infer<typeof formSingUpSchema>>({
-    resolver: zodResolver(formSingUpSchema),
+  const form = useForm<UserFormSchema>({
+    resolver: zodResolver(userSchema),
     defaultValues: {
       name: "",
       email: "",
@@ -48,8 +53,8 @@ export function RegisterForm() {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSingUpSchema>) {
-    setIsLoading(true);
+  async function onSubmit(values: UserFormSchema) {
+    setLoading(true);
     try {
       const user = await registerUser(values);
       if (user.error) throw new Error("User with this email already exists.");
@@ -58,7 +63,7 @@ export function RegisterForm() {
         description: "A code has been sent to your email for verification.",
       });
       setSeeOtp(true);
-      setUserData({
+      setData({
         email: values.email,
         id: user.user_id,
       });
@@ -72,14 +77,14 @@ export function RegisterForm() {
             : "Something went wrong. Please try again.",
       });
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   }
 
-  async function onSubmitOtp(values: z.infer<typeof formOtpSchema>) {
-    setIsLoading(true);
+  async function onSubmitOtp(values: OtpFormSchema) {
+    setLoading(true);
     try {
-      const otp = await verifyOtp(userData.id!, values.otp);
+      const otp = await verifyOtp(data?.id!, values.otp);
 
       if (otp.error) throw new Error(otp.message);
 
@@ -98,7 +103,7 @@ export function RegisterForm() {
         variant: "destructive",
       });
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   }
 
@@ -120,7 +125,7 @@ export function RegisterForm() {
           <h2 className="text-2xl font-bold">Verify your email number</h2>
           <p className="text-muted-foreground">
             We have sent a verification code to your email{" "}
-            <span className="text-gray-400">{userData?.email}</span> . Please
+            <span className="text-gray-400">{data?.email}</span> . Please
             enter it below.
           </p>
           <Form {...formOtp}>

@@ -106,10 +106,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             created_at: rest.created_at
           };
         } catch (err) {
-          console.log(err);
           if (err instanceof Error) {
-            console.log(err.message);
+            console.error("Instance of Error is " , err.message);
           }
+          console.error(err);
           throw new Error("Failed to process profile");
         }
       },
@@ -151,12 +151,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           return rest
 
         } catch (err) {
-          console.log(err)
           if (err instanceof ZodError) {
-            console.log(err.errors)
+            console.error('Instance of ZodError is ', err.errors)
           } else if (err instanceof Error) {
-            console.log(err.message)
+            console.error("Instance of Error is " , err.message)
           }
+          console.error(err)
           throw new Error("Invalid credentials")
         }
       }

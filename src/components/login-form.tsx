@@ -19,16 +19,19 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useAppStore } from "@/stores/app-store";
 
 export default function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(
     searchParams.get("error") === "Configuration"
       ? "Correo ya en uso. Para ingresar utiliza tus credenciales"
       : null
   );
+
+  const { isLoading, setLoading } = useAppStore();
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -41,7 +44,7 @@ export default function LoginForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
+    setLoading(true);
     setError(null);
 
     try {
@@ -66,12 +69,12 @@ export default function LoginForm() {
         "Ocurrió un error al iniciar sesión. Por favor intenta de nuevo: " + err
       );
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
   const handleGoogleSignIn = async () => {
-    setIsLoading(true);
+    setLoading(true);
     setError(null);
 
     try {
@@ -88,7 +91,7 @@ export default function LoginForm() {
       setError(
         "Este correo ya esta en uso y para ingresar digite sus credenciales"
       );
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
