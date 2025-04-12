@@ -61,9 +61,10 @@ export default function LoginForm() {
         return;
       }
 
-      // Si la autenticación es exitosa, redirigir al dashboard
-      router.push("/");
-      router.refresh();
+      const callbackUrl = searchParams.get("callbackUrl") || "/";
+
+      
+      router.push(callbackUrl);
     } catch (err) {
       setError(
         "Ocurrió un error al iniciar sesión. Por favor intenta de nuevo: " + err

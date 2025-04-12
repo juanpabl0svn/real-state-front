@@ -21,7 +21,6 @@ import { toast } from "@/hooks/use-toast";
 import { signIn } from "next-auth/react";
 import { Separator } from "./ui/separator";
 import { Card, CardContent, CardHeader } from "./ui/card";
-import { User } from "@/types";
 import {
   userSchema,
   OtpFormSchema,
