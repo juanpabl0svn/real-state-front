@@ -29,8 +29,8 @@ export interface Paginate<T> {
 }
 
 export interface IPropertyForm extends Omit<Property, 'id' | 'status'> {
-  mainPhoto: File[]
-  photos: File[]
+  main_photo: Array<File | string>
+  photos: Array<File | string>  
 }
 
 export interface AppStore {
@@ -42,6 +42,8 @@ export interface AppStore {
   setOtpCode: (otpCode: string | null) => void
   data: any | null
   setData: (data: any | null) => void
+  properties: Property[]
+  setProperties: (properties: Property[]) => void
 }
 export type ReturnTypeHandler<T = any> =
   | { error: true; message: string; data?: never }

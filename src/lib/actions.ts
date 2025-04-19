@@ -8,9 +8,7 @@ import { perPage, prisma } from "@/prisma"
 import { userSchema, propertySchema } from "./zod"
 import { hashPassword } from "./utils"
 import { sendOtpEmail } from "@/nodemailer"
-import formidable from "formidable"
-import { createClient } from "@/supabase"
-import fs from "fs"
+import { deleteImageFromKey, uploadImageFromFile } from "@/S3"
 import { v4 as uuidv4 } from 'uuid';
 
 // Fetch all properties for the current user
@@ -62,16 +60,15 @@ export async function fetchProperties(): Promise<Paginate<Property>> {
 }
 
 
-export async function editProperty(id: string, property: Property): Promise<Property | null> {
+// export async function editProperty(id: string, property: Property): Promise<Property | null> {
 
-  return null
-}
+//   return null
+// }
 
 // Create a new property
 export async function createProperty(formData: IPropertyForm): Promise<ReturnTypeHandler> {
 
   try {
-
     const session = await auth();
 
 
@@ -94,11 +91,11 @@ export async function createProperty(formData: IPropertyForm): Promise<ReturnTyp
     }
 
     const [mainPhoto, photos] = await Promise.all([
-      uploadImage(formData.mainPhoto![0] as unknown as formidable.File),
+      uploadImage(formData.main_photo![0] as File, "properties"),
       Promise.all(
         formData.photos?.map((photo) =>
-          uploadImage(photo as unknown as formidable.File)
-        ) ?? []
+          uploadImage(photo as File, 'properties')
+        )
       ),
     ]);
 
@@ -106,18 +103,16 @@ export async function createProperty(formData: IPropertyForm): Promise<ReturnTyp
       data: {
         user_id: user.user_id,
         ...validatedFields.data,
-        main_photo: mainPhoto.path,
+        main_photo: mainPhoto.data,
+        photos: {
+          create: photos
+            .filter((photo) => photo.data !== undefined)
+            .map((photo) => ({
+              url: photo.data as string,
+            })),
+        },
       },
     });
-
-    if (photos.length > 0) {
-      await prisma.properties_images.createMany({
-        data: photos.map((photo) => ({
-          property_id: property.id,
-          image_url: photo.path,
-        })),
-      });
-    }
 
     return {
       error: false,
@@ -135,24 +130,78 @@ export async function createProperty(formData: IPropertyForm): Promise<ReturnTyp
 }
 
 // Update an existing property
-export async function updateProperty(id: string, propertyData: Property) {
+export async function updateProperty(id: string, propertyData: IPropertyForm) {
   try {
+
+    const {
+      photos,
+      ...property
+    } = propertyData
+
+    if (typeof propertyData.main_photo === "object") {
+      const mainPhoto = await uploadImage(propertyData.main_photo[0] as File, "properties")
+
+      property.main_photo = [mainPhoto.data!] as string[]
+    }
 
     await prisma.properties.update({
       where: {
         id,
-        user_id: propertyData.user_id
+        user_id: property.user_id
       },
-      data: propertyData
+      data: {
+        ...property,
+        main_photo: property.main_photo[0] as string,
+      }
     })
 
-    // Revalidate the properties page to show the updated data
-    revalidatePath("/")
+    const existingPhotos = await prisma.photos.findMany({
+      where: { property_id: id },
+    });
 
-    return { success: true }
+
+    const photosToDelete = existingPhotos.filter(
+      existingPhoto => !photos.includes(existingPhoto.url)
+    );
+
+    // Delete photos that are no longer present
+    await prisma.photos.deleteMany({
+      where: {
+        id: { in: photosToDelete.map((photo) => photo.id) },
+      },
+    });
+
+    for (const photo of photosToDelete) {
+      const key = photo.url.split("/").pop()!;
+      const bucket = "properties"
+      await deleteImageFromKey(key,bucket)
+    }
+
+    // Upload new photos and prepare them for insertion
+    const newImages = await Promise.all(
+      photos
+      .filter(photo => typeof photo == 'object')
+      .map(async (photo) => {
+        const image = await uploadImage(photo as File, "properties");
+        return { url: image.data as string };
+      })
+    );
+
+    // Insert new photos into the database
+    await prisma.photos.createMany({
+      data: newImages.map((image) => ({
+        property_id: id,
+        url: image.url,
+      })),
+    });
+
+    return { error: false, message: "Property updated successfully", };
   } catch (error) {
     console.error("Error updating property:", error)
-    throw new Error("Failed to update property")
+    return {
+      error: true,
+      message: error instanceof Error ? error.message : "Failed to update property"
+    }
   }
 }
 
@@ -293,6 +342,25 @@ export async function getFilteredProperties(filter: {
 }
 
 
+export async function getPhotosFromPropertyId(propertyId: string): Promise<string[]> {
+  try {
+    const photos = await prisma.photos.findMany({
+      where: {
+        property_id: propertyId
+      }
+    })
+
+    if (!photos) {
+      throw new Error("No photos found for this property")
+    }
+
+    return photos.map(photo => photo.url)
+  } catch (e) {
+    console.error("Error fetching photos:", e)
+    return []
+  }
+}
+
 export async function getPropertyById(id: string): Promise<Property | null> {
   try {
 
@@ -389,44 +457,28 @@ export async function verifyOtp(user_id: string, code: string) {
 }
 
 
-export const uploadImage = async (file: formidable.File, bucket: string = 'uploads') => {
+export async function uploadImage(file: File, bucket: string = 'properties') {
   try {
-    const supabase = await createClient()
 
-    const { data, error } = await supabase.storage
-      .from(bucket)
-      .upload(`images/${uuidv4()}`, fs.createReadStream(file.filepath), {
-        cacheControl: '3600',
-        upsert: false,
-        contentType: file.mimetype!
-      })
+    const uuid = uuidv4()
 
-    if (error) throw error
+    const result = await uploadImageFromFile(file, bucket, uuid)
 
-    return { success: true, path: data.path }
+    if (!result) {
+      throw new Error("Failed to upload image")
+    }
+
+    return {
+      error: false,
+      message: 'Image uploaded successfully',
+      data: result
+    }
+
   } catch (error) {
-    console.error('Error uploading image:', error)
-    throw error
-  }
-}
-
-
-export const deleteImage = async (path: string, bucket: string = 'uploads') => {
-  try {
-    const supabase = await createClient();
-
-    const { error } = await supabase.storage
-      .from(bucket)
-      .remove([path]);
-
-    if (error) throw error;
-
-    return { error: false, message: 'Image deleted successfully' };
-  } catch (error) {
-    console.error('Error deleting image:', error);
+    console.error('Error uploading image:', error);
     return {
       error: true,
-      message: error instanceof Error ? error.message : 'Failed to delete image',
-    }
+      message: error instanceof Error ? error.message : 'Failed to upload image',
+    };
   }
-}
+};

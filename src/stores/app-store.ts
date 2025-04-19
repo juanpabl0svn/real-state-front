@@ -10,4 +10,6 @@ export const useAppStore = create<AppStore>((set) => ({
   setOtpCode: (otpCode) => set(() => ({ otpCode })),
   data: null,
   setData: (data) => set(() => ({ data })),
+  properties: [],
+  setProperties: (properties) => set(() => ({ properties })),
 }));

@@ -5,6 +5,11 @@ const nextConfig: NextConfig = {
     locales: ['en', 'es'],
     defaultLocale: 'es',
   },
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '5mb',
+    },
+  },
   webpack: (config) => {
     config.resolve.fallback = {
       ...config.resolve.fallback,

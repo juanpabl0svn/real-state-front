@@ -1,14 +1,15 @@
 import { useState } from "react";
-import { PropertyTable } from "@/components/property-table";
+import { PropertyTable } from "@/components/properties/property-table";
 import { PropertyForm } from "@/components/properties/property-form";
 import { Button } from "@/components/ui/button";
 import { PlusIcon } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { IPropertyForm, Property, ReturnTypeHandler } from "@/types";
 import { useAppStore } from "@/stores/app-store";
-import { createProperty } from "@/lib/actions";
+import { createProperty, updateProperty } from "@/lib/actions";
 
 export function PropertiesPage() {
+  
   const [editingProperty, setEditingProperty] = useState<Property | null>(null);
 
   const { tab, setTab } = useAppStore();
@@ -23,7 +24,10 @@ export function PropertiesPage() {
     setTab("form");
   };
 
-  const handleSubmit = async (property: IPropertyForm) => createProperty(property);
+  const handleSubmit = async (property: IPropertyForm) =>
+    editingProperty
+      ? updateProperty(editingProperty.id, property)
+      : createProperty(property);
 
   return (
     <div className="container mx-auto py-10">

@@ -26,7 +26,6 @@ export const userSchema = z.object({
 export type UserFormSchema = z.infer<typeof userSchema> 
 
 export const propertySchema = z.object({
-  id: z.string().optional(),
   title: z.string().min(3, { message: "Title must be at least 3 characters" }).max(255),
   description: z.string().optional(),
   price: z.coerce.number().int().positive({ message: "Price must be a positive number" }),
@@ -37,8 +36,6 @@ export const propertySchema = z.object({
   parking_spaces: z.coerce.number().int().min(0, { message: "Parking spaces cannot be negative" }),
   property_type: z.enum(["house", "apartment", "land", "office"]),
   status: z.enum(["available", "sold", "reserved"]).optional(),
-  photos: z.array(z.union([z.string(), z.instanceof(File)])).optional(),
-  mainPhoto: z.array(z.union([z.string(), z.instanceof(File)])).min(1).max(1),
 })
 
 export type PropertyFormSchema = z.infer<typeof propertySchema>

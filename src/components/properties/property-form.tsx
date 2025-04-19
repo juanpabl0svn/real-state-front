@@ -26,12 +26,13 @@ import type { IPropertyForm, Property, ReturnTypeHandler } from "@/types";
 
 import { propertySchema, PropertyFormSchema } from "@/lib/zod";
 
-import { createProperty } from "@/lib/actions";
 import useNumber from "@/hooks/use-number";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "@/hooks/use-toast";
-import ImageUploader from "../image-uploader";
+import ImageUploader from "./image-uploader";
 import { useAppStore } from "@/stores/app-store";
+
+import { getPhotosFromPropertyId } from "@/lib/actions";
 
 export function PropertyForm({
   property,
@@ -40,12 +41,23 @@ export function PropertyForm({
   property?: Omit<Property, "status"> | null;
   handleSubmit: (property: IPropertyForm) => Promise<ReturnTypeHandler>;
 }) {
-  const [mainPhoto, setMainPhoto] = useState<(File | string)[]>([]);
+  const [mainPhoto, setMainPhoto] = useState<(File | string)[]>(
+    [property?.main_photo!].filter(Boolean) as Array<File | string>
+  );
   const [photos, setPhotos] = useState<(File | string)[]>([]);
 
   const { isLoading, setIsLoading } = useAppStore();
 
   useNumber();
+
+  useEffect(() => {
+    (async () => {
+      if (property) {
+        const photosObtained = await getPhotosFromPropertyId(property.id);
+        setPhotos(photosObtained);
+      }
+    })();
+  }, [property]);
 
   const form = useForm<PropertyFormSchema>({
     resolver: zodResolver(propertySchema),
@@ -73,8 +85,8 @@ export function PropertyForm({
   });
 
   const handleFormSubmit = async (values: PropertyFormSchema) => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
       const validatedFields = propertySchema.safeParse(values);
       if (!validatedFields.success) {
         throw new Error("Invalid form data. Please check your inputs.");
@@ -82,11 +94,22 @@ export function PropertyForm({
 
       const data = {
         ...validatedFields.data,
-        mainPhoto: mainPhoto as Array<File>,
+        main_photo: mainPhoto as Array<File>,
         photos: photos as Array<File>,
       };
 
-      await handleSubmit(data as IPropertyForm);
+      const result = await handleSubmit(data as IPropertyForm);
+
+      if (result?.error) {
+        throw new Error(result.message);
+      }
+
+      toast({
+        title: property ? "Property updated" : "Property created",
+        description: property
+          ? "Property has been updated successfully."
+          : "Property has been created successfully.",
+      });
     } catch (e) {
       console.error("Form submission error:", e);
       toast({
