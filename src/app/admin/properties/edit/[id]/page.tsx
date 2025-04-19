@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { PropertyForm } from "@/components/properties/property-form";
 import type { Property } from "@/types";
 import { getPropertyById } from "@/lib/actions";
 
@@ -65,7 +64,7 @@ export default function EditPropertyPage() {
 
       <h1 className="text-3xl font-bold mb-8">Edit Property</h1>
 
-      <PropertyForm property={property} />
+      {/* <PropertyForm property={property} /> */}
     </div>
   );
 }
