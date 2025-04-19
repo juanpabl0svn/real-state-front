@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { PropertyCard } from "@/components/property-card";
+import { PropertyCard } from "@/components/properties/property-card";
 import type { Property } from "@/types";
 import { getFilteredProperties } from "@/lib/actions";
 

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { PropertyForm } from "@/components/property-form";
+import { PropertyForm } from "@/components/properties/property-form";
 import type { Property } from "@/types";
 import { getPropertyById } from "@/lib/actions";
 

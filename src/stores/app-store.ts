@@ -5,9 +5,11 @@ export const useAppStore = create<AppStore>((set) => ({
   tab: null,
   setTab: (tab) => set(() => ({ tab })),
   isLoading: false,
-  setLoading: (isLoading) => set(() => ({ isLoading })),
+  setIsLoading: (isLoading) => set(() => ({ isLoading })),
   otpCode: null,
   setOtpCode: (otpCode) => set(() => ({ otpCode })),
   data: null,
   setData: (data) => set(() => ({ data })),
+  properties: [],
+  setProperties: (properties) => set(() => ({ properties })),
 }));

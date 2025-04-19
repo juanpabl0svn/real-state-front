@@ -1,13 +1,15 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
-import type { Paginate, Property, PropertyTypes } from "../types"
+import type { IPropertyForm, Paginate, Property, PropertyTypes, ReturnTypeHandler } from "../types"
 
 import { auth } from "@/auth"
 import { perPage, prisma } from "@/prisma"
 import { userSchema, propertySchema } from "./zod"
 import { hashPassword } from "./utils"
 import { sendOtpEmail } from "@/nodemailer"
+import { deleteImageFromKey, uploadImageFromFile } from "@/S3"
+import { v4 as uuidv4 } from 'uuid';
 
 // Fetch all properties for the current user
 export async function fetchProperties(): Promise<Paginate<Property>> {
@@ -57,22 +59,16 @@ export async function fetchProperties(): Promise<Paginate<Property>> {
   }
 }
 
+
+// export async function editProperty(id: string, property: Property): Promise<Property | null> {
+
+//   return null
+// }
+
 // Create a new property
-export async function createProperty(formData: {
-  title: string;
-  description?: string;
-  price: number;
-  location: string;
-  area: number;
-  bedrooms: number;
-  bathrooms: number;
-  parking_spaces?: number;
-  property_type: string;
-  status?: string;
-}) {
+export async function createProperty(formData: IPropertyForm): Promise<ReturnTypeHandler> {
 
   try {
-
     const session = await auth();
 
 
@@ -94,17 +90,34 @@ export async function createProperty(formData: {
       throw new Error("Invalid form data. Please check your inputs.");
     }
 
+    const [mainPhoto, photos] = await Promise.all([
+      uploadImage(formData.main_photo![0] as File, "properties"),
+      Promise.all(
+        formData.photos?.map((photo) =>
+          uploadImage(photo as File, 'properties')
+        )
+      ),
+    ]);
+
     const property = await prisma.properties.create({
       data: {
         user_id: user.user_id,
         ...validatedFields.data,
+        main_photo: mainPhoto.data,
+        photos: {
+          create: photos
+            .filter((photo) => photo.data !== undefined)
+            .map((photo) => ({
+              url: photo.data as string,
+            })),
+        },
       },
     });
 
     return {
       error: false,
       message: "Property created successfully",
-      property_id: property.id,
+      data: property.id,
     };
   } catch (error) {
     console.error("Error creating property:", error);
@@ -117,24 +130,78 @@ export async function createProperty(formData: {
 }
 
 // Update an existing property
-export async function updateProperty(id: string, propertyData: Property) {
+export async function updateProperty(id: string, propertyData: IPropertyForm): Promise<ReturnTypeHandler> {
   try {
+
+    const {
+      photos,
+      ...property
+    } = propertyData
+
+    if (typeof propertyData.main_photo === "object") {
+      const mainPhoto = await uploadImage(propertyData.main_photo[0] as File, "properties")
+
+      property.main_photo = [mainPhoto.data!] as string[]
+    }
 
     await prisma.properties.update({
       where: {
         id,
-        user_id: propertyData.user_id
+        user_id: property.user_id
       },
-      data: propertyData
+      data: {
+        ...property,
+        main_photo: property.main_photo[0] as string,
+      }
     })
 
-    // Revalidate the properties page to show the updated data
-    revalidatePath("/")
+    const existingPhotos = await prisma.photos.findMany({
+      where: { property_id: id },
+    });
 
-    return { success: true }
+
+    const photosToDelete = existingPhotos.filter(
+      existingPhoto => !photos.includes(existingPhoto.url)
+    );
+
+    // Delete photos that are no longer present
+    await prisma.photos.deleteMany({
+      where: {
+        id: { in: photosToDelete.map((photo) => photo.id) },
+      },
+    });
+
+    for (const photo of photosToDelete) {
+      const key = photo.url.split("/").pop()!;
+      const bucket = "properties"
+      await deleteImageFromKey(key, bucket)
+    }
+
+    // Upload new photos and prepare them for insertion
+    const newImages = await Promise.all(
+      photos
+        .filter(photo => typeof photo == 'object')
+        .map(async (photo) => {
+          const image = await uploadImage(photo as File, "properties");
+          return { url: image.data as string };
+        })
+    );
+
+    // Insert new photos into the database
+    await prisma.photos.createMany({
+      data: newImages.map((image) => ({
+        property_id: id,
+        url: image.url,
+      })),
+    });
+
+    return { error: false, message: "Property updated successfully", data: property };
   } catch (error) {
     console.error("Error updating property:", error)
-    throw new Error("Failed to update property")
+    return {
+      error: true,
+      message: error instanceof Error ? error.message : "Failed to update property"
+    }
   }
 }
 
@@ -174,11 +241,11 @@ export async function registerUser(formData: {
   if (!validatedFields.success) {
     throw new Error("Invalid form data. Please check your inputs.")
   }
-  validatedFields.data.password = hashPassword(validatedFields.data.password!)
+  formData.password = hashPassword(formData.password!)
 
   const existingUser = await prisma.users.findFirst({
     where: {
-      email: validatedFields.data.email,
+      email: formData.email,
       is_verified: true
     }
   })
@@ -187,7 +254,7 @@ export async function registerUser(formData: {
     throw new Error("User with this email already exists.")
   }
 
-  const { name, email, password, phone } = validatedFields.data
+  const { name, email, password, phone } = formData
 
   const expires_at = new Date(Date.now() + 10 * 60 * 1000)
 
@@ -274,6 +341,25 @@ export async function getFilteredProperties(filter: {
   }
 }
 
+
+export async function getPhotosFromPropertyId(propertyId: string): Promise<string[]> {
+  try {
+    const photos = await prisma.photos.findMany({
+      where: {
+        property_id: propertyId
+      }
+    })
+
+    if (!photos) {
+      throw new Error("No photos found for this property")
+    }
+
+    return photos.map(photo => photo.url)
+  } catch (e) {
+    console.error("Error fetching photos:", e)
+    return []
+  }
+}
 
 export async function getPropertyById(id: string): Promise<Property | null> {
   try {
@@ -369,3 +455,30 @@ export async function verifyOtp(user_id: string, code: string) {
     }
   }
 }
+
+
+export async function uploadImage(file: File, bucket: string = 'properties') {
+  try {
+
+    const uuid = uuidv4()
+
+    const result = await uploadImageFromFile(file, bucket, uuid)
+
+    if (!result) {
+      throw new Error("Failed to upload image")
+    }
+
+    return {
+      error: false,
+      message: 'Image uploaded successfully',
+      data: result
+    }
+
+  } catch (error) {
+    console.error('Error uploading image:', error);
+    return {
+      error: true,
+      message: error instanceof Error ? error.message : 'Failed to upload image',
+    };
+  }
+};

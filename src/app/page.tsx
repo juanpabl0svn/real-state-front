@@ -1,5 +1,5 @@
-import { PropertyList } from "@/components/property-list";
-import { PropertyFilters } from "@/components/property-filters";
+import { PropertyList } from "@/components/properties/property-list";
+import { PropertyFilters } from "@/components/properties/property-filters";
 import { Suspense } from "react";
 import { auth } from "@/auth";
 

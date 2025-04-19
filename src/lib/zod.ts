@@ -35,7 +35,7 @@ export const propertySchema = z.object({
   bathrooms: z.coerce.number().int().min(1, { message: "Bathrooms must be at least 1" }),
   parking_spaces: z.coerce.number().int().min(0, { message: "Parking spaces cannot be negative" }),
   property_type: z.enum(["house", "apartment", "land", "office"]),
-  status: z.enum(["available", "sold", "reserved"]),
+  status: z.enum(["available", "sold", "reserved"]).optional(),
 })
 
 export type PropertyFormSchema = z.infer<typeof propertySchema>

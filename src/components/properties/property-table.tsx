@@ -31,32 +31,32 @@ import { EditIcon, MoreHorizontalIcon, TrashIcon } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { fetchProperties, deleteProperty } from "@/lib/actions";
 import { Property } from "@/types";
+import { useAppStore } from "@/stores/app-store";
 
 export function PropertyTable({
   onEdit,
 }: {
   onEdit: (property: Property) => void;
 }) {
-  const [properties, setProperties] = useState<Property[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { isLoading, setIsLoading, properties, setProperties } = useAppStore();
+
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [propertyToDelete, setPropertyToDelete] = useState<Property | null>(
     null
   );
 
   useEffect(() => {
-    const loadProperties = async () => {
+    (async () => {
+      setIsLoading(true);
       try {
         const { data } = await fetchProperties();
         setProperties(data);
       } catch (error) {
         console.error("Failed to fetch properties:", error);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
-    };
-
-    loadProperties();
+    })();
   }, []);
 
   const handleDeleteClick = (property: Property) => {
@@ -96,7 +96,7 @@ export function PropertyTable({
     );
   };
 
-  if (loading) {
+  if (isLoading) {
     return <div className="flex justify-center p-8">Loading properties...</div>;
   }
 

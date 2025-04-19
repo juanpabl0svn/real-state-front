@@ -22,27 +22,48 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { Property, PropertyStatus } from "@/types";
+import type { IPropertyForm, Property, ReturnTypeHandler } from "@/types";
 
 import { propertySchema, PropertyFormSchema } from "@/lib/zod";
-// import { useSession } from "next-auth/react";
-import { useMutation } from "@tanstack/react-query";
 
-import { createProperty } from "@/lib/actions";
 import useNumber from "@/hooks/use-number";
+import { useEffect, useState } from "react";
+import { toast } from "@/hooks/use-toast";
+import ImageUploader from "./image-uploader";
+import { useAppStore } from "@/stores/app-store";
 
-export function PropertyForm({ property }: { property?: Property | null }) {
-  // const { data: session } = useSession();
+import { getPhotosFromPropertyId } from "@/lib/actions";
 
-  useNumber()
+export function PropertyForm({
+  property,
+  handleSubmit,
+}: {
+  property?: Omit<Property, "status"> | null;
+  handleSubmit: (property: IPropertyForm) => Promise<ReturnTypeHandler>;
+}) {
+  const [mainPhoto, setMainPhoto] = useState<(File | string)[]>(
+    [property?.main_photo!].filter(Boolean) as Array<File | string>
+  );
+  const [photos, setPhotos] = useState<(File | string)[]>([]);
+
+  const { isLoading, setIsLoading } = useAppStore();
+
+  useNumber();
+
+  useEffect(() => {
+    (async () => {
+      if (property) {
+        const photosObtained = await getPhotosFromPropertyId(property.id);
+        setPhotos(photosObtained);
+      }
+    })();
+  }, [property]);
 
   const form = useForm<PropertyFormSchema>({
     resolver: zodResolver(propertySchema),
     defaultValues: property
       ? {
           ...property,
-          status: property?.status ?? ("available" as PropertyStatus),
-          // Ensure numeric values are properly converted
           price: property.price,
           area: property.area,
           description: property.description ?? "",
@@ -60,58 +81,70 @@ export function PropertyForm({ property }: { property?: Property | null }) {
           bedrooms: 0,
           bathrooms: 0,
           parking_spaces: 0,
-          status: "available" as PropertyStatus,
         },
   });
 
+  const handleFormSubmit = async (values: PropertyFormSchema) => {
+    setIsLoading(true);
+    try {
+      const validatedFields = propertySchema.safeParse(values);
+      if (!validatedFields.success) {
+        throw new Error("Invalid form data. Please check your inputs.");
+      }
 
-  const upsertProperty = async (propertyData: Partial<Property>) => {
-    const formData = Object.fromEntries(
-      Object.entries(propertyData).filter(([_, value]) => value !== undefined)
-    ) as {
-      title: string;
-      description?: string;
-      price: number;
-      location: string;
-      area: number;
-      bedrooms: number;
-      bathrooms: number;
-      parking_spaces?: number;
-      property_type: string;
-      status?: string;
-    };
+      const data = {
+        ...validatedFields.data,
+        main_photo: mainPhoto as Array<File>,
+        photos: photos as Array<File>,
+      };
 
-    return createProperty(formData);
-  };
+      const result = await handleSubmit(data as IPropertyForm);
 
-  // const upsertProperty = async (propertyData: Partial<Property>) => {
-  //   const { data } = await axios.post(`/api/properties/upsert`, propertyData);
-  //   return data;
-  // };
+      if (result?.error) {
+        throw new Error(result.message);
+      }
 
-  const { mutate: executeUpsert, isPending } = useMutation({
-    mutationFn: upsertProperty,
-    onSuccess: () => {
-      // form.reset(data);
-      window.location.reload();
-    },
-    onError: (error) => {
-      console.error("Error upserting property:", error);
-    },
-  });
-
-  const handleFormSubmit = (values: PropertyFormSchema) => {
-    const propertyData: Partial<Property> = {
-      ...values,
-      price: values.price,
-      area: values.area,
-    };
-    executeUpsert(propertyData);
+      toast({
+        title: property ? "Property updated" : "Property created",
+        description: property
+          ? "Property has been updated successfully."
+          : "Property has been created successfully.",
+      });
+    } catch (e) {
+      console.error("Form submission error:", e);
+      toast({
+        title: "Error",
+        description:
+          e instanceof Error
+            ? e.message
+            : "Something went wrong. Please try again.",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <Card>
       <CardContent className="pt-6">
+        <div className="space-y-4">
+          <div>
+            <label className="block font-medium mb-1">Imagen principal</label>
+            <ImageUploader
+              files={mainPhoto}
+              setFiles={setMainPhoto}
+              multiple={false}
+            />
+          </div>
+
+          <div>
+            <label className="block font-medium mb-1">
+              Galería de imágenes
+            </label>
+            <ImageUploader files={photos} setFiles={setPhotos} multiple />
+          </div>
+        </div>
+
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleFormSubmit)}
@@ -242,32 +275,33 @@ export function PropertyForm({ property }: { property?: Property | null }) {
                   </FormItem>
                 )}
               />
-
-              <FormField
-                control={form.control}
-                name="status"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Status*</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select status" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="available">Available</SelectItem>
-                        <SelectItem value="reserved">Reserved</SelectItem>
-                        <SelectItem value="sold">Sold</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {property && (
+                <FormField
+                  control={form.control}
+                  name="status"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Status*</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select status" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="available">Available</SelectItem>
+                          <SelectItem value="reserved">Reserved</SelectItem>
+                          <SelectItem value="sold">Sold</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
             </div>
 
             <FormField
@@ -294,10 +328,10 @@ export function PropertyForm({ property }: { property?: Property | null }) {
               </Button>
               <Button
                 type="submit"
-                disabled={isPending}
+                disabled={isLoading}
                 onClick={() => form.trigger()}
               >
-                {isPending
+                {isLoading
                   ? "Saving..."
                   : property
                   ? "Update Property"
