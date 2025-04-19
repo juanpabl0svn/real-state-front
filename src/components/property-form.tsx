@@ -30,11 +30,16 @@ import { useMutation } from "@tanstack/react-query";
 
 import { createProperty } from "@/lib/actions";
 import useNumber from "@/hooks/use-number";
+import { useState } from "react";
+import ImageUploader from "./image-uploader";
 
 export function PropertyForm({ property }: { property?: Property | null }) {
   // const { data: session } = useSession();
 
-  useNumber()
+  const [mainImage, setMainImage] = useState<File[]>([]);
+  const [galleryImages, setGalleryImages] = useState<File[]>([]);
+
+  useNumber();
 
   const form = useForm<PropertyFormSchema>({
     resolver: zodResolver(propertySchema),
@@ -63,7 +68,6 @@ export function PropertyForm({ property }: { property?: Property | null }) {
           status: "available" as PropertyStatus,
         },
   });
-
 
   const upsertProperty = async (propertyData: Partial<Property>) => {
     const formData = Object.fromEntries(
@@ -112,6 +116,28 @@ export function PropertyForm({ property }: { property?: Property | null }) {
   return (
     <Card>
       <CardContent className="pt-6">
+        <div className="space-y-4">
+          <div>
+            <label className="block font-medium mb-1">Imagen principal</label>
+            <ImageUploader
+              files={mainImage}
+              setFiles={setMainImage}
+              multiple={false}
+            />
+          </div>
+
+          <div>
+            <label className="block font-medium mb-1">
+              Galería de imágenes
+            </label>
+            <ImageUploader
+              files={galleryImages}
+              setFiles={setGalleryImages}
+              multiple
+            />
+          </div>
+        </div>
+
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleFormSubmit)}

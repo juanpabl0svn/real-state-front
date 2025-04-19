@@ -8,6 +8,10 @@ import { perPage, prisma } from "@/prisma"
 import { userSchema, propertySchema } from "./zod"
 import { hashPassword } from "./utils"
 import { sendOtpEmail } from "@/nodemailer"
+import formidable from "formidable"
+import { createClient } from "@/supabase"
+import fs from "fs"
+import { v4 as uuidv4 } from 'uuid';
 
 // Fetch all properties for the current user
 export async function fetchProperties(): Promise<Paginate<Property>> {
@@ -366,6 +370,49 @@ export async function verifyOtp(user_id: string, code: string) {
     return {
       error: true,
       message: error instanceof Error ? error.message : "Failed to verify OTP"
+    }
+  }
+}
+
+
+export const uploadImage = async (file: formidable.File, bucket: string = 'uploads') => {
+  try {
+    const supabase = await createClient()
+
+    const { data, error } = await supabase.storage
+      .from(bucket)
+      .upload(`images/${uuidv4()}`, fs.createReadStream(file.filepath), {
+        cacheControl: '3600',
+        upsert: false,
+        contentType: file.mimetype!
+      })
+
+    if (error) throw error
+
+    return { success: true, path: data.path }
+  } catch (error) {
+    console.error('Error uploading image:', error)
+    throw error
+  }
+}
+
+
+export const deleteImage = async (path: string, bucket: string = 'uploads') => {
+  try {
+    const supabase = await createClient();
+
+    const { error } = await supabase.storage
+      .from(bucket)
+      .remove([path]);
+
+    if (error) throw error;
+
+    return { error: false, message: 'Image deleted successfully' };
+  } catch (error) {
+    console.error('Error deleting image:', error);
+    return {
+      error: true,
+      message: error instanceof Error ? error.message : 'Failed to delete image',
     }
   }
 }
