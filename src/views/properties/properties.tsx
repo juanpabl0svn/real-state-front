@@ -9,7 +9,6 @@ import { useAppStore } from "@/stores/app-store";
 import { createProperty, updateProperty } from "@/lib/actions";
 
 export function PropertiesPage() {
-  
   const [editingProperty, setEditingProperty] = useState<Property | null>(null);
 
   const { tab, setTab } = useAppStore();

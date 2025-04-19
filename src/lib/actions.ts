@@ -130,7 +130,7 @@ export async function createProperty(formData: IPropertyForm): Promise<ReturnTyp
 }
 
 // Update an existing property
-export async function updateProperty(id: string, propertyData: IPropertyForm) {
+export async function updateProperty(id: string, propertyData: IPropertyForm): Promise<ReturnTypeHandler> {
   try {
 
     const {
@@ -174,17 +174,17 @@ export async function updateProperty(id: string, propertyData: IPropertyForm) {
     for (const photo of photosToDelete) {
       const key = photo.url.split("/").pop()!;
       const bucket = "properties"
-      await deleteImageFromKey(key,bucket)
+      await deleteImageFromKey(key, bucket)
     }
 
     // Upload new photos and prepare them for insertion
     const newImages = await Promise.all(
       photos
-      .filter(photo => typeof photo == 'object')
-      .map(async (photo) => {
-        const image = await uploadImage(photo as File, "properties");
-        return { url: image.data as string };
-      })
+        .filter(photo => typeof photo == 'object')
+        .map(async (photo) => {
+          const image = await uploadImage(photo as File, "properties");
+          return { url: image.data as string };
+        })
     );
 
     // Insert new photos into the database
@@ -195,7 +195,7 @@ export async function updateProperty(id: string, propertyData: IPropertyForm) {
       })),
     });
 
-    return { error: false, message: "Property updated successfully", };
+    return { error: false, message: "Property updated successfully", data: property };
   } catch (error) {
     console.error("Error updating property:", error)
     return {
