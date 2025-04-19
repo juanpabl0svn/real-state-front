@@ -8,7 +8,6 @@ export type Notification = Prisma.NotificationGetPayload<{}>
 
 export type PropertyTypes = $Enums['PropertyType']
 
-
 export type PropertyStatus = $Enums['PropertyStatus']
 
 
@@ -29,6 +28,16 @@ export interface Paginate<T> {
   total_pages: number
 }
 
+export interface ICreateProperty extends Omit<Property, 'id' | 'status'> {
+  mainPhoto: File[]
+  photos: File[]
+}
+
+export interface IUpdateProperty extends Partial<Property> {
+  mainPhoto: Array<File | string>
+  photos: Array<File | string>
+} 
+
 export interface AppStore {
   tab: string | null
   setTab: (tab: string | null) => void
@@ -39,17 +48,9 @@ export interface AppStore {
   data: any | null
   setData: (data: any | null) => void
 }
-
-
-export const useAppStore = create<AppStore>((set) => ({
-  tab: null,
-  setTab: (tab) => set(() => ({ tab })),
-  isLoading: false,
-  setLoading: (isLoading) => set(() => ({ isLoading })),
-  otpCode: null,
-  setOtpCode: (otpCode) => set(() => ({ otpCode })),
-  data: null,
-  setData: (data) => set(() => ({ data })),
-}));
+export type ReturnTypeHandler<T = any> =
+  | { error: true; message: string; data?: never }
+  | { error: false; data: T | any | null; message?: string }
+  | null
 
 

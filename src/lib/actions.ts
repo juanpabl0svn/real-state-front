@@ -1,7 +1,7 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
-import type { Paginate, Property, PropertyTypes } from "../types"
+import type { ICreateProperty, Paginate, Property, PropertyTypes, ReturnTypeHandler } from "../types"
 
 import { auth } from "@/auth"
 import { perPage, prisma } from "@/prisma"
@@ -61,19 +61,14 @@ export async function fetchProperties(): Promise<Paginate<Property>> {
   }
 }
 
+
+export async function editProperty(id: string, property: Property): Promise<Property | null> {
+
+  return null
+}
+
 // Create a new property
-export async function createProperty(formData: {
-  title: string;
-  description?: string;
-  price: number;
-  location: string;
-  area: number;
-  bedrooms: number;
-  bathrooms: number;
-  parking_spaces?: number;
-  property_type: string;
-  status?: string;
-}) {
+export async function createProperty(formData: ICreateProperty): Promise<ReturnTypeHandler> {
 
   try {
 
@@ -98,17 +93,36 @@ export async function createProperty(formData: {
       throw new Error("Invalid form data. Please check your inputs.");
     }
 
+    const [mainPhoto, photos] = await Promise.all([
+      uploadImage(formData.mainPhoto![0] as unknown as formidable.File),
+      Promise.all(
+        formData.photos?.map((photo) =>
+          uploadImage(photo as unknown as formidable.File)
+        ) ?? []
+      ),
+    ]);
+
     const property = await prisma.properties.create({
       data: {
         user_id: user.user_id,
         ...validatedFields.data,
+        main_photo: mainPhoto.path,
       },
     });
+
+    if (photos.length > 0) {
+      await prisma.properties_images.createMany({
+        data: photos.map((photo) => ({
+          property_id: property.id,
+          image_url: photo.path,
+        })),
+      });
+    }
 
     return {
       error: false,
       message: "Property created successfully",
-      property_id: property.id,
+      data: property.id,
     };
   } catch (error) {
     console.error("Error creating property:", error);
@@ -178,11 +192,11 @@ export async function registerUser(formData: {
   if (!validatedFields.success) {
     throw new Error("Invalid form data. Please check your inputs.")
   }
-  validatedFields.data.password = hashPassword(validatedFields.data.password!)
+  formData.password = hashPassword(formData.password!)
 
   const existingUser = await prisma.users.findFirst({
     where: {
-      email: validatedFields.data.email,
+      email: formData.email,
       is_verified: true
     }
   })
@@ -191,7 +205,7 @@ export async function registerUser(formData: {
     throw new Error("User with this email already exists.")
   }
 
-  const { name, email, password, phone } = validatedFields.data
+  const { name, email, password, phone } = formData
 
   const expires_at = new Date(Date.now() + 10 * 60 * 1000)
 

@@ -1,16 +1,17 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { X } from "lucide-react";
 
 type Props = {
-  files: File[];
-  setFiles: (files: File[]) => void;
+  files: (File | string)[];
+  setFiles: (files: (File | string)[]) => void;
   multiple?: boolean;
 };
 
 export default function ImageUploader({ files, setFiles, multiple = true }: Props) {
+
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       const newFiles = multiple ? [...files, ...acceptedFiles] : [acceptedFiles[0]];
@@ -21,6 +22,7 @@ export default function ImageUploader({ files, setFiles, multiple = true }: Prop
 
   const removeImage = (index: number) => {
     const newList = [...files];
+    
     newList.splice(index, 1);
     setFiles(newList);
   };
@@ -33,6 +35,7 @@ export default function ImageUploader({ files, setFiles, multiple = true }: Prop
 
   return (
     <div className="space-y-3">
+      {/* Zona de arrastre */}
       <div
         {...getRootProps()}
         className={`border-2 border-dashed p-6 rounded-lg text-center cursor-pointer ${
@@ -53,31 +56,35 @@ export default function ImageUploader({ files, setFiles, multiple = true }: Prop
         )}
       </div>
 
+
       {/* Vista previa */}
       <div className={multiple ? "flex flex-wrap gap-4" : ""}>
-        {files.map((file, index) => (
-          <div
-            key={index}
-            className={
-              multiple
-                ? "relative w-24 h-24"
-                : "relative w-full max-w-2xl h-64 mx-auto"
-            }
-          >
-            <img
-              src={URL.createObjectURL(file)}
-              alt={`preview-${index}`}
-              className="w-full h-full object-cover rounded-md"
-            />
-            <button
-              type="button"
-              onClick={() => removeImage(index)}
-              className="absolute top-2 right-2 bg-white p-1 rounded-full shadow"
+        {files.map((file, index) => {
+          const src = typeof file === "string" ? file : URL.createObjectURL(file);
+          return (
+            <div
+              key={index}
+              className={
+                multiple
+                  ? "relative w-24 h-24"
+                  : "relative w-full max-w-2xl h-64 mx-auto"
+              }
             >
-              <X size={18} />
-            </button>
-          </div>
-        ))}
+              <img
+                src={src}
+                alt={`preview-${index}`}
+                className="w-full h-full object-cover rounded-md"
+              />
+              <button
+                type="button"
+                onClick={() => removeImage(index)}
+                className="absolute top-2 right-2 bg-white p-1 rounded-full shadow"
+              >
+                <X size={18} />
+              </button>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

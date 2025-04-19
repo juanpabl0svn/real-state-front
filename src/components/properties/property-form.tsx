@@ -22,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { Property, PropertyStatus } from "@/types";
+import type { Property, ReturnTypeHandler } from "@/types";
 
 import { propertySchema, PropertyFormSchema } from "@/lib/zod";
 // import { useSession } from "next-auth/react";
@@ -31,13 +31,18 @@ import { useMutation } from "@tanstack/react-query";
 import { createProperty } from "@/lib/actions";
 import useNumber from "@/hooks/use-number";
 import { useState } from "react";
-import ImageUploader from "./image-uploader";
+import { toast } from "@/hooks/use-toast";
+import ImageUploader from "../image-uploader";
 
-export function PropertyForm({ property }: { property?: Property | null }) {
-  // const { data: session } = useSession();
-
-  const [mainImage, setMainImage] = useState<File[]>([]);
-  const [galleryImages, setGalleryImages] = useState<File[]>([]);
+export function PropertyForm({
+  property,
+  handleSubmit,
+}: {
+  property?: Omit<Property, "status"> | null;
+  handleSubmit: (property: Property) => Promise<ReturnTypeHandler>;
+}) {
+  const [mainPhoto, setMainPhoto] = useState<(File | string)[]>([]);
+  const [photos, setPhotos] = useState<(File | string)[]>([]);
 
   useNumber();
 
@@ -46,8 +51,6 @@ export function PropertyForm({ property }: { property?: Property | null }) {
     defaultValues: property
       ? {
           ...property,
-          status: property?.status ?? ("available" as PropertyStatus),
-          // Ensure numeric values are properly converted
           price: property.price,
           area: property.area,
           description: property.description ?? "",
@@ -65,52 +68,27 @@ export function PropertyForm({ property }: { property?: Property | null }) {
           bedrooms: 0,
           bathrooms: 0,
           parking_spaces: 0,
-          status: "available" as PropertyStatus,
         },
-  });
-
-  const upsertProperty = async (propertyData: Partial<Property>) => {
-    const formData = Object.fromEntries(
-      Object.entries(propertyData).filter(([_, value]) => value !== undefined)
-    ) as {
-      title: string;
-      description?: string;
-      price: number;
-      location: string;
-      area: number;
-      bedrooms: number;
-      bathrooms: number;
-      parking_spaces?: number;
-      property_type: string;
-      status?: string;
-    };
-
-    return createProperty(formData);
-  };
-
-  // const upsertProperty = async (propertyData: Partial<Property>) => {
-  //   const { data } = await axios.post(`/api/properties/upsert`, propertyData);
-  //   return data;
-  // };
-
-  const { mutate: executeUpsert, isPending } = useMutation({
-    mutationFn: upsertProperty,
-    onSuccess: () => {
-      // form.reset(data);
-      window.location.reload();
-    },
-    onError: (error) => {
-      console.error("Error upserting property:", error);
-    },
   });
 
   const handleFormSubmit = (values: PropertyFormSchema) => {
     const propertyData: Partial<Property> = {
       ...values,
-      price: values.price,
-      area: values.area,
     };
-    executeUpsert(propertyData);
+
+    if (mainPhoto.length == 0) {
+      toast({
+        title: "Error",
+        description: "Please upload a main photo.",
+        variant: "destructive",
+      });
+      return;
+    }
+    // return createProperty({
+    //   ...formData,
+    //   mainPhoto: mainPhoto as Array<File>,
+    //   photos: photos as Array<File>,
+    // });
   };
 
   return (
@@ -120,8 +98,8 @@ export function PropertyForm({ property }: { property?: Property | null }) {
           <div>
             <label className="block font-medium mb-1">Imagen principal</label>
             <ImageUploader
-              files={mainImage}
-              setFiles={setMainImage}
+              files={mainPhoto}
+              setFiles={setMainPhoto}
               multiple={false}
             />
           </div>
@@ -130,11 +108,7 @@ export function PropertyForm({ property }: { property?: Property | null }) {
             <label className="block font-medium mb-1">
               Galería de imágenes
             </label>
-            <ImageUploader
-              files={galleryImages}
-              setFiles={setGalleryImages}
-              multiple
-            />
+            <ImageUploader files={photos} setFiles={setPhotos} multiple />
           </div>
         </div>
 
@@ -268,32 +242,6 @@ export function PropertyForm({ property }: { property?: Property | null }) {
                   </FormItem>
                 )}
               />
-
-              <FormField
-                control={form.control}
-                name="status"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Status*</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select status" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="available">Available</SelectItem>
-                        <SelectItem value="reserved">Reserved</SelectItem>
-                        <SelectItem value="sold">Sold</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
             </div>
 
             <FormField
@@ -318,7 +266,7 @@ export function PropertyForm({ property }: { property?: Property | null }) {
               <Button variant="outline" type="button" asChild>
                 <Link href="/admin/properties">Cancel</Link>
               </Button>
-              <Button
+              {/* <Button
                 type="submit"
                 disabled={isPending}
                 onClick={() => form.trigger()}
@@ -328,7 +276,7 @@ export function PropertyForm({ property }: { property?: Property | null }) {
                   : property
                   ? "Update Property"
                   : "Create Property"}
-              </Button>
+              </Button> */}
             </div>
           </form>
         </Form>
