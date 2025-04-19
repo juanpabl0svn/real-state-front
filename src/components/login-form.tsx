@@ -30,7 +30,7 @@ export default function LoginForm() {
       : null
   );
 
-  const { isLoading, setLoading } = useAppStore();
+  const { isLoading, setIsLoading } = useAppStore();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -44,7 +44,7 @@ export default function LoginForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    setIsLoading(true);
     setError(null);
 
     try {
@@ -70,12 +70,12 @@ export default function LoginForm() {
         "Ocurrió un error al iniciar sesión. Por favor intenta de nuevo: " + err
       );
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
   const handleGoogleSignIn = async () => {
-    setLoading(true);
+    setIsLoading(true);
     setError(null);
 
     try {
@@ -92,7 +92,7 @@ export default function LoginForm() {
       setError(
         "Este correo ya esta en uso y para ingresar digite sus credenciales"
       );
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
