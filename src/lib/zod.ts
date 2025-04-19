@@ -37,8 +37,8 @@ export const propertySchema = z.object({
   parking_spaces: z.coerce.number().int().min(0, { message: "Parking spaces cannot be negative" }),
   property_type: z.enum(["house", "apartment", "land", "office"]),
   status: z.enum(["available", "sold", "reserved"]).optional(),
-  mainPhoto: z.union([z.string(), z.instanceof(File)]).optional(),
   photos: z.array(z.union([z.string(), z.instanceof(File)])).optional(),
+  mainPhoto: z.array(z.union([z.string(), z.instanceof(File)])).min(1).max(1),
 })
 
 export type PropertyFormSchema = z.infer<typeof propertySchema>

@@ -22,27 +22,28 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { Property, ReturnTypeHandler } from "@/types";
+import type { IPropertyForm, Property, ReturnTypeHandler } from "@/types";
 
 import { propertySchema, PropertyFormSchema } from "@/lib/zod";
-// import { useSession } from "next-auth/react";
-import { useMutation } from "@tanstack/react-query";
 
 import { createProperty } from "@/lib/actions";
 import useNumber from "@/hooks/use-number";
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
 import ImageUploader from "../image-uploader";
+import { useAppStore } from "@/stores/app-store";
 
 export function PropertyForm({
   property,
   handleSubmit,
 }: {
   property?: Omit<Property, "status"> | null;
-  handleSubmit: (property: Property) => Promise<ReturnTypeHandler>;
+  handleSubmit: (property: IPropertyForm) => Promise<ReturnTypeHandler>;
 }) {
   const [mainPhoto, setMainPhoto] = useState<(File | string)[]>([]);
   const [photos, setPhotos] = useState<(File | string)[]>([]);
+
+  const { isLoading, setIsLoading } = useAppStore();
 
   useNumber();
 
@@ -71,24 +72,33 @@ export function PropertyForm({
         },
   });
 
-  const handleFormSubmit = (values: PropertyFormSchema) => {
-    const propertyData: Partial<Property> = {
-      ...values,
-    };
+  const handleFormSubmit = async (values: PropertyFormSchema) => {
+    try {
+      setIsLoading(true);
+      const validatedFields = propertySchema.safeParse(values);
+      if (!validatedFields.success) {
+        throw new Error("Invalid form data. Please check your inputs.");
+      }
 
-    if (mainPhoto.length == 0) {
+      const data = {
+        ...validatedFields.data,
+        mainPhoto: mainPhoto as Array<File>,
+        photos: photos as Array<File>,
+      };
+
+      await handleSubmit(data as IPropertyForm);
+    } catch (e) {
+      console.error("Form submission error:", e);
       toast({
         title: "Error",
-        description: "Please upload a main photo.",
-        variant: "destructive",
+        description:
+          e instanceof Error
+            ? e.message
+            : "Something went wrong. Please try again.",
       });
-      return;
+    } finally {
+      setIsLoading(false);
     }
-    // return createProperty({
-    //   ...formData,
-    //   mainPhoto: mainPhoto as Array<File>,
-    //   photos: photos as Array<File>,
-    // });
   };
 
   return (
@@ -242,6 +252,33 @@ export function PropertyForm({
                   </FormItem>
                 )}
               />
+              {property && (
+                <FormField
+                  control={form.control}
+                  name="status"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Status*</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select status" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="available">Available</SelectItem>
+                          <SelectItem value="reserved">Reserved</SelectItem>
+                          <SelectItem value="sold">Sold</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
             </div>
 
             <FormField
@@ -266,17 +303,17 @@ export function PropertyForm({
               <Button variant="outline" type="button" asChild>
                 <Link href="/admin/properties">Cancel</Link>
               </Button>
-              {/* <Button
+              <Button
                 type="submit"
-                disabled={isPending}
+                disabled={isLoading}
                 onClick={() => form.trigger()}
               >
-                {isPending
+                {isLoading
                   ? "Saving..."
                   : property
                   ? "Update Property"
                   : "Create Property"}
-              </Button> */}
+              </Button>
             </div>
           </form>
         </Form>

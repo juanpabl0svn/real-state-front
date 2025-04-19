@@ -32,7 +32,7 @@ import { useAppStore } from "@/stores/app-store";
 export function RegisterForm() {
   const router = useRouter();
   const [seeOtp, setSeeOtp] = useState(false);
-  const { isLoading, setLoading, setData, data } = useAppStore();
+  const { isLoading, setIsLoading, setData, data } = useAppStore();
 
   const formOtp = useForm<OtpFormSchema>({
     resolver: zodResolver(otpSchema),
@@ -52,7 +52,7 @@ export function RegisterForm() {
   });
 
   async function onSubmit(values: UserFormSchema) {
-    setLoading(true);
+    setIsLoading(true);
     try {
       const user = await registerUser(values);
       if (user.error) throw new Error("User with this email already exists.");
@@ -75,12 +75,12 @@ export function RegisterForm() {
             : "Something went wrong. Please try again.",
       });
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   }
 
   async function onSubmitOtp(values: OtpFormSchema) {
-    setLoading(true);
+    setIsLoading(true);
     try {
       const otp = await verifyOtp(data?.id!, values.otp);
 
@@ -101,7 +101,7 @@ export function RegisterForm() {
         variant: "destructive",
       });
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   }
 

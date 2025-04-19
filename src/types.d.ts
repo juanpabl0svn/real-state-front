@@ -28,21 +28,16 @@ export interface Paginate<T> {
   total_pages: number
 }
 
-export interface ICreateProperty extends Omit<Property, 'id' | 'status'> {
+export interface IPropertyForm extends Omit<Property, 'id' | 'status'> {
   mainPhoto: File[]
   photos: File[]
 }
-
-export interface IUpdateProperty extends Partial<Property> {
-  mainPhoto: Array<File | string>
-  photos: Array<File | string>
-} 
 
 export interface AppStore {
   tab: string | null
   setTab: (tab: string | null) => void
   isLoading: boolean
-  setLoading: (isLoading: boolean) => void
+  setIsLoading: (isLoading: boolean) => void
   otpCode: string | null
   setOtpCode: (otpCode: string | null) => void
   data: any | null

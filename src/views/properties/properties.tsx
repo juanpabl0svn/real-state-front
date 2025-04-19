@@ -4,7 +4,7 @@ import { PropertyForm } from "@/components/properties/property-form";
 import { Button } from "@/components/ui/button";
 import { PlusIcon } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ICreateProperty, Property, ReturnTypeHandler } from "@/types";
+import { IPropertyForm, Property, ReturnTypeHandler } from "@/types";
 import { useAppStore } from "@/stores/app-store";
 import { createProperty } from "@/lib/actions";
 
@@ -23,7 +23,7 @@ export function PropertiesPage() {
     setTab("form");
   };
 
-  const handleSubmit = async (property: Property) => createProperty(property as unknown as ICreateProperty);
+  const handleSubmit = async (property: IPropertyForm) => createProperty(property);
 
   return (
     <div className="container mx-auto py-10">

@@ -1,7 +1,7 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
-import type { ICreateProperty, Paginate, Property, PropertyTypes, ReturnTypeHandler } from "../types"
+import type { IPropertyForm, Paginate, Property, PropertyTypes, ReturnTypeHandler } from "../types"
 
 import { auth } from "@/auth"
 import { perPage, prisma } from "@/prisma"
@@ -68,7 +68,7 @@ export async function editProperty(id: string, property: Property): Promise<Prop
 }
 
 // Create a new property
-export async function createProperty(formData: ICreateProperty): Promise<ReturnTypeHandler> {
+export async function createProperty(formData: IPropertyForm): Promise<ReturnTypeHandler> {
 
   try {
 
