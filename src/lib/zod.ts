@@ -2,12 +2,12 @@ import { z } from "zod"
 
 export const signInSchema = z.object({
   email: z.string({ required_error: "Email is required" })
-  .min(1, "Email is required")
-  .email("Invalid email"),
+    .min(1, "Email is required")
+    .email("Invalid email"),
   password: z.string({ required_error: "Password is required" })
-  .min(1, "Password is required")
-  .min(8, "Password must be more than 8 characters")
-  .max(32, "Password must be less than 32 characters"),
+    .min(1, "Password is required")
+    .min(8, "Password must be more than 8 characters")
+    .max(32, "Password must be less than 32 characters"),
 })
 
 export const userSchema = z.object({
@@ -23,7 +23,7 @@ export const userSchema = z.object({
   phone: z.string().optional(),
 });
 
-export type UserFormSchema = z.infer<typeof userSchema> 
+export type UserFormSchema = z.infer<typeof userSchema>
 
 export const propertySchema = z.object({
   title: z.string().min(3, { message: "Title must be at least 3 characters" }).max(255),
@@ -48,3 +48,15 @@ export const otpSchema = z.object({
 })
 
 export type OtpFormSchema = z.infer<typeof otpSchema>
+
+export const forgotPasswordSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8, {
+    message: "Password must be at least 8 characters.",
+  }),
+  confirmPassword: z.string().min(8, {
+    message: "Confirm password is required.",
+  }),
+})
+
+export type ForgotPasswordFormSchema = z.infer<typeof forgotPasswordSchema>

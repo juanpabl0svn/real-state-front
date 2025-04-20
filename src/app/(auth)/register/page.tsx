@@ -1,6 +1,6 @@
 "use client";
 
-import RegisterPage from "@/views/register/register";
+import RegisterPage from "@/views/register";
 
 export default function Register() {
   return <RegisterPage />;

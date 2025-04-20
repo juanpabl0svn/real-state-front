@@ -1,4 +1,4 @@
-import ProfilePage from "@/views/profile/profile";
+import ProfilePage from "@/views/profile";
 
 export default async function Profile() {
   return <ProfilePage />;
