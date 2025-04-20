@@ -72,7 +72,7 @@ export default function PropertyDetailsPage() {
     );
   }
 
-  if (!property && !isLoading) {
+  if (!property) {
     return (
       <div className="container mx-auto py-16 px-4">
         <Link href="/" className="flex items-center text-primary mb-8">
