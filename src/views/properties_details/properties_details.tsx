@@ -8,28 +8,63 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import type { Property } from "@/types";
 import { getPropertyById } from "@/lib/actions";
+import { useAppStore } from "@/stores/app-store";
+import { toast } from "@/hooks/use-toast";
 
 export default function PropertyDetailsPage() {
   const { id } = useParams();
   const [property, setProperty] = useState<Property | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+
   const router = useRouter();
+
+  const [mainPhoto, setMainPhoto] = useState<string>(
+    "https://kzmfrb706jqxywn2ntrn.lite.vusercontent.net/placeholder.svg?height=600&width=800"
+  );
+
+  const [otherPhotos, setOtherPhotos] = useState<string[]>([]);
 
   useEffect(() => {
     (async () => {
-      if (id) {
-        const fetchedProperty = await getPropertyById(id as string);
-        if (!fetchedProperty) {
-          router.push("/");
-          return;
+      try {
+        if (id) {
+          const fetchedProperty = await getPropertyById(id as string);
+          if (!fetchedProperty) {
+            throw new Error("Property not found");
+          }
+          setProperty(fetchedProperty);
+          setMainPhoto(fetchedProperty.main_photo ?? mainPhoto);
+          setOtherPhotos(
+            fetchedProperty.photos?.map((photo) => photo.url) ?? []
+          );
         }
-        setProperty(fetchedProperty);
-        setLoading(false);
+      } catch (e) {
+        toast({
+          title: "Error",
+          description: "Failed to fetch property details.",
+          variant: "destructive",
+        });
+
+        setTimeout(() => {
+          router.push("/");
+        }, 1000);
+      } finally {
+        setIsLoading(false);
       }
     })();
   }, [id, router]);
 
-  if (loading) {
+  const switchImages = (index: number) => {
+    const selectedPhoto = otherPhotos[index];
+    setOtherPhotos((prevPhotos) => {
+      const updatedPhotos = [...prevPhotos];
+      updatedPhotos[index] = mainPhoto;
+      return updatedPhotos;
+    });
+    setMainPhoto(selectedPhoto);
+  };
+
+  if (isLoading) {
     return (
       <div className="container mx-auto py-16 px-4 flex justify-center">
         <div className="animate-pulse">Loading property details...</div>
@@ -37,7 +72,7 @@ export default function PropertyDetailsPage() {
     );
   }
 
-  if (!property) {
+  if (!property && !isLoading) {
     return (
       <div className="container mx-auto py-16 px-4">
         <Link href="/" className="flex items-center text-primary mb-8">
@@ -71,13 +106,30 @@ export default function PropertyDetailsPage() {
         <div className="lg:col-span-2">
           <div className="relative aspect-video rounded-lg overflow-hidden mb-6">
             <img
-              src={`https://kzmfrb706jqxywn2ntrn.lite.vusercontent.net/placeholder.svg?height=600&width=800&text=${property.title}`}
+              src={mainPhoto}
               alt={property.title}
               className="object-cover w-full h-full"
             />
           </div>
 
           <div className="mb-8">
+            <div className="flex items-center justify-between mb-4 flex-1">
+              {otherPhotos.length! > 0 ? (
+                <div className="flex gap-4 overflow-x-auto">
+                  {otherPhotos.map((photo, index) => (
+                    <img
+                      key={index}
+                      src={photo}
+                      alt={`Property photo ${index + 1}`}
+                      onClick={() => switchImages(index)}
+                      className="w-24 h-24 object-cover rounded-lg"
+                    />
+                  ))}
+                </div>
+              ) : (
+                <p>No additional photos available</p>
+              )}
+            </div>
             <div className="flex flex-wrap items-center justify-between mb-4">
               <h1 className="text-3xl font-bold">{property.title}</h1>
               <div className="flex items-center">

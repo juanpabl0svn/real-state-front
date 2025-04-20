@@ -367,6 +367,9 @@ export async function getPropertyById(id: string): Promise<Property | null> {
     const property = await prisma.properties.findUnique({
       where: {
         id
+      },
+      include: {
+        photos: true
       }
     })
 

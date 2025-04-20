@@ -1,6 +1,9 @@
 import { Prisma, $Enums } from '@prisma/client'
 
-export type Property = Prisma.propertiesGetPayload<{}>
+
+export type Photos = Prisma.photosGetPayload<{}>
+
+export type Property = Prisma.propertiesGetPayload<{}> & { photos?: Photos[] }
 
 export type User = Prisma.UserGetPayload<{}>
 
@@ -30,7 +33,7 @@ export interface Paginate<T> {
 
 export interface IPropertyForm extends Omit<Property, 'id' | 'status'> {
   main_photo: Array<File | string>
-  photos: Array<File | string>  
+  photos: Array<File | string>
 }
 
 export interface AppStore {
