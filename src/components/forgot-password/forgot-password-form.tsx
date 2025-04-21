@@ -60,13 +60,14 @@ export function ForgotPasswordForm() {
     try {
       const restorePasswordResult = await restorePassword(values.email);
 
-      if (restorePasswordResult.error) throw new Error(restorePasswordResult.message);
+      if (restorePasswordResult.error)
+        throw new Error(restorePasswordResult.message);
 
       toast({
         title: "Registration successful",
         description: "A code has been sent to your email for verification.",
       });
-      
+
       setSeeOtp(true);
 
       setData({

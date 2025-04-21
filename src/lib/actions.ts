@@ -604,3 +604,43 @@ export async function uploadImage(file: File, bucket: string = 'properties') {
     };
   }
 };
+
+
+
+export async function changePassword(currentPassword: string, newPassword: string) {
+  try {
+    const session = await auth()
+
+    if (!session?.user) {
+      throw new Error("User not authenticated")
+    }
+
+    const user = await prisma.users.findFirst({
+      where: {
+        user_id: session.user.user_id,
+        password: hashPassword(currentPassword)
+      }
+    })
+
+    if (!user) {
+      throw new Error("Contraseña actual incorrecta")
+    }
+
+    await prisma.users.update({
+      where: {
+        user_id: session.user.user_id
+      },
+      data: {
+        password: hashPassword(newPassword)
+      }
+    })
+
+    return { error: false, message: "Password changed successfully" }
+  } catch (error) {
+    console.error("Error changing password:", error)
+    return {
+      error: true,
+      message: error instanceof Error ? error.message : "Failed to change password"
+    }
+  }
+}
