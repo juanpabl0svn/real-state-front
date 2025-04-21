@@ -51,6 +51,5 @@ export interface AppStore {
 export type ReturnTypeHandler<T = any> =
   | { error: true; message: string; data?: never }
   | { error: false; data: T | any | null; message?: string }
-  | null
 
 

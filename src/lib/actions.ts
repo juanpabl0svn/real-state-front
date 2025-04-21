@@ -6,7 +6,7 @@ import type { IPropertyForm, Paginate, Property, PropertyTypes, ReturnTypeHandle
 import { auth } from "@/auth"
 import { perPage, prisma } from "@/prisma"
 import { userSchema, propertySchema } from "./zod"
-import { hashPassword } from "./utils"
+import { generateExpirationDate, generateRandomCode, hashPassword } from "./utils"
 import { sendOtpEmail } from "@/nodemailer"
 import { deleteImageFromKey, uploadImageFromFile } from "@/S3"
 import { v4 as uuidv4 } from 'uuid';
@@ -256,9 +256,7 @@ export async function registerUser(formData: {
 
   const { name, email, password, phone } = formData
 
-  const expires_at = new Date(Date.now() + 10 * 60 * 1000)
-
-  const code = Math.floor(100000 + Math.random() * 900000).toString()
+  const code = generateRandomCode()
 
   try {
     const user = await prisma.$transaction(async (prisma) => {
@@ -276,8 +274,9 @@ export async function registerUser(formData: {
       await prisma.otp_codes.create({
         data: {
           user_id: newUser.user_id,
-          expires_at,
-          code
+          expires_at: generateExpirationDate(),
+          code,
+          type: 'register'
         }
       })
 
@@ -415,13 +414,133 @@ export async function getAllProperties(): Promise<Paginate<Property>> {
 }
 
 
+export async function verifyOtpPassword(email: string, code: string, newPassword: string) {
+
+  try {
+
+    const user = await prisma.users.findFirst({
+      where: {
+        email
+      },
+      include: {
+        user_providers: true,
+      }
+    })
+
+    if (!user || user.user_providers) {
+      throw new Error("User not found")
+    }
+
+    const otpRecord = await prisma.otp_codes.findFirst({
+      where: {
+        code,
+        type: 'forgot_password',
+        user_id: user.user_id,
+        expires_at: {
+          gte: new Date()
+        },
+        is_used: false
+      }
+    })
+
+    if (!otpRecord) {
+      throw new Error("Invalid or expired OTP code")
+    }
+
+    await Promise.all([
+      prisma.users.update({
+        where: {
+          user_id: user.user_id
+        },
+        data: {
+          password: hashPassword(newPassword)
+        }
+      }),
+      prisma.otp_codes.update({
+        where: {
+          id: otpRecord.id
+        },
+        data: {
+          is_used: true
+        }
+      })
+    ])
+
+    return { error: false, message: "Contraseña restablecida correctamente" }
+
+  } catch (e) {
+
+    console.error("Error verifying OTP:", e)
+    return {
+      error: true,
+      message: e instanceof Error ? e.message : "Failed to verify OTP"
+    }
+
+  }
+
+}
+
+
+export async function restorePassword(email: string): Promise<ReturnTypeHandler> {
+  try {
+
+    const user = await prisma.users.findFirst({
+      where: {
+        email
+      },
+      include: {
+        user_providers: true,
+      }
+    })
+
+
+    if (!user || user.user_providers) {
+      throw new Error("User not found")
+    }
+
+    const code = generateRandomCode()
+
+    await prisma.otp_codes.create({
+      data: {
+        user_id: user?.user_id!,
+        expires_at: generateExpirationDate(),
+        code,
+        type: 'forgot_password'
+      }
+    })
+
+    await sendOtpEmail(email, code)
+
+
+    return {
+      error: false,
+      message: "A code has been sent to your email for verification.",
+      data: null
+    }
+
+  } catch (e) {
+    console.error("Error restoring password:", e)
+    return {
+      error: true,
+      message: e instanceof Error ? e.message : "Failed to restore password"
+    }
+
+  }
+}
+
+
 export async function verifyOtp(user_id: string, code: string) {
   try {
 
     const otpRecord = await prisma.otp_codes.findFirst({
       where: {
         user_id,
-        code
+        code,
+        type: 'register',
+        expires_at: {
+          gte: new Date()
+        },
+        is_used: false
       }
     })
 
