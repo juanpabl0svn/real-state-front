@@ -14,7 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "react-hot-toast";
 import { useState } from "react";
 import { Eye, EyeOff, Lock } from "lucide-react";
 import { changePassword } from "@/lib/actions";
@@ -67,20 +67,17 @@ export function PasswordForm() {
       if (error) {
         throw new Error(message);
       }
-      toast({
-        title: "Contraseña actualizada",
-        description:
-          "Tu contraseña ha sido actualizada correctamente. Ahora es " +
-          data.newPassword,
-      });
+
+      toast.success("Contraseña actualizada con éxito.");
+
       form.reset();
     } catch (error) {
-      toast({
-        title: "Error",
-        description:
-          error instanceof Error ? error.message : "Error inesperado.",
-        variant: "destructive",
-      });
+      console.error("Error al cambiar la contraseña:", error);
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Error al cambiar la contraseña."
+      );
     } finally {
       setIsLoading(false);
     }

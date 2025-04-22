@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "react-hot-toast";
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User, Mail, MapPin, Phone } from "lucide-react";
@@ -64,17 +64,12 @@ export function ProfileForm() {
 
     try {
       const result = await updateProfile(data);
-      toast({
-        title: "Perfil actualizado",
-        description:
-          "Tu información personal ha sido actualizada correctamente.",
-      });
+      toast.success("Perfil actualizado con éxito.");
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "No se pudo actualizar tu perfil. Intenta nuevamente.",
-        variant: "destructive",
-      });
+      console.error("Error al actualizar el perfil:", error);
+      toast.error(
+        "Hubo un error al actualizar tu perfil. Por favor intenta nuevamente."
+      );
     } finally {
       setIsLoading(false);
     }

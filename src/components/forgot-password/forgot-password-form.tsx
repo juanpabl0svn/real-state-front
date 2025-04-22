@@ -22,8 +22,8 @@ import {
   verifyOtp,
   verifyOtpPassword,
 } from "@/lib/actions";
-import { toast } from "@/hooks/use-toast";
-import { signIn } from "next-auth/react";
+
+import { toast } from "react-hot-toast";
 
 import { Card, CardContent, CardHeader } from "../ui/card";
 import {
@@ -63,10 +63,9 @@ export function ForgotPasswordForm() {
       if (restorePasswordResult.error)
         throw new Error(restorePasswordResult.message);
 
-      toast({
-        title: "Registration successful",
-        description: "A code has been sent to your email for verification.",
-      });
+      toast.success(
+        "Password reset successfully!. Please check your email for the OTP."
+      );
 
       setSeeOtp(true);
 
@@ -76,13 +75,11 @@ export function ForgotPasswordForm() {
       });
     } catch (error) {
       console.error("Registration error:", error);
-      toast({
-        title: "Registration failed",
-        description:
-          error instanceof Error
-            ? error.message
-            : "Something went wrong. Please try again.",
-      });
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Something went wrong. Please try again."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -99,20 +96,16 @@ export function ForgotPasswordForm() {
 
       if (otp.error) throw new Error(otp.message);
 
-      toast({
-        title: "OTP verified",
-        description: otp.message,
-      });
+      toast.success(
+        "Email verified successfully!. You can now login with your new password."
+      );
       router.push("/login");
     } catch (error) {
-      toast({
-        title: "Verification failed",
-        description:
-          error instanceof Error
-            ? error.message
-            : "Something went wrong. Please try again.",
-        variant: "destructive",
-      });
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Invalid OTP. Please try again."
+      );
     } finally {
       setIsLoading(false);
     }

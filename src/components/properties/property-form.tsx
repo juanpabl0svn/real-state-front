@@ -28,9 +28,10 @@ import { propertySchema, PropertyFormSchema } from "@/lib/zod";
 
 import useNumber from "@/hooks/use-number";
 import { useEffect, useState } from "react";
-import { toast } from "@/hooks/use-toast";
 import ImageUploader from "./image-uploader";
 import { useAppStore } from "@/stores/app-store";
+
+import { toast } from "react-hot-toast";
 
 import { getPhotosFromPropertyId } from "@/lib/actions";
 
@@ -104,21 +105,18 @@ export function PropertyForm({
         throw new Error(result.message);
       }
 
-      toast({
-        title: property ? "Property updated" : "Property created",
-        description: property
-          ? "Property has been updated successfully."
-          : "Property has been created successfully.",
-      });
+      toast.success(
+        property
+          ? "Property updated successfully!"
+          : "Property created successfully!"
+      );
     } catch (e) {
       console.error("Form submission error:", e);
-      toast({
-        title: "Error",
-        description:
-          e instanceof Error
-            ? e.message
-            : "Something went wrong. Please try again.",
-      });
+      toast.error(
+        e instanceof Error
+          ? e.message
+          : "An unexpected error occurred. Please try again."
+      );
     } finally {
       setIsLoading(false);
     }

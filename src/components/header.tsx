@@ -15,8 +15,9 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { useToast } from "@/hooks/use-toast";
+
 import { signOut, useSession } from "next-auth/react";
+import { toast } from "react-hot-toast";
 
 // This would typically come from your API
 interface Notification {
@@ -31,7 +32,6 @@ interface Notification {
 export default function Header() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { toast } = useToast();
 
   const { data } = useSession();
 
@@ -81,8 +81,7 @@ export default function Header() {
           : notification
       )
     );
-    toast({
-      title: "Notification marked as read",
+    toast.success("Notification marked as read", {
       duration: 2000,
     });
   };
@@ -91,8 +90,7 @@ export default function Header() {
     setNotifications(
       notifications.map((notification) => ({ ...notification, is_read: true }))
     );
-    toast({
-      title: "All notifications marked as read",
+    toast.success("Notification marked as read", {
       duration: 2000,
     });
   };
@@ -133,7 +131,12 @@ export default function Header() {
   };
 
   const navItems = [
-    { label: "Home", href: "/", icon: <Home className="h-4 w-4 mr-2" />, needsAuth: false },
+    {
+      label: "Home",
+      href: "/",
+      icon: <Home className="h-4 w-4 mr-2" />,
+      needsAuth: false,
+    },
     {
       label: "Mis propiedades",
       href: "/properties",
@@ -153,21 +156,21 @@ export default function Header() {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-6 ml-6">
             {navItems.map((item) => {
-
               if (item.needsAuth && !data?.user) {
-                return null;  
+                return null;
               }
-              
+
               return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="flex items-center text-sm font-medium transition-colors hover:text-primary"
-              >
-                {item.icon}
-                {item.label}
-              </Link>
-            )})}
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="flex items-center text-sm font-medium transition-colors hover:text-primary"
+                >
+                  {item.icon}
+                  {item.label}
+                </Link>
+              );
+            })}
           </nav>
         </div>
 
