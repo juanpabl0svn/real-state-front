@@ -1,12 +1,16 @@
+import { auth } from "@/auth";
 import { NextRequest } from "next/server";
 
 // Simulador de eventos en memoria (en producción usarías una cola o db trigger)
 const clients = new Map<string, (data: any) => void>();
 
 export async function GET(req: NextRequest) {
-  const userId = req.headers.get("x-user-id"); // O usa cookies/session
+  
+  const session = await auth()
 
-  if (!userId) return new Response("Unauthorized", { status: 401 });
+  if (!session) return new Response("Unauthorized", { status: 401 });
+
+  const userId = session.user.user_id!;
 
   const stream = new ReadableStream({
     start(controller) {
