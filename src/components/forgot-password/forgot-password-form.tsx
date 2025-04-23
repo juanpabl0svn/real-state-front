@@ -16,16 +16,18 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { registerUser, verifyOtp } from "@/lib/actions";
-import { toast } from "@/hooks/use-toast";
-import { signIn } from "next-auth/react";
-import { Separator } from "../ui/separator";
+import {
+  registerUser,
+  restorePassword,
+  verifyOtp,
+  verifyOtpPassword,
+} from "@/lib/actions";
+
+import { toast } from "react-hot-toast";
 
 import { Card, CardContent, CardHeader } from "../ui/card";
 import {
-  userSchema,
   OtpFormSchema,
-  UserFormSchema,
   otpSchema,
   ForgotPasswordFormSchema,
   forgotPasswordSchema,
@@ -56,28 +58,28 @@ export function ForgotPasswordForm() {
   async function onSubmit(values: ForgotPasswordFormSchema) {
     setIsLoading(true);
     try {
+      const restorePasswordResult = await restorePassword(values.email);
 
-      // const restorePassword = await restorePassword(values.email, values.password);
+      if (restorePasswordResult.error)
+        throw new Error(restorePasswordResult.message);
 
-      // if (user.error) throw new Error("User with this email already exists.");
-      // toast({
-      //   title: "Registration successful",
-      //   description: "A code has been sent to your email for verification.",
-      // });
+      toast.success(
+        "Password reset successfully!. Please check your email for the OTP."
+      );
+
       setSeeOtp(true);
-      // setData({
-      //   email: values.email,
-      //   id: user.user_id,
-      // });
+
+      setData({
+        email: values.email,
+        password: values.password,
+      });
     } catch (error) {
       console.error("Registration error:", error);
-      toast({
-        title: "Registration failed",
-        description:
-          error instanceof Error
-            ? error.message
-            : "Something went wrong. Please try again.",
-      });
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Something went wrong. Please try again."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -86,30 +88,28 @@ export function ForgotPasswordForm() {
   async function onSubmitOtp(values: OtpFormSchema) {
     setIsLoading(true);
     try {
-      const otp = await verifyOtp(data?.id!, values.otp);
+      const otp = await verifyOtpPassword(
+        data?.email,
+        values.otp,
+        data?.password
+      );
 
       if (otp.error) throw new Error(otp.message);
 
-      toast({
-        title: "OTP verified",
-        description: otp.message,
-      });
+      toast.success(
+        "Email verified successfully!. You can now login with your new password."
+      );
       router.push("/login");
     } catch (error) {
-      toast({
-        title: "Verification failed",
-        description:
-          error instanceof Error
-            ? error.message
-            : "Something went wrong. Please try again.",
-        variant: "destructive",
-      });
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Invalid OTP. Please try again."
+      );
     } finally {
       setIsLoading(false);
     }
   }
-
-  const signInWithGoogle = async () => await signIn("google");
 
   return seeOtp ? (
     <Card className="w-full">
@@ -202,7 +202,7 @@ export function ForgotPasswordForm() {
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel>Confirm Password</FormLabel>
                   <FormControl>
                     <Input type="password" {...field} />
                   </FormControl>
@@ -214,7 +214,7 @@ export function ForgotPasswordForm() {
               )}
             />
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Creating account..." : "Create account"}
+              {isLoading ? "Sending code..." : "Reset Password"}
             </Button>
           </form>
         </Form>

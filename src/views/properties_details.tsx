@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import type { Property } from "@/types";
 import { getPropertyById } from "@/lib/actions";
 import { useAppStore } from "@/stores/app-store";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "react-hot-toast";
 
 export default function PropertyDetailsPage() {
   const { id } = useParams();
@@ -39,11 +39,7 @@ export default function PropertyDetailsPage() {
           );
         }
       } catch (e) {
-        toast({
-          title: "Error",
-          description: "Failed to fetch property details.",
-          variant: "destructive",
-        });
+        toast.error("Failed to fetch property details. Redirecting to home.");
 
         setTimeout(() => {
           router.push("/");
