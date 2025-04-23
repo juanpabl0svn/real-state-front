@@ -35,6 +35,8 @@ export default function Header() {
 
   const { data } = useSession();
 
+  console.log(data)
+
   // Simulate fetching notifications
   useEffect(() => {
     // This would be replaced with an actual API call
@@ -270,71 +272,27 @@ export default function Header() {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              {/* Settings */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <Settings className="h-5 w-5" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>Settings</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <Link href="/settings/profile" className="flex w-full">
-                      Profile
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Link href="/settings/account" className="flex w-full">
-                      Account
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Link
-                      href="/settings/notifications"
-                      className="flex w-full"
-                    >
-                      Notification Settings
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <Link
-                      onClick={async () => await signOut()}
-                      href="/"
-                      className="flex w-full"
-                    >
-                      Logout
-                    </Link>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-
               {/* User Profile */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className="rounded-full">
                     <Avatar className="h-8 w-8">
-                      <AvatarImage
-                        src="/placeholder.svg?height=32&width=32"
-                        alt="User"
-                      />
-                      <AvatarFallback>U</AvatarFallback>
+                      {data?.user?.image ? (
+                        <AvatarImage src={data.user.image} alt="User" />
+                      ) : (
+                        <AvatarFallback>
+                          {data?.user.name![0].toUpperCase()}
+                        </AvatarFallback>
+                      )}
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuLabel>{data.user.email}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem>
-                    <Link href="/profile" className="flex w-full">
-                      View Profile
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
                     <Link href="/settings" className="flex w-full">
-                      Settings
+                      View Profile
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
@@ -384,16 +342,18 @@ export default function Header() {
             <div className="flex items-center justify-between pt-4 border-t">
               <div className="flex items-center space-x-4">
                 <Avatar className="h-8 w-8">
-                  <AvatarImage
-                    src="/placeholder.svg?height=32&width=32"
-                    alt="User"
-                  />
-                  <AvatarFallback>U</AvatarFallback>
+                  {data?.user?.image ? (
+                    <AvatarImage src={data.user.image} alt="User" />
+                  ) : (
+                    <AvatarFallback>
+                      {data?.user.name![0].toUpperCase()}
+                    </AvatarFallback>
+                  )}
                 </Avatar>
                 <div>
                   <p className="text-sm font-medium">User Name</p>
                   <p className="text-xs text-muted-foreground">
-                    user@example.com
+                    {data?.user.email}
                   </p>
                 </div>
               </div>
