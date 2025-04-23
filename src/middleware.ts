@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 import { auth } from "./auth"
 
-export const protectedRoutes = ["/profile", "/properties"]
+export const protectedRoutes = ["/settings", "/properties"]
 
 export const authRoutes = ["/login", "/register"]
 

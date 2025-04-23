@@ -1,6 +1,5 @@
 import { Prisma, $Enums } from '@prisma/client'
 
-
 export type Photos = Prisma.photosGetPayload<{}>
 
 export type Property = Prisma.propertiesGetPayload<{}> & { photos?: Photos[] }
@@ -12,7 +11,6 @@ export type Notification = Prisma.NotificationGetPayload<{}>
 export type PropertyTypes = $Enums['PropertyType']
 
 export type PropertyStatus = $Enums['PropertyStatus']
-
 
 export interface FilterOptions {
   type?: string

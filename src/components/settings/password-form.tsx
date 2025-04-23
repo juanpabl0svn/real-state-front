@@ -18,26 +18,7 @@ import { toast } from "react-hot-toast";
 import { useState } from "react";
 import { Eye, EyeOff, Lock } from "lucide-react";
 import { changePassword } from "@/lib/actions";
-
-const passwordFormSchema = z
-  .object({
-    currentPassword: z.string().min(8, {
-      message: "La contraseña actual debe tener al menos 8 caracteres.",
-    }),
-    newPassword: z.string().min(8, {
-      message: "La nueva contraseña debe tener al menos 8 caracteres.",
-    }),
-    confirmPassword: z.string().min(8, {
-      message:
-        "La confirmación de contraseña debe tener al menos 8 caracteres.",
-    }),
-  })
-  .refine((data) => data.newPassword === data.confirmPassword, {
-    message: "Las contraseñas no coinciden.",
-    path: ["confirmPassword"],
-  });
-
-type PasswordFormValues = z.infer<typeof passwordFormSchema>;
+import { PasswordFormValues, passwordFormSchema } from "@/lib/zod";
 
 export function PasswordForm() {
   const [isLoading, setIsLoading] = useState(false);

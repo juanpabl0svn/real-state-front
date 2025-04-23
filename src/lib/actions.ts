@@ -11,8 +11,6 @@ import { sendOtpEmail } from "@/nodemailer"
 import { deleteImageFromKey, uploadImageFromFile } from "@/S3"
 import { v4 as uuidv4 } from 'uuid';
 
-import { signIn, signOut, useSession, getSession } from "next-auth/react"
-
 
 
 // Fetch all properties for the current user
