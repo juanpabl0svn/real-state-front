@@ -10,19 +10,24 @@ type Props = {
   multiple?: boolean;
 };
 
-export default function ImageUploader({ files, setFiles, multiple = true }: Props) {
-
+export default function ImageUploader({
+  files,
+  setFiles,
+  multiple = true,
+}: Props) {
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
-      const newFiles = multiple ? [...files, ...acceptedFiles] : [acceptedFiles[0]];
+      const newFiles = multiple
+        ? [...files, ...acceptedFiles]
+        : [acceptedFiles[0]];
       setFiles(newFiles);
     },
     [files, multiple, setFiles]
-  );
+  );  
 
   const removeImage = (index: number) => {
     const newList = [...files];
-    
+
     newList.splice(index, 1);
     setFiles(newList);
   };
@@ -34,7 +39,7 @@ export default function ImageUploader({ files, setFiles, multiple = true }: Prop
   });
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 py-5">
       {/* Zona de arrastre */}
       <div
         {...getRootProps()}
@@ -46,45 +51,42 @@ export default function ImageUploader({ files, setFiles, multiple = true }: Prop
         {isDragActive ? (
           <p>Suelta la imagen aquí...</p>
         ) : (
-          <p>
-            {multiple
-              ? "Haz clic o arrastra imágenes para subir"
-              : files.length > 0
-              ? "Haz clic para cambiar la imagen"
-              : "Haz clic o arrastra una imagen para subir"}
-          </p>
+          <p>{multiple ? "Haz clic o arrastra imágenes para subir" : null}</p>
         )}
-      </div>
 
-
-      {/* Vista previa */}
-      <div className={multiple ? "flex flex-wrap gap-4" : ""}>
-        {files.map((file, index) => {
-          const src = typeof file === "string" ? file : URL.createObjectURL(file);
-          return (
-            <div
-              key={index}
-              className={
-                multiple
-                  ? "relative w-24 h-24"
-                  : "relative w-full max-w-2xl h-64 mx-auto"
-              }
-            >
-              <img
-                src={src}
-                alt={`preview-${index}`}
-                className="w-full h-full object-cover rounded-md"
-              />
-              <button
-                type="button"
-                onClick={() => removeImage(index)}
-                className="absolute top-2 right-2 bg-white p-1 rounded-full shadow"
+        {/* Vista previa */}
+        <div className={multiple ? "flex flex-wrap gap-4" : ""}>
+          {files.map((file, index) => {
+            const src =
+              typeof file === "string" ? file : URL.createObjectURL(file);
+            return (
+              <div
+                key={index}
+                className={
+                  multiple
+                    ? "relative w-24 h-24"
+                    : "relative w-full max-w-2xl h-64 mx-auto"
+                }
               >
-                <X size={18} />
-              </button>
-            </div>
-          );
-        })}
+                <img
+                  src={src}
+                  alt={`preview-${index}`}
+                  className="w-full h-full object-cover rounded-md"
+                />
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    removeImage(index);
+                  }}
+                  className="absolute top-2 right-2 bg-white p-1 rounded-full shadow"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

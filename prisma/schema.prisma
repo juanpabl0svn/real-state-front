@@ -126,6 +126,7 @@ model users {
   user_id       String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name          String          @db.VarChar(100)
   email         String          @db.VarChar(100)
+  image       String?         @db.VarChar(400)
   password      String?
   phone         String?         @db.VarChar(20)
   role          roles

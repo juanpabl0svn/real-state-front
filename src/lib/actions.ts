@@ -1,7 +1,7 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
-import type { IPropertyForm, Paginate, Property, PropertyTypes, ReturnTypeHandler } from "../types"
+import type { IPropertyForm, Paginate, Property, PropertyTypes, ReturnTypeHandler, User } from "../types"
 
 import { auth } from "@/auth"
 import { perPage, prisma } from "@/prisma"
@@ -10,6 +10,10 @@ import { generateExpirationDate, generateRandomCode, hashPassword } from "./util
 import { sendOtpEmail } from "@/nodemailer"
 import { deleteImageFromKey, uploadImageFromFile } from "@/S3"
 import { v4 as uuidv4 } from 'uuid';
+
+import { signIn, signOut, useSession, getSession } from "next-auth/react"
+
+
 
 // Fetch all properties for the current user
 export async function fetchProperties(): Promise<Paginate<Property>> {
@@ -641,6 +645,57 @@ export async function changePassword(currentPassword: string, newPassword: strin
     return {
       error: true,
       message: error instanceof Error ? error.message : "Failed to change password"
+    }
+  }
+}
+
+
+export async function updateProfile(data: Partial<User>) {
+  try {
+    const session = await auth()
+
+    if (!session?.user) {
+      throw new Error("User not authenticated")
+    }
+
+    const user = await prisma.users.findFirst({
+      where: {
+        user_id: session.user.user_id
+      }
+    })
+
+    if (!user) {
+      throw new Error("User not found")
+    }
+
+    const image = data.image
+
+    if (typeof image === "object") {
+      const uploadResult = await uploadImage(image as File, "users")
+
+      if (uploadResult.error) {
+        throw new Error(uploadResult.message)
+      }
+
+      data.image = uploadResult.data
+    }
+
+    const updatedUser = await prisma.users.update({
+      where: {
+        user_id: session.user.user_id
+      },
+      data: {
+        ...data,
+      }
+    })
+
+
+    return { error: false, message: "Profile updated successfully", data: updatedUser }
+  } catch (error) {
+    console.error("Error updating profile:", error)
+    return {
+      error: true,
+      message: error instanceof Error ? error.message : "Failed to update profile"
     }
   }
 }

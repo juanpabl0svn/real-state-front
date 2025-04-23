@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { set, z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -16,9 +16,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "react-hot-toast";
-import { useState } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useEffect, useState } from "react";
 import { User, Mail, MapPin, Phone } from "lucide-react";
+import { useSession } from "next-auth/react";
+import ImageUploaderProfile from "./image-uploader-profile";
+import { updateProfile } from "@/lib/actions";
+import { auth } from "@/auth";
 
 const profileFormSchema = z.object({
   name: z.string().min(2, {
@@ -28,42 +31,55 @@ const profileFormSchema = z.object({
     message: "Por favor ingresa un correo electrónico válido.",
   }),
   phone: z.string().optional(),
-  address: z.string().optional(),
-  bio: z.string().max(160).optional(),
 });
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
-// Esta función simularía la actualización del perfil en un servidor
-async function updateProfile(values: ProfileFormValues) {
-  // Simulamos una demora de red
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  return values;
-}
-
 export function ProfileForm() {
+  const session = useSession();
+
   const [isLoading, setIsLoading] = useState(false);
 
-  // Valores por defecto que vendrían de la base de datos
-  const defaultValues: Partial<ProfileFormValues> = {
-    name: "Juan Pérez",
-    email: "juan.perez@example.com",
-    phone: "+57 300 123 4567",
-    address: "Calle 10 #15-30, Medellín",
-    bio: "Propietario de una casa en Laureles.",
-  };
+  const [image, setImage] = useState<Array<File | string>>([]);
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
-    defaultValues,
+    defaultValues: {
+      name: "",
+      email: "",
+      phone: "",
+    },
     mode: "onChange",
   });
 
+  useEffect(() => {
+    if (session?.data?.user) {
+      form.reset({
+        name: session.data.user.name,
+        email: session.data.user.email,
+        phone: session.data.user.phone,
+      });
+      setImage([session.data.user.image || ""]);
+    }
+  }, [session?.data?.user]);
+
   async function onSubmit(data: ProfileFormValues) {
     setIsLoading(true);
-
     try {
-      const result = await updateProfile(data);
+      const res = await updateProfile({ ...data, image: image[0] });
+
+      if (res.error) {
+        throw new Error(res.message);
+      }
+
+      await session.update({
+        user: {
+          ...session.data?.user,
+          ...res.data,
+        },
+      });
+
+      console.log("Perfil actualizado:", res.data, session.data?.user);
       toast.success("Perfil actualizado con éxito.");
     } catch (error) {
       console.error("Error al actualizar el perfil:", error);
@@ -77,16 +93,11 @@ export function ProfileForm() {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center gap-6">
-        <Avatar className="h-20 w-20">
-          <AvatarImage src="/placeholder.svg?height=80&width=80" alt="Avatar" />
-          <AvatarFallback>JP</AvatarFallback>
-        </Avatar>
-        <div>
-          <Button variant="outline" size="sm">
-            Cambiar foto
-          </Button>
-        </div>
+      <div className="flex flex-col gap-6 ">
+        <ImageUploaderProfile files={image} setFiles={setImage} />
+        <p className="text-muted-foreground text-xs">
+          Da click en la imagen o suelta una imagen para cambiarla
+        </p>
       </div>
 
       <Form {...form}>
@@ -154,48 +165,7 @@ export function ProfileForm() {
                 </FormItem>
               )}
             />
-
-            <FormField
-              control={form.control}
-              name="address"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Dirección</FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        className="pl-10"
-                        placeholder="Tu dirección"
-                        {...field}
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
           </div>
-
-          <FormField
-            control={form.control}
-            name="bio"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Biografía</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder="Cuéntanos un poco sobre ti"
-                    className="resize-none"
-                    {...field}
-                  />
-                </FormControl>
-                <FormDescription>Máximo 160 caracteres.</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
           <Button type="submit" disabled={isLoading}>
             {isLoading ? "Guardando..." : "Guardar cambios"}
           </Button>

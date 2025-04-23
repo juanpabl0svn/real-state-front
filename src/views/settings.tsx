@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ProfileForm } from "@/components/settings/profile-password";
+import { ProfileForm } from "@/components/settings/profile";
 import { PasswordForm } from "@/components/settings/password-form";
 
 export default function SettingsPage() {
