@@ -165,7 +165,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     })
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
+      if (trigger === "update" && session) {
+        token.name = session.user.name;
+        token.image = session.user.image;
+        token.email = session.user.email;
+        token.phone = session.user.phone;
+        token.role = session.user.role;
+        token.id = session.user.id;
+        token.user_id = session.user.user_id;
+      }
+
       if (user) {
         token.role = user.role;
         token.id = user.id;
@@ -193,4 +203,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     error: '/login', // Error code passed in query string as ?error=
   },
   secret: process.env.NEXTAUTH_SECRET,
+  session: {
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  }
 })

@@ -53,7 +53,7 @@ export default function ImageUploaderProfile({ files, setFiles }: Props) {
                 <img
                   src={src}
                   alt={`preview-${index}`}
-                  className="w-full h-full object-fit rounded-md aspect-square"
+                  className="w-full h-full object-cover rounded-md aspect-square"
                 />
               </div>
             );

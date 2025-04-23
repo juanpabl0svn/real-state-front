@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { set, z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -16,11 +16,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "react-hot-toast";
-import { useState } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useEffect, useState } from "react";
 import { User, Mail, MapPin, Phone } from "lucide-react";
 import { useSession } from "next-auth/react";
 import ImageUploaderProfile from "./image-uploader-profile";
+import { updateProfile } from "@/lib/actions";
+import { auth } from "@/auth";
 
 const profileFormSchema = z.object({
   name: z.string().min(2, {
@@ -30,43 +31,55 @@ const profileFormSchema = z.object({
     message: "Por favor ingresa un correo electrónico válido.",
   }),
   phone: z.string().optional(),
-  address: z.string().optional(),
-  bio: z.string().max(160).optional(),
 });
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
-
-// Esta función simularía la actualización del perfil en un servidor
-async function updateProfile(values: ProfileFormValues) {
-  // Simulamos una demora de red
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  return values;
-}
 
 export function ProfileForm() {
   const session = useSession();
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const [image, setImage] = useState<Array<File | string>>([
-    session?.data?.user?.image! || "",
-  ]);
+  const [image, setImage] = useState<Array<File | string>>([]);
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
-      name: session?.data?.user?.name,
-      email: session?.data?.user?.email,
-      phone: session?.data?.user?.phone,
+      name: "",
+      email: "",
+      phone: "",
     },
     mode: "onChange",
   });
 
+  useEffect(() => {
+    if (session?.data?.user) {
+      form.reset({
+        name: session.data.user.name,
+        email: session.data.user.email,
+        phone: session.data.user.phone,
+      });
+      setImage([session.data.user.image || ""]);
+    }
+  }, [session?.data?.user]);
+
   async function onSubmit(data: ProfileFormValues) {
     setIsLoading(true);
-
     try {
-      const result = await updateProfile(data);
+      const res = await updateProfile({ ...data, image: image[0] });
+
+      if (res.error) {
+        throw new Error(res.message);
+      }
+
+      await session.update({
+        user: {
+          ...session.data?.user,
+          ...res.data,
+        },
+      });
+
+      console.log("Perfil actualizado:", res.data, session.data?.user);
       toast.success("Perfil actualizado con éxito.");
     } catch (error) {
       console.error("Error al actualizar el perfil:", error);
@@ -82,8 +95,8 @@ export function ProfileForm() {
     <div className="space-y-8">
       <div className="flex flex-col gap-6 ">
         <ImageUploaderProfile files={image} setFiles={setImage} />
-        <p className="text-muted-foreground text-sm">
-          Da click en la imagen o suelta una imagen
+        <p className="text-muted-foreground text-xs">
+          Da click en la imagen o suelta una imagen para cambiarla
         </p>
       </div>
 

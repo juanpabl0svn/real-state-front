@@ -35,7 +35,7 @@ export default function Header() {
 
   const { data } = useSession();
 
-  console.log(data)
+  console.log(data);
 
   // Simulate fetching notifications
   useEffect(() => {
@@ -297,11 +297,7 @@ export default function Header() {
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem>
-                    <Link
-                      onClick={async () => await signOut()}
-                      href="/"
-                      className="flex w-full"
-                    >
+                    <Link href="/logout" className="flex w-full">
                       Logout
                     </Link>
                   </DropdownMenuItem>
