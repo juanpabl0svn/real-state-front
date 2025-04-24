@@ -188,7 +188,7 @@ export async function sendPropertyApprovedEmail(email: string, title: string): P
   }
 }
 
-export async function sendPropertyRejectedEmail(email: string, title: string): Promise<boolean> {
+export async function sendPropertyRejectedEmail(email: string, title: string, message: string): Promise<boolean> {
   try {
     const subject = "Tu propiedad ha sido rechazada"
     const body = `
@@ -252,6 +252,7 @@ export async function sendPropertyRejectedEmail(email: string, title: string): P
             <div class="property-title">${title}</div>
             <p>Por favor revisa las <a href="https://tusitio.com/guia-publicacion">directrices de publicación</a> y ajusta la información.</p>
             <a href="https://tusitio.com/mis-propiedades" class="button">Revisar mis propiedades</a>
+            <p><strong>Motivo:</strong> ${message}</p>
           </div>
           <div class="footer">
             Si tienes dudas, contáctanos en soporte@tusitio.com.<br/>

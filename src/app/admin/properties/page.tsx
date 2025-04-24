@@ -1,14 +1,26 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import { Search, Filter, Check, X, Eye } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { Search, Filter, Check, X, Eye } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -16,97 +28,108 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from "@/components/ui/dialog"
-import type { Property, PropertyTypes } from "@/types"
-import { getNotApprovedProperties, approveProperty, rejectProperty } from "@/lib/actions"
+} from "@/components/ui/dialog";
+import type { Property, PropertyTypes } from "@/types";
+import {
+  getNotApprovedProperties,
+  approveProperty,
+  rejectProperty,
+} from "@/lib/actions";
 
 export default function PropertiesAdminPage() {
-  const [properties, setProperties] = useState<Property[]>([])
-  const [searchQuery, setSearchQuery] = useState("")
-  const [acceptDialogOpen, setAcceptDialogOpen] = useState(false)
-  const [rejectDialogOpen, setRejectDialogOpen] = useState(false)
-  const [propertyToAccept, setPropertyToAccept] = useState<Property | null>(null)
-  const [propertyToReject, setPropertyToReject] = useState<Property | null>(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [acceptDialogOpen, setAcceptDialogOpen] = useState(false);
+  const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
+  const [propertyToAccept, setPropertyToAccept] = useState<Property | null>(
+    null
+  );
+  const [propertyToReject, setPropertyToReject] = useState<Property | null>(
+    null
+  );
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    ; (async () => {
-      const { data } = await getNotApprovedProperties()
-      setProperties(data)
-      console.log(data)
-    })()
-  }, [])
+    (async () => {
+      const { data } = await getNotApprovedProperties();
+      setProperties(data);
+      console.log(data);
+    })();
+  }, []);
 
   // Filter properties based on search query
   const filteredProperties = properties.filter(
     (property) =>
       property.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      property.city.toLowerCase().includes(searchQuery.toLowerCase()) || property.neighborhood.toLowerCase().includes(searchQuery.toLowerCase()),
-  )
+      property.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      property.neighborhood.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   // Handle property acceptance
   const handleAcceptClick = (property: Property) => {
-    setPropertyToAccept(property)
-    setAcceptDialogOpen(true)
-  }
+    setPropertyToAccept(property);
+    setAcceptDialogOpen(true);
+  };
 
   const handleAcceptConfirm = async (id: string) => {
-    setIsSubmitting(true)
+    setIsSubmitting(true);
     try {
       // Llamamos a la acción que aprueba en back-end
-      const updated = await approveProperty(id)
+      const updated = await approveProperty(id);
       if (updated) {
         // Removemos la propiedad aprobada de la lista de no aprobadas
-        setProperties((prev) => prev.filter((p) => p.id !== id))
+        setProperties((prev) => prev.filter((p) => p.id !== id));
       } else {
-        console.error("No se devolvió la propiedad aprobada")
+        console.error("No se devolvió la propiedad aprobada");
       }
     } catch (e) {
-      console.error("Error al aprobar la propiedad:", e)
+      console.error("Error al aprobar la propiedad:", e);
     } finally {
-      setIsSubmitting(false)
-      setAcceptDialogOpen(false)
-      setPropertyToAccept(null)
+      setIsSubmitting(false);
+      setAcceptDialogOpen(false);
+      setPropertyToAccept(null);
     }
-  }
+  };
+
+  const [reason, setReason] = useState<string>("");
 
   // Handle property rejection
   const handleRejectClick = (property: Property) => {
-    setPropertyToReject(property)
-    setRejectDialogOpen(true)
-  }
+    setPropertyToReject(property);
+    setRejectDialogOpen(true);
+  };
 
   const handleRejectConfirm = async (id: string) => {
-    setIsSubmitting(true)
+    setIsSubmitting(true);
     try {
-      const sent = await rejectProperty(id)
+      const sent = await rejectProperty(id, reason);
       if (sent) {
-        setProperties((prev) => prev.filter((p) => p.id !== id))
+        setProperties((prev) => prev.filter((p) => p.id !== id));
       } else {
-        console.error("No se pudo enviar el email de rechazo")
+        console.error("No se pudo enviar el email de rechazo");
       }
     } catch (e) {
-      console.error("Error al rechazar la propiedad:", e)
+      console.error("Error al rechazar la propiedad:", e);
     } finally {
-      setIsSubmitting(false)
-      setRejectDialogOpen(false)
-      setPropertyToReject(null)
+      setIsSubmitting(false);
+      setRejectDialogOpen(false);
+      setPropertyToReject(null);
     }
-  }
+  };
 
   const getStatusBadge = (status: PropertyTypes) => {
     const statusStyles = {
       available: "bg-green-100 text-green-800 hover:bg-green-100",
       sold: "bg-red-100 text-red-800 hover:bg-red-100",
       reserved: "bg-yellow-100 text-yellow-800 hover:bg-yellow-100",
-    }
+    };
 
     return (
       <Badge className={statusStyles[status as keyof typeof statusStyles]}>
         {status.charAt(0).toUpperCase() + status.slice(1)}
       </Badge>
-    )
-  }
+    );
+  };
 
   return (
     <div className="container mx-auto py-8 px-4">
@@ -136,11 +159,21 @@ export default function PropertiesAdminPage() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => setSearchQuery("")}>All Properties</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSearchQuery("house")}>Houses</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSearchQuery("apartment")}>Apartments</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSearchQuery("land")}>Land</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSearchQuery("office")}>Offices</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSearchQuery("")}>
+                  All Properties
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSearchQuery("house")}>
+                  Houses
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSearchQuery("apartment")}>
+                  Apartments
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSearchQuery("land")}>
+                  Land
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSearchQuery("office")}>
+                  Offices
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -151,7 +184,9 @@ export default function PropertiesAdminPage() {
                 <TableRow>
                   <TableHead>Title</TableHead>
                   <TableHead>Type</TableHead>
-                  <TableHead className="hidden md:table-cell">Location</TableHead>
+                  <TableHead className="hidden md:table-cell">
+                    Location
+                  </TableHead>
                   <TableHead className="hidden md:table-cell">Price</TableHead>
                   <TableHead className="hidden md:table-cell">Status</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
@@ -161,20 +196,35 @@ export default function PropertiesAdminPage() {
                 {filteredProperties.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={6} className="text-center py-8">
-                      No properties found. Try a different search or add a new property.
+                      No properties found. Try a different search or add a new
+                      property.
                     </TableCell>
                   </TableRow>
                 ) : (
                   filteredProperties.map((property) => (
                     <TableRow key={property.id}>
-                      <TableCell className="font-medium">{property.title}</TableCell>
-                      <TableCell className="capitalize">{property.property_type}</TableCell>
-                      <TableCell className="hidden md:table-cell">{property.city} / {property.neighborhood}</TableCell>
-                      <TableCell className="hidden md:table-cell">${property.price.toLocaleString()}</TableCell>
-                      <TableCell className="hidden md:table-cell">{getStatusBadge(property.status)}</TableCell>
+                      <TableCell className="font-medium">
+                        {property.title}
+                      </TableCell>
+                      <TableCell className="capitalize">
+                        {property.property_type}
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        {property.city} / {property.neighborhood}
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        ${property.price.toLocaleString()}
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        {getStatusBadge(property.status)}
+                      </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
-                          <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-500 hover:text-gray-700">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-gray-500 hover:text-gray-700"
+                          >
                             <Link href={`/properties/${property.id}`}>
                               <Eye className="h-4 w-4" />
                             </Link>
@@ -213,7 +263,8 @@ export default function PropertiesAdminPage() {
             <DialogHeader>
               <DialogTitle>Confirmar aprobación</DialogTitle>
               <DialogDescription>
-                ¿Estás seguro de que deseas aprobar la propiedad {propertyToAccept.title}?
+                ¿Estás seguro de que deseas aprobar la propiedad{" "}
+                {propertyToAccept.title}?
               </DialogDescription>
             </DialogHeader>
             <DialogFooter className="flex justify-end gap-2 mt-4">
@@ -242,14 +293,29 @@ export default function PropertiesAdminPage() {
             <DialogHeader>
               <DialogTitle>Confirmar rechazo</DialogTitle>
               <DialogDescription>
-                ¿Estás seguro de que deseas rechazar la propiedad {propertyToReject.title}?
+                ¿Estás seguro de que deseas rechazar la propiedad{" "}
+                {propertyToReject.title}?
               </DialogDescription>
+              <label htmlFor="">Razon</label>
+              <Input
+                placeholder="Escribe la razón del rechazo"
+                className="mt-2"
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+              />
             </DialogHeader>
             <DialogFooter className="flex justify-end gap-2 mt-4">
-              <Button variant="outline" onClick={() => setRejectDialogOpen(false)}>
+              <Button
+                variant="outline"
+                onClick={() => setRejectDialogOpen(false)}
+              >
                 Cancelar
               </Button>
-              <Button variant="destructive" onClick={() => handleRejectConfirm(propertyToReject.id)}>
+              <Button
+                variant="destructive"
+                onClick={() => handleRejectConfirm(propertyToReject.id)}
+                disabled={isSubmitting || !reason}
+              >
                 Rechazar
               </Button>
             </DialogFooter>
@@ -257,5 +323,5 @@ export default function PropertiesAdminPage() {
         </Dialog>
       )}
     </div>
-  )
+  );
 }

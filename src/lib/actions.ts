@@ -755,7 +755,7 @@ export async function approveProperty(id: string): Promise<Property | null> {
 }
 
 
-export async function rejectProperty(id: string): Promise<boolean> {
+export async function rejectProperty(id: string, message: string): Promise<boolean> {
   try {
     const property = await prisma.properties.findUnique({
       where: { id },
@@ -773,7 +773,8 @@ export async function rejectProperty(id: string): Promise<boolean> {
 
     await sendPropertyRejectedEmail(
       property.user.email,
-      property.title
+      property.title,
+      message
     )
 
     return true
