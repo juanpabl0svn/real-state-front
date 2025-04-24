@@ -77,7 +77,8 @@ export function PropertyForm({
           title: "",
           description: "",
           price: 0,
-          location: "",
+          city: "",
+          neighborhood: "",
           area: 0,
           bedrooms: 0,
           bathrooms: 0,
@@ -165,7 +166,7 @@ export function PropertyForm({
 
               <FormField
                 control={form.control}
-                name="location"
+                name="city"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Location*</FormLabel>
@@ -176,6 +177,22 @@ export function PropertyForm({
                   </FormItem>
                 )}
               />
+
+              {form.watch("city") && (
+                <FormField
+                  control={form.control}
+                  name="neighborhood"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Neighborhood</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Property neighborhood" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
 
               <FormField
                 control={form.control}

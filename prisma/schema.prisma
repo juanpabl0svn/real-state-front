@@ -74,7 +74,8 @@ model properties {
   title          String          @db.VarChar(255)
   description    String?
   price          Int             @db.Integer
-  location       String          @db.VarChar(255)
+  city           String          @db.VarChar(255)
+  neighborhood   String          @db.VarChar(255)
   area           Int             @db.Integer
   bedrooms       Int             @db.SmallInt
   bathrooms      Int             @db.SmallInt
@@ -126,7 +127,7 @@ model users {
   user_id       String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name          String          @db.VarChar(100)
   email         String          @db.VarChar(100)
-  image       String?         @db.VarChar(400)
+  image         String?         @db.VarChar(400)
   password      String?
   phone         String?         @db.VarChar(20)
   role          roles

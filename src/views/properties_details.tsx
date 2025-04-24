@@ -137,7 +137,9 @@ export default function PropertyDetailsPage() {
               ${Number(property.price).toLocaleString()}
             </div>
 
-            <p className="text-muted-foreground mb-2">{property.location}</p>
+            <p className="text-muted-foreground mb-2">
+              {property.city} / {property.neighborhood}
+            </p>
 
             <div className="flex flex-wrap gap-4 my-6">
               <div className="flex items-center">
