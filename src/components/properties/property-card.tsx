@@ -38,7 +38,7 @@ export function PropertyCard({ property }: PropertyCardProps) {
             {property.title}
           </h3>
           <p className="text-muted-foreground text-sm mb-2">
-            {property.location}
+            {property.city} / {property.neighborhood}
           </p>
           <p className="text-xl font-bold text-primary mb-3">
             ${property.price.toLocaleString()}

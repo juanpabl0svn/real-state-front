@@ -44,7 +44,8 @@ export default function PropertiesAdminPage() {
   const filteredProperties = properties.filter(
     (property) =>
       property.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      property.location.toLowerCase().includes(searchQuery.toLowerCase())
+      property.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      property.neighborhood.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   // Handle property deletion
@@ -153,7 +154,7 @@ export default function PropertiesAdminPage() {
                         {property.property_type}
                       </TableCell>
                       <TableCell className="hidden md:table-cell">
-                        {property.location}
+                        {property.city} / {property.neighborhood}
                       </TableCell>
                       <TableCell className="hidden md:table-cell">
                         ${property.price.toLocaleString()}

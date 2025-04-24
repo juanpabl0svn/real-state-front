@@ -129,7 +129,7 @@ export function PropertyTable({
                 <TableCell className="capitalize">
                   {property.property_type}
                 </TableCell>
-                <TableCell>{property.location}</TableCell>
+                <TableCell>{property.city} / {property.neighborhood}</TableCell>
                 <TableCell className="text-right">
                   {formatCurrency(property.price)}
                 </TableCell>
