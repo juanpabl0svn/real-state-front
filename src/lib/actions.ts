@@ -1,7 +1,7 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
-import type { IPropertyForm, Paginate, Property, PropertyTypes, ReturnTypeHandler, User } from "../types"
+import type { FilterOptions, IPropertyForm, Paginate, Property, PropertyTypes, ReturnTypeHandler, User } from "../types"
 
 import { auth } from "@/auth"
 import { perPage, prisma } from "@/prisma"
@@ -299,26 +299,22 @@ export async function registerUser(formData: {
 
 
 
-export async function getFilteredProperties(filter: {
-  status?: string
-  type?: PropertyTypes
-  minPrice?: number
-  maxPrice?: number
-}): Promise<Paginate<Property>> {
+export async function getFilteredProperties(filter: FilterOptions): Promise<Paginate<Property>> {
   try {
 
     const page = 1
 
+    const { minPrice, maxPrice, ...rest } = filter
 
     const properties = await prisma.properties.findMany({
       where: {
-        status: filter.status,
-        property_type: filter.type,
         price: {
-          gte: filter.minPrice,
-          lte: filter.maxPrice
+          gte: minPrice,
+          lte: maxPrice
         },
+        ...rest,
         is_approved: true,
+        photos: undefined, 
       },
       skip: (page - 1) * perPage,
       take: perPage

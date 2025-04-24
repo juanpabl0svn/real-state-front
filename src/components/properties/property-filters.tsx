@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { use, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useLocations } from "@/hooks/use-locations";
+import { NeighborhoodCombobox } from "../neighborhood-combobox";
+import { CityCombobox } from "../city-combobox";
 
 export function PropertyFilters() {
   const router = useRouter();
@@ -25,24 +28,29 @@ export function PropertyFilters() {
   );
   const [minPrice, setMinPrice] = useState(searchParams.get("minPrice") || "");
   const [maxPrice, setMaxPrice] = useState(searchParams.get("maxPrice") || "");
-  const [minBedrooms, setMinBedrooms] = useState(
-    searchParams.get("minBedrooms") || ""
+  const [currentCity, setCurrentCity] = useState(
+    searchParams.get("currentCity") || ""
   );
-  const [status, setStatus] = useState(
-    searchParams.get("status") || "available"
+
+  const [currentNeighborhood, setCurrentNeighborhood] = useState(
+    searchParams.get("currentNeighborhood") || ""
   );
+
+
+  const { cities, getNeighborhoods } = useLocations();
 
   // Apply filters
   const applyFilters = () => {
     const params = new URLSearchParams();
 
     if (propertyType && propertyType !== "all")
-      params.set("type", propertyType);
+      params.set("propertyType", propertyType);
     if (minPrice) params.set("minPrice", minPrice);
     if (maxPrice) params.set("maxPrice", maxPrice);
-    if (minBedrooms && minBedrooms !== "any")
-      params.set("minBedrooms", minBedrooms);
-    if (status && status !== "all") params.set("status", status);
+    if (currentCity && currentCity !== "any")
+      params.set("currentCity", currentCity);
+    if (currentNeighborhood && currentNeighborhood !== "any")
+      params.set("currentNeighborhood", currentNeighborhood);
 
     router.push(`/?${params.toString()}`);
   };
@@ -52,10 +60,14 @@ export function PropertyFilters() {
     setPropertyType("");
     setMinPrice("");
     setMaxPrice("");
-    setMinBedrooms("");
-    setStatus("available");
+    setCurrentCity("");
     router.push("/");
   };
+
+  const currentNeighborhoods = useMemo(
+    () => getNeighborhoods(currentCity),
+    [currentCity, getNeighborhoods]
+  );
 
   return (
     <Card>
@@ -103,41 +115,32 @@ export function PropertyFilters() {
 
         <div className="space-y-2">
           <Label htmlFor="bedrooms">Minimum Bedrooms</Label>
-          <Select value={minBedrooms} onValueChange={setMinBedrooms}>
+          <Select value={currentCity} onValueChange={setCurrentCity}>
             <SelectTrigger id="bedrooms">
               <SelectValue placeholder="Any" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="any">Any</SelectItem>
-              <SelectItem value="1">1+</SelectItem>
-              <SelectItem value="2">2+</SelectItem>
-              <SelectItem value="3">3+</SelectItem>
-              <SelectItem value="4">4+</SelectItem>
-              <SelectItem value="5">5+</SelectItem>
-            </SelectContent>
+            <SelectContent></SelectContent>
           </Select>
         </div>
 
+        <div>
+          <Label>City</Label>
+          <CityCombobox
+            cities={cities}
+            value={currentCity}
+            onSelect={setCurrentCity}
+          />
+        </div>
+
         <div className="space-y-2">
-          <Label>Status</Label>
-          <RadioGroup value={status} onValueChange={setStatus}>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="available" id="available" />
-              <Label htmlFor="available">Available</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="reserved" id="reserved" />
-              <Label htmlFor="reserved">Reserved</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="sold" id="sold" />
-              <Label htmlFor="sold">Sold</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="all" id="all" />
-              <Label htmlFor="all">All</Label>
-            </div>
-          </RadioGroup>
+          <Label>Neighborhood</Label>
+          <NeighborhoodCombobox
+            key={currentCity}
+            neighborhoods={currentNeighborhoods}
+            value={currentNeighborhood}
+            onSelect={setCurrentNeighborhood}
+            disabled={!currentCity}
+          />
         </div>
 
         <div className="flex flex-col gap-2">

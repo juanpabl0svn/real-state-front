@@ -22,6 +22,7 @@ import { useSession } from "next-auth/react";
 import ImageUploaderProfile from "./image-uploader-profile";
 import { updateProfile } from "@/lib/actions";
 import { auth } from "@/auth";
+import usePhone from "@/hooks/use-phone";
 
 const profileFormSchema = z.object({
   name: z.string().min(2, {
@@ -51,6 +52,8 @@ export function ProfileForm() {
     },
     mode: "onChange",
   });
+
+  usePhone();
 
   useEffect(() => {
     if (session?.data?.user) {
@@ -156,7 +159,8 @@ export function ProfileForm() {
                       <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
                         className="pl-10"
-                        placeholder="+57 300 123 4567"
+                        aria-label="phone"
+                        placeholder="3001231234"
                         {...field}
                       />
                     </div>

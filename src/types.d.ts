@@ -13,11 +13,13 @@ export type PropertyTypes = $Enums['PropertyType']
 export type PropertyStatus = $Enums['PropertyStatus']
 
 export interface FilterOptions {
-  type?: string
   minPrice?: number
   maxPrice?: number
   minBedrooms?: number
-  status?: string
+  property_type?: PropertyTypes
+  city?: string
+  neighborhood?: string
+  status?: PropertyStatus
 }
 
 

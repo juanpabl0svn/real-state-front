@@ -1,11 +1,8 @@
 import { PropertyList } from "@/components/properties/property-list";
 import { PropertyFilters } from "@/components/properties/property-filters";
 import { Suspense } from "react";
-import { auth } from "@/auth";
 
 export default async function HomePage() {
-
-  const session = await auth();
 
   return (
     <div className="container mx-auto py-8 px-4">

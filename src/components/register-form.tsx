@@ -28,6 +28,7 @@ import {
 } from "@/lib/zod";
 import { useAppStore } from "@/stores/app-store";
 import { toast } from "react-hot-toast";
+import usePhone from "@/hooks/use-phone";
 
 export function RegisterForm() {
   const router = useRouter();
@@ -40,6 +41,8 @@ export function RegisterForm() {
       otp: "",
     },
   });
+
+  usePhone();
 
   const form = useForm<UserFormSchema>({
     resolver: zodResolver(userSchema),
@@ -207,7 +210,11 @@ export function RegisterForm() {
                 <FormItem>
                   <FormLabel>Phone (optional)</FormLabel>
                   <FormControl>
-                    <Input placeholder="+1 (555) 123-4567" {...field} />
+                    <Input
+                      aria-label="phone"
+                      placeholder="3001231234"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

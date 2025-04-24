@@ -14,21 +14,23 @@ export function PropertyList() {
     // Create a function to fetch properties
     (async () => {
       // Get filter values from URL params
-      const type = searchParams.get("type") || undefined;
+      const property_type = searchParams.get("propertyType") || undefined;
       const minPrice = searchParams.get("minPrice")
         ? Number(searchParams.get("minPrice"))
         : undefined;
       const maxPrice = searchParams.get("maxPrice")
         ? Number(searchParams.get("maxPrice"))
         : undefined;
-      const status = searchParams.get("status") || undefined;
+      const city = searchParams.get("currentCity") || undefined;
+      const neighborhood = searchParams.get("currentNeighborhood") || undefined;
 
       // Get filtered properties
       const { data } = await getFilteredProperties({
-        type,
+        property_type,
         minPrice,
         maxPrice,
-        status,
+        city,
+        neighborhood,
       });
 
       setProperties(data);
