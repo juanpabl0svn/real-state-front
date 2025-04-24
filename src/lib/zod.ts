@@ -8,6 +8,22 @@ const password = (name: string) => z.string({ required_error: `${name} is requir
   .regex(/[\W_]/, `${name} must have at least one special character`)
   .regex(/[0-9]/, `${name} must have at least one number`)
 
+
+const name = z.string().min(2, {
+  message: "Name must be at least 2 characters.",
+})
+  .max(50, {
+    message: "Name must be at most 50 characters.",
+  })
+  .regex(/^[a-zA-Z\s]+$/, {
+    message: "Name can only contain letters and spaces.",
+  })
+
+
+const phone = z.string().regex(/^\d+$/, {
+  message: "Phone must be numbers only.",
+}).optional()
+
 export const signInSchema = z.object({
   email: z.string({ required_error: "Email is required" })
     .min(1, "Email is required")
@@ -16,23 +32,13 @@ export const signInSchema = z.object({
 })
 
 export const userSchema = z.object({
-  name: z.string().min(2, {
-    message: "Name must be at least 2 characters.",
-  })
-    .max(50, {
-      message: "Name must be at most 50 characters.",
-    })
-    .regex(/^[a-zA-Z\s]+$/, {
-      message: "Name can only contain letters and spaces.",
-    })
+  name
   ,
   email: z.string().email({
     message: "Please enter a valid email address.",
   }),
   password: password("Password"),
-  phone: z.string().regex(/^\d+$/, {
-    message: "Phone must be numbers only.",
-  }).optional(),
+  phone,
 });
 
 export type UserFormSchema = z.infer<typeof userSchema>
@@ -81,3 +87,12 @@ export const passwordFormSchema = z.object({
 
 
 export type PasswordFormValues = z.infer<typeof passwordFormSchema>;
+
+
+export const profileFormSchema = z.object({
+  name,
+  phone,
+});
+
+
+export type ProfileFormValues = z.infer<typeof profileFormSchema>;

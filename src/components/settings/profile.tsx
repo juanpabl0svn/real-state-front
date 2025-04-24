@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { set, z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -24,17 +23,7 @@ import { updateProfile } from "@/lib/actions";
 import { auth } from "@/auth";
 import usePhone from "@/hooks/use-phone";
 
-const profileFormSchema = z.object({
-  name: z.string().min(2, {
-    message: "El nombre debe tener al menos 2 caracteres.",
-  }),
-  email: z.string().email({
-    message: "Por favor ingresa un correo electrónico válido.",
-  }),
-  phone: z.string().optional(),
-});
-
-type ProfileFormValues = z.infer<typeof profileFormSchema>;
+import { profileFormSchema, ProfileFormValues } from "@/lib/zod";
 
 export function ProfileForm() {
   const session = useSession();
@@ -47,7 +36,6 @@ export function ProfileForm() {
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
       name: "",
-      email: "",
       phone: "",
     },
     mode: "onChange",
@@ -59,7 +47,6 @@ export function ProfileForm() {
     if (session?.data?.user) {
       form.reset({
         name: session.data.user.name,
-        email: session.data.user.email,
         phone: session.data.user.phone,
       });
       setImage([session.data.user.image || ""]);
@@ -117,27 +104,6 @@ export function ProfileForm() {
                     <Input
                       className="pl-10"
                       placeholder="Tu nombre"
-                      {...field}
-                    />
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Correo electrónico</FormLabel>
-                <FormControl>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      className="pl-10"
-                      placeholder="tu@ejemplo.com"
                       {...field}
                     />
                   </div>
