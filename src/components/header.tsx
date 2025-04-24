@@ -15,8 +15,9 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { useToast } from "@/hooks/use-toast";
+
 import { signOut, useSession } from "next-auth/react";
+import { toast } from "react-hot-toast";
 
 // This would typically come from your API
 interface Notification {
@@ -31,9 +32,10 @@ interface Notification {
 export default function Header() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { toast } = useToast();
 
   const { data } = useSession();
+
+  console.log(data);
 
   // Simulate fetching notifications
   useEffect(() => {
@@ -81,8 +83,7 @@ export default function Header() {
           : notification
       )
     );
-    toast({
-      title: "Notification marked as read",
+    toast.success("Notification marked as read", {
       duration: 2000,
     });
   };
@@ -91,8 +92,7 @@ export default function Header() {
     setNotifications(
       notifications.map((notification) => ({ ...notification, is_read: true }))
     );
-    toast({
-      title: "All notifications marked as read",
+    toast.success("Notification marked as read", {
       duration: 2000,
     });
   };
@@ -133,7 +133,12 @@ export default function Header() {
   };
 
   const navItems = [
-    { label: "Home", href: "/", icon: <Home className="h-4 w-4 mr-2" />, needsAuth: false },
+    {
+      label: "Home",
+      href: "/",
+      icon: <Home className="h-4 w-4 mr-2" />,
+      needsAuth: false,
+    },
     {
       label: "Mis propiedades",
       href: "/properties",
@@ -153,21 +158,21 @@ export default function Header() {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-6 ml-6">
             {navItems.map((item) => {
-
               if (item.needsAuth && !data?.user) {
-                return null;  
+                return null;
               }
-              
+
               return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="flex items-center text-sm font-medium transition-colors hover:text-primary"
-              >
-                {item.icon}
-                {item.label}
-              </Link>
-            )})}
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="flex items-center text-sm font-medium transition-colors hover:text-primary"
+                >
+                  {item.icon}
+                  {item.label}
+                </Link>
+              );
+            })}
           </nav>
         </div>
 
@@ -267,80 +272,32 @@ export default function Header() {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              {/* Settings */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <Settings className="h-5 w-5" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>Settings</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <Link href="/settings/profile" className="flex w-full">
-                      Profile
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Link href="/settings/account" className="flex w-full">
-                      Account
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Link
-                      href="/settings/notifications"
-                      className="flex w-full"
-                    >
-                      Notification Settings
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <Link
-                      onClick={async () => await signOut()}
-                      href="/"
-                      className="flex w-full"
-                    >
-                      Logout
-                    </Link>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-
               {/* User Profile */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className="rounded-full">
                     <Avatar className="h-8 w-8">
-                      <AvatarImage
-                        src="/placeholder.svg?height=32&width=32"
-                        alt="User"
-                      />
-                      <AvatarFallback>U</AvatarFallback>
+                      {data?.user?.image ? (
+                        <AvatarImage src={data.user.image} alt="User" />
+                      ) : (
+                        <AvatarFallback>
+                          {data?.user.name![0].toUpperCase()}
+                        </AvatarFallback>
+                      )}
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuLabel>{data.user.email}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem>
-                    <Link href="/profile" className="flex w-full">
+                    <Link href="/settings" className="flex w-full">
                       View Profile
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Link href="/settings" className="flex w-full">
-                      Settings
-                    </Link>
-                  </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem>
-                    <Link
-                      onClick={async () => await signOut()}
-                      href="/"
-                      className="flex w-full"
-                    >
+                    <Link href="/logout" className="flex w-full">
                       Logout
                     </Link>
                   </DropdownMenuItem>
@@ -381,16 +338,18 @@ export default function Header() {
             <div className="flex items-center justify-between pt-4 border-t">
               <div className="flex items-center space-x-4">
                 <Avatar className="h-8 w-8">
-                  <AvatarImage
-                    src="/placeholder.svg?height=32&width=32"
-                    alt="User"
-                  />
-                  <AvatarFallback>U</AvatarFallback>
+                  {data?.user?.image ? (
+                    <AvatarImage src={data.user.image} alt="User" />
+                  ) : (
+                    <AvatarFallback>
+                      {data?.user.name![0].toUpperCase()}
+                    </AvatarFallback>
+                  )}
                 </Avatar>
                 <div>
                   <p className="text-sm font-medium">User Name</p>
                   <p className="text-xs text-muted-foreground">
-                    user@example.com
+                    {data?.user.email}
                   </p>
                 </div>
               </div>

@@ -22,3 +22,18 @@ export function hashPassword(password: string): string {
   const hmacDigest = Base64.stringify(hmacSHA512(hashDigest, secret));
   return hmacDigest;
 }
+
+export function generateRandomCode(length: number = 6): string {
+  let code = "";
+  const characters = "0123456789";
+  for (let i = 0; i < length; i++) {
+    code += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return code;
+}
+
+export function generateExpirationDate(minutes: number = 10): Date {
+  const date = new Date();
+  date.setMinutes(date.getMinutes() + minutes);
+  return date;
+}

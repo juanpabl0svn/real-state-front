@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { registerUser, verifyOtp } from "@/lib/actions";
-import { toast } from "@/hooks/use-toast";
 import { signIn } from "next-auth/react";
 import { Separator } from "./ui/separator";
 import { Card, CardContent, CardHeader } from "./ui/card";
@@ -28,6 +27,7 @@ import {
   otpSchema,
 } from "@/lib/zod";
 import { useAppStore } from "@/stores/app-store";
+import { toast } from "react-hot-toast";
 
 export function RegisterForm() {
   const router = useRouter();
@@ -56,10 +56,11 @@ export function RegisterForm() {
     try {
       const user = await registerUser(values);
       if (user.error) throw new Error("User with this email already exists.");
-      toast({
-        title: "Registration successful",
-        description: "A code has been sent to your email for verification.",
-      });
+
+      toast.success(
+        "Registered successfully! Please check your email for the OTP."
+      );
+
       setSeeOtp(true);
       setData({
         email: values.email,
@@ -67,13 +68,12 @@ export function RegisterForm() {
       });
     } catch (error) {
       console.error("Registration error:", error);
-      toast({
-        title: "Registration failed",
-        description:
-          error instanceof Error
-            ? error.message
-            : "Something went wrong. Please try again.",
-      });
+
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Something went wrong. Please try again."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -86,20 +86,14 @@ export function RegisterForm() {
 
       if (otp.error) throw new Error(otp.message);
 
-      toast({
-        title: "OTP verified",
-        description: otp.message,
-      });
+      toast.success("Email verified successfully!");
       router.push("/login");
     } catch (error) {
-      toast({
-        title: "Verification failed",
-        description:
-          error instanceof Error
-            ? error.message
-            : "Something went wrong. Please try again.",
-        variant: "destructive",
-      });
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Invalid OTP. Please try again."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -123,8 +117,8 @@ export function RegisterForm() {
           <h2 className="text-2xl font-bold">Verify your email number</h2>
           <p className="text-muted-foreground">
             We have sent a verification code to your email{" "}
-            <span className="text-gray-400">{data?.email}</span> . Please
-            enter it below.
+            <span className="text-gray-400">{data?.email}</span> . Please enter
+            it below.
           </p>
           <Form {...formOtp}>
             <form

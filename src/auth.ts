@@ -65,6 +65,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 name: profile.name,
                 role: "user",
                 is_verified: true,
+                image: profile.image
               }
             });
 
@@ -102,12 +103,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             email: rest.email,
             phone: rest.phone,
             role: rest.role,
+            image: rest.image,
             is_verified: rest.is_verified,
             created_at: rest.created_at
           };
         } catch (err) {
           if (err instanceof Error) {
-            console.error("Instance of Error is " , err.message);
+            console.error("Instance of Error is ", err.message);
           }
           console.error(err);
           throw new Error("Failed to process profile");
@@ -154,7 +156,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           if (err instanceof ZodError) {
             console.error('Instance of ZodError is ', err.errors)
           } else if (err instanceof Error) {
-            console.error("Instance of Error is " , err.message)
+            console.error("Instance of Error is ", err.message)
           }
           console.error(err)
           throw new Error("Invalid credentials")
@@ -163,7 +165,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     })
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
+      if (trigger === "update" && session) {
+        token.name = session.user.name;
+        token.image = session.user.image;
+        token.email = session.user.email;
+        token.phone = session.user.phone;
+        token.role = session.user.role;
+        token.id = session.user.id;
+        token.user_id = session.user.user_id;
+      }
+
       if (user) {
         token.role = user.role;
         token.id = user.id;
@@ -171,6 +183,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.name = user.name;
         token.email = user.email;
         token.phone = user.phone;
+        token.image = user.image;
       }
       return token;
     },
@@ -181,6 +194,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       session.user.name = token.name as string;
       session.user.email = token.email as string;
       session.user.phone = token.phone as string;
+      session.user.image = token.image as string;
       return session;
     },
   },
@@ -189,4 +203,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     error: '/login', // Error code passed in query string as ?error=
   },
   secret: process.env.NEXTAUTH_SECRET,
+  session: {
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  }
 })

@@ -27,12 +27,20 @@ import type { IPropertyForm, Property, ReturnTypeHandler } from "@/types";
 import { propertySchema, PropertyFormSchema } from "@/lib/zod";
 
 import useNumber from "@/hooks/use-number";
-import { useEffect, useState } from "react";
-import { toast } from "@/hooks/use-toast";
+import { useEffect, useState, useMemo } from "react";
 import ImageUploader from "./image-uploader";
 import { useAppStore } from "@/stores/app-store";
 
+import { toast } from "react-hot-toast";
+
 import { getPhotosFromPropertyId } from "@/lib/actions";
+
+import { CityCombobox } from "@/components/city-combobox";
+import { NeighborhoodCombobox } from "@/components/neighborhood-combobox";
+import { useLocations } from "@/hooks/use-locations";
+import { useWatch } from 'react-hook-form';
+
+
 
 export function PropertyForm({
   property,
@@ -45,8 +53,17 @@ export function PropertyForm({
     [property?.main_photo!].filter(Boolean) as Array<File | string>
   );
   const [photos, setPhotos] = useState<(File | string)[]>([]);
-
   const { isLoading, setIsLoading } = useAppStore();
+
+  const locationData: Record<string, string[]> = {
+    Medellin: ['Laureles', 'Estadio', 'Poblado'],
+    cali: ['centro', 'suroccidente', 'norte'],
+    bogota: ['chapinero', 'usaquen', 'suba'],
+    barranquilla: ['barrio_abajo', 'barrio_arriba', 'barrio_centro'],
+  };
+  const { cities, getNeighborhoods } = useLocations(locationData);
+
+
 
   useNumber();
 
@@ -63,26 +80,37 @@ export function PropertyForm({
     resolver: zodResolver(propertySchema),
     defaultValues: property
       ? {
-          ...property,
-          price: property.price,
-          area: property.area,
-          description: property.description ?? "",
-          property_type: property.property_type,
-          bedrooms: property.bedrooms,
-          bathrooms: property.bathrooms,
-          parking_spaces: property.parking_spaces ?? 0,
-        }
+        ...property,
+        price: property.price,
+        area: property.area,
+        description: property.description ?? "",
+        property_type: property.property_type,
+        bedrooms: property.bedrooms,
+        bathrooms: property.bathrooms,
+        parking_spaces: property.parking_spaces ?? 0,
+      }
       : {
-          title: "",
-          description: "",
-          price: 0,
-          location: "",
-          area: 0,
-          bedrooms: 0,
-          bathrooms: 0,
-          parking_spaces: 0,
-        },
+        title: "",
+        description: "",
+        price: 0,
+        city: "",
+        neighborhood: "",
+        area: 0,
+        bedrooms: 0,
+        bathrooms: 0,
+        parking_spaces: 0,
+      },
   });
+
+  const cityValue = useWatch({
+    control: form.control,
+    name: "city"
+  });
+  const currentNeighborhoods = useMemo(() =>
+    getNeighborhoods(cityValue),
+    [cityValue, getNeighborhoods]
+  );
+
 
   const handleFormSubmit = async (values: PropertyFormSchema) => {
     setIsLoading(true);
@@ -104,21 +132,18 @@ export function PropertyForm({
         throw new Error(result.message);
       }
 
-      toast({
-        title: property ? "Property updated" : "Property created",
-        description: property
-          ? "Property has been updated successfully."
-          : "Property has been created successfully.",
-      });
+      toast.success(
+        property
+          ? "Property updated successfully!"
+          : "Property created successfully!"
+      );
     } catch (e) {
       console.error("Form submission error:", e);
-      toast({
-        title: "Error",
-        description:
-          e instanceof Error
-            ? e.message
-            : "Something went wrong. Please try again.",
-      });
+      toast.error(
+        e instanceof Error
+          ? e.message
+          : "An unexpected error occurred. Please try again."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -167,12 +192,36 @@ export function PropertyForm({
 
               <FormField
                 control={form.control}
-                name="location"
+                name="city"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Location*</FormLabel>
+                  <FormItem className="flex flex-col">
+                    <FormLabel>City*</FormLabel>
                     <FormControl>
-                      <Input placeholder="Property location" {...field} />
+                      <CityCombobox
+                        cities={cities}
+                        value={field.value}
+                        onSelect={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="neighborhood"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Neighborhood*</FormLabel>
+                    <FormControl>
+                      <NeighborhoodCombobox
+                        key={cityValue}
+                        neighborhoods={currentNeighborhoods}
+                        value={field.value}
+                        onSelect={field.onChange}
+                        disabled={!cityValue}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -334,8 +383,8 @@ export function PropertyForm({
                 {isLoading
                   ? "Saving..."
                   : property
-                  ? "Update Property"
-                  : "Create Property"}
+                    ? "Update Property"
+                    : "Create Property"}
               </Button>
             </div>
           </form>

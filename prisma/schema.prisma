@@ -37,15 +37,21 @@ model notifications {
   user       users     @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
 }
 
+enum otp_codes_type {
+  forgot_password
+  register
+}
+
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model otp_codes {
-  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  user_id    String    @db.Uuid
-  code       String    @db.Char(6)
-  expires_at DateTime? @default(dbgenerated("(CURRENT_TIMESTAMP + '00:30:00'::interval)")) @db.Timestamptz(6)
-  is_used    Boolean?  @default(false)
-  created_at DateTime? @default(now()) @db.Timestamptz(6)
-  user       users     @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
+  id         String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id    String         @db.Uuid
+  code       String         @db.Char(6)
+  expires_at DateTime?      @default(dbgenerated("(CURRENT_TIMESTAMP + '00:30:00'::interval)")) @db.Timestamptz(6)
+  type       otp_codes_type @default(register)
+  is_used    Boolean?       @default(false)
+  created_at DateTime?      @default(now()) @db.Timestamptz(6)
+  user       users          @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 enum property_type {
@@ -63,26 +69,27 @@ enum property_status {
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model properties {
-  id                String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  user_id           String              @db.Uuid
-  title             String              @db.VarChar(255)
-  description       String?
-  price             Int                 @db.Integer
-  location          String              @db.VarChar(255)
-  area              Int                 @db.Integer
-  bedrooms          Int                 @db.SmallInt
-  bathrooms         Int                 @db.SmallInt
-  parking_spaces    Int?                @default(0) @db.SmallInt
-  property_type     property_type
-  status            String?             @default("available") @db.VarChar(20)
-  is_deleted        Boolean             @default(false)
-  is_sold           Boolean             @default(false)
-  is_approved       Boolean             @default(false)
-  main_photo        String?             @db.VarChar(400)
-  created_at        DateTime?           @default(now()) @db.Timestamptz(6)
-  consultancies     consultancies[]
-  user              users               @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
-  photos photos[]
+  id             String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id        String          @db.Uuid
+  title          String          @db.VarChar(255)
+  description    String?
+  price          Int             @db.Integer
+  city           String          @db.VarChar(255)
+  neighborhood   String          @db.VarChar(255)
+  area           Int             @db.Integer
+  bedrooms       Int             @db.SmallInt
+  bathrooms      Int             @db.SmallInt
+  parking_spaces Int?            @default(0) @db.SmallInt
+  property_type  property_type
+  status         String?         @default("available") @db.VarChar(20)
+  is_deleted     Boolean         @default(false)
+  is_sold        Boolean         @default(false)
+  is_approved    Boolean         @default(false)
+  main_photo     String?         @db.VarChar(400)
+  created_at     DateTime?       @default(now()) @db.Timestamptz(6)
+  consultancies  consultancies[]
+  user           users           @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
+  photos         photos[]
 }
 
 enum social_media_providers_name {
@@ -100,7 +107,7 @@ model social_media_providers {
 
 model user_providers {
   id                     String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  user_id                String                 @db.Uuid
+  user_id                String                 @unique @db.Uuid
   provider_id            Int
   provider_user_id       String                 @db.VarChar(255)
   created_at             DateTime?              @default(now()) @db.Timestamptz(6)
@@ -117,25 +124,27 @@ enum roles {
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model users {
-  user_id        String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name           String           @db.VarChar(100)
-  email          String           @db.VarChar(100)
-  password       String?
-  phone          String?          @db.VarChar(20)
-  role           roles
-  is_verified    Boolean?         @default(false)
-  created_at     DateTime?        @default(now()) @db.Timestamptz(6)
-  consultancies  consultancies[]
-  notifications  notifications[]
-  otp_codes      otp_codes[]
-  properties     properties[]
-  user_providers user_providers[]
+  user_id       String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String          @db.VarChar(100)
+  email         String          @db.VarChar(100)
+  image         String?         @db.VarChar(400)
+  password      String?
+  phone         String?         @db.VarChar(20)
+  role          roles
+  is_verified   Boolean?        @default(false)
+  created_at    DateTime?       @default(now()) @db.Timestamptz(6)
+  consultancies consultancies[]
+  notifications notifications[]
+  otp_codes     otp_codes[]
+  properties    properties[]
+
+  user_providers user_providers?
 }
 
 model photos {
   id          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   property_id String     @db.Uuid
-  url   String     @db.VarChar(400)
+  url         String     @db.VarChar(400)
   created_at  DateTime?  @default(now()) @db.Timestamptz(6)
   properties  properties @relation(fields: [property_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
