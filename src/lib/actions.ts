@@ -316,7 +316,8 @@ export async function getFilteredProperties(filter: {
         price: {
           gte: filter.minPrice,
           lte: filter.maxPrice
-        }
+        },
+        is_approved: true
       },
       skip: (page - 1) * perPage,
       take: perPage
