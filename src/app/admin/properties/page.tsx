@@ -81,7 +81,6 @@ export default function PropertiesAdminPage() {
     try {
       const sent = await rejectProperty(id)
       if (sent) {
-        // Quitamos la propiedad rechazada de la lista
         setProperties((prev) => prev.filter((p) => p.id !== id))
       } else {
         console.error("No se pudo enviar el email de rechazo")
@@ -214,7 +213,7 @@ export default function PropertiesAdminPage() {
             <DialogHeader>
               <DialogTitle>Confirmar aprobación</DialogTitle>
               <DialogDescription>
-                ¿Estás seguro de que deseas aprobar la propiedad "{propertyToAccept.title}"?
+                ¿Estás seguro de que deseas aprobar la propiedad {propertyToAccept.title}?
               </DialogDescription>
             </DialogHeader>
             <DialogFooter className="flex justify-end gap-2 mt-4">
@@ -243,7 +242,7 @@ export default function PropertiesAdminPage() {
             <DialogHeader>
               <DialogTitle>Confirmar rechazo</DialogTitle>
               <DialogDescription>
-                ¿Estás seguro de que deseas rechazar la propiedad "{propertyToReject.title}"?
+                ¿Estás seguro de que deseas rechazar la propiedad {propertyToReject.title}?
               </DialogDescription>
             </DialogHeader>
             <DialogFooter className="flex justify-end gap-2 mt-4">
