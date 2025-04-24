@@ -7,7 +7,7 @@ import { auth } from "@/auth"
 import { perPage, prisma } from "@/prisma"
 import { userSchema, propertySchema } from "./zod"
 import { generateExpirationDate, generateRandomCode, hashPassword } from "./utils"
-import { sendOtpEmail } from "@/nodemailer"
+import { sendOtpEmail, sendPropertyApprovedEmail, sendPropertyRejectedEmail } from "@/nodemailer"
 import { deleteImageFromKey, uploadImageFromFile } from "@/S3"
 import { v4 as uuidv4 } from 'uuid';
 
@@ -317,7 +317,8 @@ export async function getFilteredProperties(filter: {
         price: {
           gte: filter.minPrice,
           lte: filter.maxPrice
-        }
+        },
+        is_approved: true,
       },
       skip: (page - 1) * perPage,
       take: perPage
@@ -695,5 +696,93 @@ export async function updateProfile(data: Partial<User>) {
       error: true,
       message: error instanceof Error ? error.message : "Failed to update profile"
     }
+  }
+}
+
+
+export async function getNotApprovedProperties(): Promise<Paginate<Property>> {
+  try {
+    const properties = await prisma.properties.findMany({
+      where: {
+        is_deleted: false,
+        is_approved: false,
+      },
+      orderBy: {
+        created_at: 'desc',
+      },
+    })
+
+    return {
+      data: properties,
+      page: 1,
+      per_page: properties.length,
+      total: properties.length,
+      total_pages: 1,
+    }
+  } catch (error) {
+    console.error('Error fetching unapproved properties:', error)
+    return {
+      data: [],
+      page: 1,
+      per_page: 0,
+      total: 0,
+      total_pages: 0,
+    }
+  }
+}
+
+
+export async function approveProperty(id: string): Promise<Property | null> {
+  try {
+    const updated = await prisma.properties.update({
+      where: { id },
+      data: { is_approved: true },
+      include: {
+        user: {
+          select: { email: true }
+        }
+      }
+    })
+
+    await sendPropertyApprovedEmail(
+      updated.user.email,
+      updated.title
+    )
+
+    const { user, ...property } = updated
+    return property as Property
+
+  } catch (error) {
+    console.error("Error approving property and sending email:", error)
+    return null
+  }
+}
+
+
+export async function rejectProperty(id: string): Promise<boolean> {
+  try {
+    const property = await prisma.properties.findUnique({
+      where: { id },
+      include: {
+        user: {
+          select: { email: true }
+        }
+      }
+    })
+
+    if (!property) {
+      console.error("Propiedad no encontrada:", id)
+      return false
+    }
+
+    await sendPropertyRejectedEmail(
+      property.user.email,
+      property.title
+    )
+
+    return true
+  } catch (error) {
+    console.error("Error enviando email de rechazo:", error)
+    return false
   }
 }

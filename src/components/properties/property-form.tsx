@@ -42,6 +42,7 @@ import { useWatch } from 'react-hook-form';
 
 
 
+
 export function PropertyForm({
   property,
   handleSubmit,
@@ -55,13 +56,7 @@ export function PropertyForm({
   const [photos, setPhotos] = useState<(File | string)[]>([]);
   const { isLoading, setIsLoading } = useAppStore();
 
-  const locationData: Record<string, string[]> = {
-    Medellin: ['Laureles', 'Estadio', 'Poblado'],
-    cali: ['centro', 'suroccidente', 'norte'],
-    bogota: ['chapinero', 'usaquen', 'suba'],
-    barranquilla: ['barrio_abajo', 'barrio_arriba', 'barrio_centro'],
-  };
-  const { cities, getNeighborhoods } = useLocations(locationData);
+  const { cities, getNeighborhoods } = useLocations();
 
 
 

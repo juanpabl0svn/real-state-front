@@ -1,11 +1,8 @@
 
 import { useMemo } from "react";
+import {locationData} from "@/lib/locations-data"
 
-interface LocationData {
-  [city: string]: string[];
-}
-
-export function useLocations(locationData: LocationData) {
+export function useLocations() {
   const cities = useMemo(() => Object.keys(locationData), [locationData]);
 
   const getNeighborhoods = useMemo(() => {
