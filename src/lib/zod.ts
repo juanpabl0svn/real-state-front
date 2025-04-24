@@ -20,9 +20,7 @@ const name = z.string().min(2, {
   })
 
 
-const phone = z.string().regex(/^\d+$/, {
-  message: "Phone must be numbers only.",
-}).optional()
+const phone = z.string().optional()
 
 export const signInSchema = z.object({
   email: z.string({ required_error: "Email is required" })
