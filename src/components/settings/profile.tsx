@@ -47,7 +47,7 @@ export function ProfileForm() {
     if (session?.data?.user) {
       form.reset({
         name: session.data.user.name,
-        phone: session.data.user.phone,
+        phone: session.data.user.phone ?? '',
       });
       setImage([session.data.user.image || ""]);
     }

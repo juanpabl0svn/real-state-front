@@ -208,9 +208,10 @@ export function RegisterForm() {
               name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Phone (optional)</FormLabel>
+                  <FormLabel>Phone</FormLabel>
                   <FormControl>
                     <Input
+                      type="tel"
                       aria-label="phone"
                       placeholder="3001231234"
                       {...field}
