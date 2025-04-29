@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Bell, Settings, Home, Search, Menu, X } from "lucide-react";
+import { Bell, Settings, Home, Search, Menu, X, UserCog } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -28,6 +28,7 @@ interface Notification {
   is_read: boolean;
   created_at: string;
 }
+
 
 export default function Header() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -138,13 +139,22 @@ export default function Header() {
       href: "/",
       icon: <Home className="h-4 w-4 mr-2" />,
       needsAuth: false,
+      adminOnly: false,
     },
     {
-      label: "Mis propiedades",
+      label: "My properties",
       href: "/properties",
       icon: <Search className="h-4 w-4 mr-2" />,
       needsAuth: true,
+      adminOnly: false,
     },
+    {
+      label: "Admin",
+      href: "/admin",
+      icon: <UserCog className="h-4 w-4 mr-2" />,
+      needsAuth: true,
+      adminOnly: true,
+    }
   ];
 
   return (
@@ -152,13 +162,13 @@ export default function Header() {
       <div className="px-8 flex h-16 items-center justify-between">
         <div className="flex items-center gap-2">
           <Link href="/" className="flex items-center space-x-2">
-            <span className="font-bold text-xl">Vivea</span>
+            <img src="/vivea.png" alt="logo" className="h-7" />
           </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-6 ml-6">
             {navItems.map((item) => {
-              if (item.needsAuth && !data?.user) {
+              if ((item.needsAuth && !data?.user) || (item.adminOnly && data?.user?.role !== "admin")) {
                 return null;
               }
 

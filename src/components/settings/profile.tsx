@@ -20,7 +20,6 @@ import { User, Mail, MapPin, Phone } from "lucide-react";
 import { useSession } from "next-auth/react";
 import ImageUploaderProfile from "./image-uploader-profile";
 import { updateProfile } from "@/lib/actions";
-import { auth } from "@/auth";
 import usePhone from "@/hooks/use-phone";
 
 import { profileFormSchema, ProfileFormValues } from "@/lib/zod";
@@ -47,7 +46,7 @@ export function ProfileForm() {
     if (session?.data?.user) {
       form.reset({
         name: session.data.user.name,
-        phone: session.data.user.phone ?? '',
+        phone: session.data.user.phone ?? "",
       });
       setImage([session.data.user.image || ""]);
     }
@@ -82,7 +81,7 @@ export function ProfileForm() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 flex justify-between ">
       <div className="flex flex-col gap-6 ">
         <ImageUploaderProfile files={image} setFiles={setImage} />
         <p className="text-muted-foreground text-xs">
@@ -92,28 +91,28 @@ export function ProfileForm() {
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Nombre completo</FormLabel>
-                <FormControl>
-                  <div className="relative">
-                    <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      className="pl-10"
-                      placeholder="Tu nombre"
-                      {...field}
-                    />
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div className="flex gap-5">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nombre completo</FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        className="pl-10 w-full"
+                        placeholder="Tu nombre"
+                        {...field}
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <FormField
               control={form.control}
               name="phone"
@@ -124,7 +123,8 @@ export function ProfileForm() {
                     <div className="relative">
                       <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
-                        className="pl-10"
+                        className="pl-10 w-full"
+                        type="tel"
                         aria-label="phone"
                         placeholder="3001231234"
                         {...field}
@@ -136,7 +136,8 @@ export function ProfileForm() {
               )}
             />
           </div>
-          <Button type="submit" disabled={isLoading}>
+
+          <Button type="submit" disabled={isLoading} className="inline-block">
             {isLoading ? "Guardando..." : "Guardar cambios"}
           </Button>
         </form>

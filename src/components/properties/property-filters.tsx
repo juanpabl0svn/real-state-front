@@ -72,7 +72,7 @@ export function PropertyFilters() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Filters</CardTitle>
+        <CardTitle className="text-2xl">Filters</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="space-y-2">
@@ -114,16 +114,6 @@ export function PropertyFilters() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="bedrooms">Minimum Bedrooms</Label>
-          <Select value={currentCity} onValueChange={setCurrentCity}>
-            <SelectTrigger id="bedrooms">
-              <SelectValue placeholder="Any" />
-            </SelectTrigger>
-            <SelectContent></SelectContent>
-          </Select>
-        </div>
-
-        <div>
           <Label>City</Label>
           <CityCombobox
             cities={cities}

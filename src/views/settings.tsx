@@ -11,7 +11,7 @@ import { PasswordForm } from "@/components/settings/password-form";
 
 export default function SettingsPage() {
   return (
-    <div className="container mx-auto py-10">
+    <div className="w-3/4 mx-auto py-10">
       <div className="mb-8">
         <h1 className="text-3xl font-bold">Configuración de Usuario</h1>
         <p className="text-muted-foreground">

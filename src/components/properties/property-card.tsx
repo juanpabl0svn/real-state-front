@@ -17,7 +17,7 @@ export function PropertyCard({ property }: PropertyCardProps) {
 
   return (
     <Link href={`/properties/${property.id}`}>
-      <Card className="overflow-hidden h-full transition-all hover:shadow-md">
+      <Card className="overflow-hidden h-full transition-all hover:shadow-md py-0">
         <div className="relative aspect-video overflow-hidden">
           <img
             src={
@@ -33,7 +33,7 @@ export function PropertyCard({ property }: PropertyCardProps) {
           </Badge>
         </div>
 
-        <CardContent className="p-4">
+        <CardContent className="px-4">
           <h3 className="text-lg font-semibold line-clamp-1 mb-1">
             {property.title}
           </h3>
@@ -68,7 +68,7 @@ export function PropertyCard({ property }: PropertyCardProps) {
           <div className="flex justify-between w-full">
             <span className="capitalize">{property.property_type}</span>
             <span>
-              Listed: {property?.created_at?.toLocaleDateString() ?? "N/A"}
+              Created: {property?.created_at?.toLocaleDateString() ?? "N/A"}
             </span>
           </div>
         </CardFooter>
