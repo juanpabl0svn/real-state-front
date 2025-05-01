@@ -37,7 +37,6 @@ export function ProfileForm() {
       name: "",
       phone: "",
     },
-    mode: "onChange",
   });
 
   usePhone();
@@ -55,7 +54,10 @@ export function ProfileForm() {
   async function onSubmit(data: ProfileFormValues) {
     setIsLoading(true);
     try {
+      console.log({data})
       const res = await updateProfile({ ...data, image: image[0] });
+
+      console.log({res})
 
       if (res.error) {
         throw new Error(res.message);
