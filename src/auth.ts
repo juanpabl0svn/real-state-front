@@ -16,6 +16,7 @@ declare module "next-auth" {
       phone?: string;
       is_verified?: boolean;
       user_id?: string;
+      has_provider?: boolean;
     } & DefaultSession["user"];
   }
 
@@ -26,6 +27,7 @@ declare module "next-auth" {
     email?: string | null;
     phone?: string | null;
     user_id?: string | null;
+    has_provider?: boolean;
   }
 }
 
@@ -105,7 +107,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             role: rest.role,
             image: rest.image,
             is_verified: rest.is_verified,
-            created_at: rest.created_at
+            created_at: rest.created_at,
+            has_provider: true,
           };
         } catch (err) {
           if (err instanceof Error) {
@@ -150,7 +153,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           } = user
 
 
-          return rest
+          return { ...rest, has_provider: false }
 
         } catch (err) {
           if (err instanceof ZodError) {
