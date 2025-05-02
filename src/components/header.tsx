@@ -150,7 +150,7 @@ export default function Header() {
     },
     {
       label: "Admin",
-      href: "/admin",
+      href: "/admin/properties",
       icon: <UserCog className="h-4 w-4 mr-2" />,
       needsAuth: true,
       adminOnly: true,

@@ -45,7 +45,7 @@ export type UserFormSchema = z.infer<typeof userSchema>
 export const propertySchema = z.object({
   title: z.string().min(3, { message: "Title must be at least 3 characters" }).max(255),
   description: z.string().optional(),
-  price: z.coerce.number().int().positive({ message: "Price must be a positive number" }).min(100000, { message: "Price must be at least 100,000 COP" }),
+  price: z.coerce.number().int().positive({ message: "Price must be a positive number" }).min(100000, { message: "Price must be at least 100,000 COP" }).max(9223372036854775807, { message: "Price cannot exceed 9,223,372,036,854,775,807 COP" }),
   city: z.string().min(3, { message: "Location must be at least 3 characters" }).max(255),
   neighborhood: z.string().min(3, { message: "Neighborhood must be at least 3 characters" }).max(255),
   area: z.coerce.number().int().positive({ message: "Area must be a positive number" }),
