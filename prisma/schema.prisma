@@ -7,24 +7,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum consultancies_status {
-  pending
-  accepted
-  rejected
+enum consultancy_type {
+  buyer
+  seller
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model consultancies {
-  id               String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  user_id          String               @db.Uuid
-  consultancy_type String               @db.VarChar(20)
-  property_id      String?              @db.Uuid
-  status           consultancies_status
-  request_date     DateTime?            @default(now()) @db.Timestamptz(6)
-  meeting_type     String               @db.VarChar(20)
-  meeting_date     DateTime             @db.Timestamptz(6)
-  properties       properties?          @relation(fields: [property_id], references: [id], onUpdate: NoAction)
-  user             users                @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
+  id               String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id          String           @db.Uuid
+  consultancy_type consultancy_type @default(buyer)
+  property_id      String?          @db.Uuid
+  observations     String?
+  meeting_date     DateTime         @db.Timestamptz(6)
+  properties       properties?      @relation(fields: [property_id], references: [id], onUpdate: NoAction)
+  user             users            @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model notifications {
@@ -120,9 +117,9 @@ model user_providers {
 enum roles {
   admin
   user
+  seller
 }
 
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model users {
   user_id       String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name          String          @db.VarChar(100)
@@ -130,7 +127,9 @@ model users {
   image         String?         @db.VarChar(400)
   password      String?
   phone         String?         @db.VarChar(20)
-  role          roles
+  role          roles           @default(user)
+  city          String?         @db.VarChar(255)
+  neighborhood  String?         @db.VarChar(255)
   is_verified   Boolean?        @default(false)
   created_at    DateTime?       @default(now()) @db.Timestamptz(6)
   consultancies consultancies[]
@@ -138,7 +137,8 @@ model users {
   otp_codes     otp_codes[]
   properties    properties[]
 
-  user_providers user_providers?
+  user_providers           user_providers?
+  users_seller_permissions users_seller_permissions[]
 }
 
 model photos {
@@ -147,4 +147,19 @@ model photos {
   url         String     @db.VarChar(400)
   created_at  DateTime?  @default(now()) @db.Timestamptz(6)
   properties  properties @relation(fields: [property_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+enum response {
+  accepted
+  rejected
+  waiting
+}
+
+model users_seller_permissions {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id    String    @db.Uuid
+  response   response  @default(waiting)
+  created_at DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at DateTime? @default(now()) @db.Timestamptz(6)
+  user       users     @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
 }
