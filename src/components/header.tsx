@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import { Bell, Settings, Home, Search, Menu, X, UserCog } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,6 +18,7 @@ import { cn } from "@/lib/utils";
 import { signOut, useSession } from "next-auth/react";
 import { toast } from "react-hot-toast";
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 
 // This would typically come from your API
 interface Notification {

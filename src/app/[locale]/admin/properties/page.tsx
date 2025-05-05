@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import { Search, Filter, Check, X, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,6 +34,7 @@ import {
   approveProperty,
   rejectProperty,
 } from "@/lib/actions";
+import { Link } from "@/i18n/navigation";
 
 export default function PropertiesAdminPage() {
   const [properties, setProperties] = useState<Property[]>([]);

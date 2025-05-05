@@ -20,6 +20,7 @@ import { Separator } from "@/components/ui/separator";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useAppStore } from "@/stores/app-store";
+import { Link } from "@/i18n/navigation";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -118,12 +119,12 @@ export default function LoginForm() {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="password">Contraseña</Label>
-              <a
+              <Link
                 href="/forgot-password"
                 className="text-xs text-primary hover:text-primary/90"
               >
                 ¿Olvidaste tu contraseña?
-              </a>
+              </Link>
             </div>
             <Input
               id="password"
@@ -190,9 +191,9 @@ export default function LoginForm() {
       <CardFooter className="flex justify-center">
         <p className="text-sm text-muted-foreground">
           ¿No tienes una cuenta?{" "}
-          <a href="/register" className="text-primary hover:text-primary/90">
+          <Link href="/register" className="text-primary hover:text-primary/90">
             Regístrate
-          </a>
+          </Link>
         </p>
       </CardFooter>
     </Card>

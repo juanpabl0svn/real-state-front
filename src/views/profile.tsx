@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import {
   Card,
   CardContent,

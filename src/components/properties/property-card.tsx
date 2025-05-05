@@ -1,8 +1,8 @@
-import Link from "next/link";
 import { BedDouble, Bath, Car, Ruler } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import type { Property } from "@/types";
+import { Link } from "@/i18n/navigation";
 
 interface PropertyCardProps {
   property: Property;
