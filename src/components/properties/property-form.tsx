@@ -38,10 +38,7 @@ import { getPhotosFromPropertyId } from "@/lib/actions";
 import { CityCombobox } from "@/components/city-combobox";
 import { NeighborhoodCombobox } from "@/components/neighborhood-combobox";
 import { useLocations } from "@/hooks/use-locations";
-import { useWatch } from 'react-hook-form';
-
-
-
+import { useWatch } from "react-hook-form";
 
 export function PropertyForm({
   property,
@@ -58,8 +55,6 @@ export function PropertyForm({
 
   const { cities, getNeighborhoods } = useLocations();
 
-
-
   useNumber();
 
   useEffect(() => {
@@ -75,37 +70,36 @@ export function PropertyForm({
     resolver: zodResolver(propertySchema),
     defaultValues: property
       ? {
-        ...property,
-        price: property.price,
-        area: property.area,
-        description: property.description ?? "",
-        property_type: property.property_type,
-        bedrooms: property.bedrooms,
-        bathrooms: property.bathrooms,
-        parking_spaces: property.parking_spaces ?? 0,
-      }
+          ...property,
+          price: Number(property.price),
+          area: property.area,
+          description: property.description ?? "",
+          property_type: property.property_type,
+          bedrooms: property.bedrooms,
+          bathrooms: property.bathrooms,
+          parking_spaces: property.parking_spaces ?? 0,
+        }
       : {
-        title: "",
-        description: "",
-        price: 0,
-        city: "",
-        neighborhood: "",
-        area: 0,
-        bedrooms: 0,
-        bathrooms: 0,
-        parking_spaces: 0,
-      },
+          title: "",
+          description: "",
+          price: 0,
+          city: "",
+          neighborhood: "",
+          area: 0,
+          bedrooms: 0,
+          bathrooms: 0,
+          parking_spaces: 0,
+        },
   });
 
   const cityValue = useWatch({
     control: form.control,
-    name: "city"
+    name: "city",
   });
-  const currentNeighborhoods = useMemo(() =>
-    getNeighborhoods(cityValue),
+  const currentNeighborhoods = useMemo(
+    () => getNeighborhoods(cityValue),
     [cityValue, getNeighborhoods]
   );
-
 
   const handleFormSubmit = async (values: PropertyFormSchema) => {
     setIsLoading(true);
@@ -121,7 +115,7 @@ export function PropertyForm({
         photos: photos as Array<File>,
       };
 
-      const result = await handleSubmit(data as IPropertyForm);
+      const result = await handleSubmit(data as unknown as IPropertyForm);
 
       if (result?.error) {
         throw new Error(result.message);
@@ -378,8 +372,8 @@ export function PropertyForm({
                 {isLoading
                   ? "Saving..."
                   : property
-                    ? "Update Property"
-                    : "Create Property"}
+                  ? "Update Property"
+                  : "Create Property"}
               </Button>
             </div>
           </form>

@@ -8,7 +8,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import type { Property } from "@/types";
 import { getPropertyById } from "@/lib/actions";
-import { useAppStore } from "@/stores/app-store";
 import { toast } from "react-hot-toast";
 
 export default function PropertyDetailsPage() {
