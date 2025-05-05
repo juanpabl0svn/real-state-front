@@ -1,10 +1,9 @@
 import type { NextConfig } from "next";
+import createNextIntlPlugin from 'next-intl/plugin';
+
+const withNextIntl = createNextIntlPlugin()
 
 const nextConfig: NextConfig = {
-  i18n: {
-    locales: ['en', 'es'],
-    defaultLocale: 'es',
-  },
   experimental: {
     serverActions: {
       bodySizeLimit: '5mb',
@@ -25,4 +24,4 @@ const nextConfig: NextConfig = {
   /* config options here */
 };
 
-export default nextConfig;
+export default withNextIntl(nextConfig);

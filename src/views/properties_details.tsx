@@ -1,14 +1,13 @@
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ArrowLeft, BedDouble, Bath, Car, Ruler, Home } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import type { Property } from "@/types";
 import { getPropertyById } from "@/lib/actions";
-import { useAppStore } from "@/stores/app-store";
 import { toast } from "react-hot-toast";
 
 export default function PropertyDetailsPage() {

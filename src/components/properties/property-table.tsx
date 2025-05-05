@@ -131,7 +131,7 @@ export function PropertyTable({
                 </TableCell>
                 <TableCell>{property.city} / {property.neighborhood}</TableCell>
                 <TableCell className="text-right">
-                  {formatCurrency(property.price)}
+                  {formatCurrency(Number(property.price))}
                 </TableCell>
                 <TableCell>
                   {getStatusBadge(property?.status ?? "No status")}

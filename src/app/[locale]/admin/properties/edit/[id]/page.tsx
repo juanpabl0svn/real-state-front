@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import type { Property } from "@/types";
 import { getPropertyById } from "@/lib/actions";
+import { Link } from "@/i18n/navigation";
 
 export default function EditPropertyPage() {
   const { id } = useParams();

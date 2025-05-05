@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import { Bell, Settings, Home, Search, Menu, X, UserCog } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,6 +17,8 @@ import { cn } from "@/lib/utils";
 
 import { signOut, useSession } from "next-auth/react";
 import { toast } from "react-hot-toast";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 
 // This would typically come from your API
 interface Notification {
@@ -29,14 +30,13 @@ interface Notification {
   created_at: string;
 }
 
-
 export default function Header() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const { data } = useSession();
 
-  console.log(data);
+  const t = useTranslations("header");
 
   // Simulate fetching notifications
   useEffect(() => {
@@ -135,7 +135,7 @@ export default function Header() {
 
   const navItems = [
     {
-      label: "Home",
+      label: t("home"),
       href: "/",
       icon: <Home className="h-4 w-4 mr-2" />,
       needsAuth: false,
@@ -154,7 +154,7 @@ export default function Header() {
       icon: <UserCog className="h-4 w-4 mr-2" />,
       needsAuth: true,
       adminOnly: true,
-    }
+    },
   ];
 
   return (
@@ -168,7 +168,10 @@ export default function Header() {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-6 ml-6">
             {navItems.map((item) => {
-              if ((item.needsAuth && !data?.user) || (item.adminOnly && data?.user?.role !== "admin")) {
+              if (
+                (item.needsAuth && !data?.user) ||
+                (item.adminOnly && data?.user?.role !== "admin")
+              ) {
                 return null;
               }
 
