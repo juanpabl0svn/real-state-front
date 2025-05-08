@@ -1,4 +1,5 @@
 import { auth } from "@/auth";
+import { sendNotification } from "@/lib/notifications";
 import { prisma } from "@/prisma";
 
 export async function GET() {
@@ -25,7 +26,6 @@ export async function GET() {
       Connection: "keep-alive",
     },
   });
-
 
 
 }
