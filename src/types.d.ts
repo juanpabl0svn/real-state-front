@@ -47,6 +47,8 @@ export interface AppStore {
   setData: (data: any | null) => void
   properties: Property[]
   setProperties: (properties: Property[]) => void
+  notifications: Notification[]
+  setNotifications: (notifications: Notification[] | ((prev: Notification[]) => Notification[])) => void
 }
 export type ReturnTypeHandler<T = any> =
   | { error: true; message: string; data?: never }
