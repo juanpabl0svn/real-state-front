@@ -1,7 +1,7 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
-import type { FilterOptions, IPropertyForm, Paginate, Property, PropertyTypes, ReturnTypeHandler, User } from "../types"
+import type { FilterOptions, IPropertyForm, Paginate, Property, ReturnTypeHandler, User } from "../types"
 
 import { auth } from "@/auth"
 import { perPage, prisma } from "@/prisma"

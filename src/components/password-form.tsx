@@ -19,11 +19,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Lock, AlertCircle, ArrowLeft } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 
-interface PasswordFormProps {
-  userId: string;
-}
-
-export default function PasswordForm({ userId }: PasswordFormProps) {
+export default function PasswordForm() {
   const router = useRouter();
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");

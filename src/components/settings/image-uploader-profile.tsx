@@ -2,7 +2,6 @@
 
 import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import { X } from "lucide-react";
 
 type Props = {
   files: Array<File | string>;
@@ -17,13 +16,6 @@ export default function ImageUploaderProfile({ files, setFiles }: Props) {
     },
     [files, setFiles]
   );
-
-  const removeImage = (index: number) => {
-    const newList = [...files];
-
-    newList.splice(index, 1);
-    setFiles(newList);
-  };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,

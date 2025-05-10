@@ -1,6 +1,5 @@
 import { auth } from "@/auth";
 import { NextRequest } from "next/server";
-import { Notification as INotification } from "@/types";
 import { CLIENTS } from "@/lib/notifications";
 
 export async function GET(req: NextRequest) {

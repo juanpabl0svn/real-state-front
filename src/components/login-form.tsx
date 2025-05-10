@@ -80,7 +80,8 @@ export default function LoginForm() {
 
     try {
       await signIn("google", { callbackUrl: "/" });
-    } catch (err) {
+    } catch (_err) {
+      console.error("Error signing in with Google:", _err);
       setError(
         "Este correo ya esta en uso y para ingresar digite sus credenciales"
       );
