@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Bell, Settings, Home, Search, Menu, X, UserCog } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,24 +13,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
 
-import { signOut, useSession } from "next-auth/react";
-import { toast } from "react-hot-toast";
+import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { useAppStore } from "@/stores/app-store";
 import Notifications from "./notifications";
-
-// This would typically come from your API
-interface Notification {
-  id: string;
-  user_id: string;
-  type: string;
-  data: any;
-  is_read: boolean;
-  created_at: string;
-}
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

@@ -37,7 +37,8 @@ export default function PropertyDetailsPage() {
             fetchedProperty.photos?.map((photo) => photo.url) ?? []
           );
         }
-      } catch (e) {
+      } catch (_e) {
+        console.error("Failed to fetch property details", _e);  
         toast.error("Failed to fetch property details. Redirecting to home.");
 
         setTimeout(() => {
@@ -47,7 +48,7 @@ export default function PropertyDetailsPage() {
         setIsLoading(false);
       }
     })();
-  }, [id, router]);
+  }, [id]);
 
   const switchImages = (index: number) => {
     const selectedPhoto = otherPhotos[index];

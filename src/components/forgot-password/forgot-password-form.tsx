@@ -17,9 +17,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
-  registerUser,
   restorePassword,
-  verifyOtp,
   verifyOtpPassword,
 } from "@/lib/actions";
 

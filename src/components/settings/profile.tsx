@@ -6,17 +6,15 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { toast } from "react-hot-toast";
 import { useEffect, useState } from "react";
-import { User, Mail, MapPin, Phone } from "lucide-react";
+import { User, Phone } from "lucide-react";
 import { useSession } from "next-auth/react";
 import ImageUploaderProfile from "./image-uploader-profile";
 import { updateProfile } from "@/lib/actions";

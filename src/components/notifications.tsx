@@ -26,54 +26,53 @@ const Messages = (
   const { type, data } = notification;
 
   if (type === "property_approved") {
-    return t("property_approved", {
+    return t("notifications.property_approved", {
       propertyId: data.property_id,
       propertyTitle: data.property_title,
     });
   }
   if (type === "property_rejected") {
-    return t("property_rejected", {
+    return t("notifications.property_rejected", {
       propertyId: data.property_id,
       propertyTitle: data.property_title,
       reason: data.reason,
     });
   }
   if (type === "consultancy_meeting_date_changed") {
-    return t("consultancy_meeting_date_changed", {
+    return t("notifications.consultancy_meeting_date_changed", {
       lastDate: data.last_date,
       newDate: data.new_date,
     });
   }
   if (type === "consultancy_created") {
-    return t("consultancy_created", {
+    return t("notifications.consultancy_created", {
       consultancyName: data.consultancy_id,
       date: data.date,
     });
   }
 };
 
-const getTimeAgo = (dateString: string) => {
-  const t = useTranslations("common");
+const getTimeAgo = (dateString: string, t: ReturnType<typeof useTranslations>) => {
 
   const date = new Date(dateString);
   const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
 
   let interval = seconds / 31536000;
-  if (interval > 1) return Math.floor(interval) + t("years_ago");
+  if (interval > 1) return <>{Math.floor(interval) + t("common.years_ago")}</>;
 
   interval = seconds / 2592000;
-  if (interval > 1) return Math.floor(interval) + t("months_ago");
+  if (interval > 1) return <>{Math.floor(interval) + t("common.months_ago")}</>;
 
   interval = seconds / 86400;
-  if (interval > 1) return Math.floor(interval) + t("days_ago");
+  if (interval > 1) return <>{Math.floor(interval) + t("common.days_ago")}</>;
 
   interval = seconds / 3600;
-  if (interval > 1) return Math.floor(interval) + t("hours_ago");
+  if (interval > 1) return <>{Math.floor(interval) + t("common.hours_ago")}</>;
 
   interval = seconds / 60;
-  if (interval > 1) return Math.floor(interval) + t("minutes_ago");
+  if (interval > 1) return <>{Math.floor(interval) + t("common.minutes_ago")}</>;
 
-  return Math.floor(seconds) + t("seconds_ago");
+  return <>{Math.floor(seconds) + t("seconds_ago")}</>;
 };
 
 const getNotificationIcon: Record<NotificationTypes, ReactElement> = {
@@ -92,13 +91,14 @@ const Message = ({
   notification: Notification;
   markAsRead: (id: string) => void;
 }) => {
-  const t = useTranslations("notifications");
+  const t = useTranslations();
+
 
   const Text = () => Messages(notification, t);
 
   const Icon = () => getNotificationIcon[notification.type];
 
-  const Timer = () => getTimeAgo(notification.created_at);
+  const Timer = () => getTimeAgo(notification.created_at, t);
 
   return (
     <div className="flex items-start gap-3 w-full">
@@ -120,7 +120,7 @@ const Message = ({
           className="h-6 text-xs"
           onClick={() => markAsRead(notification.id)}
         >
-          {t("mark_as_read")}
+          {t("notifications.mark_as_read")}
         </Button>
       )}
     </div>
