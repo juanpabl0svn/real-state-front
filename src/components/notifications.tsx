@@ -72,7 +72,7 @@ const getTimeAgo = (dateString: string, t: ReturnType<typeof useTranslations>) =
   interval = seconds / 60;
   if (interval > 1) return <>{Math.floor(interval) + t("common.minutes_ago")}</>;
 
-  return <>{Math.floor(seconds) + t("seconds_ago")}</>;
+  return <>{Math.floor(seconds) + t("common.seconds_ago")}</>;
 };
 
 const getNotificationIcon: Record<NotificationTypes, ReactElement> = {
