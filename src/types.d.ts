@@ -6,11 +6,13 @@ export type Property = Prisma.propertiesGetPayload<{}> & { photos?: Photos[] }
 
 export type User = Prisma.UserGetPayload<{}>
 
-export type Notification = Prisma.NotificationGetPayload<{}>
+export type INotification = Prisma.NotificationGetPayload<{}>
 
 export type PropertyTypes = $Enums['PropertyType']
 
 export type PropertyStatus = $Enums['PropertyStatus']
+
+export type NotificationTypes = $Enums['NotificationType']
 
 export interface FilterOptions {
   minPrice?: number
@@ -21,7 +23,40 @@ export interface FilterOptions {
   neighborhood?: string
   status?: PropertyStatus
 }
-
+export type Notification = Omit<INotification, 'data' | 'type'> & (
+  | {
+    type: 'property_approved'
+    data: {
+      property_id: string
+      property_title: string
+    }
+  }
+  | {
+    type: 'property_rejected'
+    data: {
+      property_id: string
+      property_title: string
+      reason: string
+    }
+  }
+  | {
+    type: 'consultancy_meeting_date_changed'
+    data: {
+      consultancy_id: string
+      consultancy_name: string
+      new_date: string
+      last_date: string
+    }
+  }
+  | {
+    type: 'consultancy_created'
+    data: {
+      consultancy_id: string
+      consultancy_name: string
+      date: string
+    }
+  }
+);
 
 export interface Paginate<T> {
   data: T[]

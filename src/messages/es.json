@@ -1,5 +1,35 @@
 {
   "header": {
-    "home": "Inicio"
+    "home": "Inicio",
+    "my_properties": "Mis Propiedades"
+  },
+  "notifications": {
+    "property_approved": "La propiedad {propertyTitle} ha sido aprobada.",
+    "property_rejected": "La propiedad {propertyTitle} ha sido rechazada por la razón: {reason}.",
+    "consultancy_meeting_date_changed": "La reunión de consultoría que era {lastDate} ha sido cambiada a {newDate}.",
+    "consultancy_created": "La consultoría para {date} ha sido creada.",
+    "mark_as_read": "Marcar como leído"
+  },
+  "common": {
+    "yes": "Sí",
+    "no": "No",
+    "ok": "OK",
+    "cancel": "Cancelar",
+    "close": "Cerrar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "add": "Agregar",
+    "update": "Actualizar",
+    "search": "Buscar",
+    "clear": "Limpiar",
+    "select": "Seleccionar",
+    "deselect": "Deseleccionar",
+    "seconds_ago": " segundo(s) atrás",
+    "minutes_ago": " minuto(s) atrás",
+    "hours_ago": " hora(s) atrás",
+    "days_ago": " día(s) atrás",
+    "months_ago": " mese(s) atrás",
+    "years_ago": " año(s) atrás"
   }
 }

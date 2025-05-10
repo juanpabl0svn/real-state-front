@@ -52,7 +52,7 @@ export default function Header() {
       adminOnly: false,
     },
     {
-      label: "My properties",
+      label: t("my_properties"),
       href: "/properties",
       icon: <Search className="h-4 w-4 mr-2" />,
       needsAuth: true,
