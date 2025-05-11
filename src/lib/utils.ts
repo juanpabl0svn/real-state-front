@@ -8,6 +8,8 @@ export const secret = process.env.AUTH_SECRET as string
 
 export const API_URL = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL as string
 
+export const LANGS = ['es', 'en']
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }

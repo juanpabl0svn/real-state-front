@@ -31,5 +31,9 @@
     "days_ago": " día(s) atrás",
     "months_ago": " mese(s) atrás",
     "years_ago": " año(s) atrás"
+  },
+  "locale_switcher": {
+    "label": "Cambiar idioma",
+    "locale": "{locale, select, en {🇺🇸 Ingles} es {🇪🇸 Español} other {Unknown}}"
   }
 }
