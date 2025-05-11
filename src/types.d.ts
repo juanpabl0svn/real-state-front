@@ -23,12 +23,13 @@ export interface FilterOptions {
   neighborhood?: string
   status?: PropertyStatus
 }
-export type Notification = Omit<INotification, 'data' | 'type'> & (
+
+export type NotificationTypeVariants = (
   | {
     type: 'property_approved'
     data: {
       property_id: string
-      property_title: string
+    property_title: string
     }
   }
   | {
@@ -57,6 +58,8 @@ export type Notification = Omit<INotification, 'data' | 'type'> & (
     }
   }
 );
+
+export type Notification = Omit<INotification, 'data' | 'type'> & NotificationTypeVariants
 
 export interface Paginate<T> {
   data: T[]

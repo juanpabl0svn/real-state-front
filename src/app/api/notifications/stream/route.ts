@@ -1,6 +1,10 @@
 import { auth } from "@/auth";
+import { secret } from "@/lib/utils";
+import { prisma } from "@/prisma";
 import { NextRequest } from "next/server";
-import { CLIENTS } from "@/lib/notifications";
+
+export const CLIENTS = new Map<string, (data: any) => void>();
+
 
 export async function GET(req: NextRequest) {
 
@@ -40,3 +44,41 @@ export async function GET(req: NextRequest) {
   });
 }
 
+
+
+export async function POST(req: Request) {
+
+  const token = req.headers.get("Authorization")?.split(" ")[1];
+
+  if (!token || token !== secret) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
+  const body = await req.json();
+
+  const userId = body.user_id;
+
+  const notification = await prisma.notifications.create({
+    data: {
+      ...body,
+    },
+  })
+
+  if (CLIENTS.has(userId)) {
+    const client = CLIENTS.get(userId);
+    if (client) {
+      client(JSON.stringify(notification));
+    }
+  }
+
+  return new Response(JSON.stringify(notification), {
+    headers: {
+      "Content-Type": "application/json",
+      "Cache-Control": "no-cache",
+      Connection: "keep-alive",
+    },
+  });
+}
+
+
+export const dynamic = "force-dynamic";

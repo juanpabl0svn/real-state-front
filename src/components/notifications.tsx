@@ -52,8 +52,10 @@ const Messages = (
   }
 };
 
-const getTimeAgo = (dateString: string, t: ReturnType<typeof useTranslations>) => {
-
+const getTimeAgo = (
+  dateString: string,
+  t: ReturnType<typeof useTranslations>
+) => {
   const date = new Date(dateString);
   const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
 
@@ -70,7 +72,8 @@ const getTimeAgo = (dateString: string, t: ReturnType<typeof useTranslations>) =
   if (interval > 1) return <>{Math.floor(interval) + t("common.hours_ago")}</>;
 
   interval = seconds / 60;
-  if (interval > 1) return <>{Math.floor(interval) + t("common.minutes_ago")}</>;
+  if (interval > 1)
+    return <>{Math.floor(interval) + t("common.minutes_ago")}</>;
 
   return <>{Math.floor(seconds) + t("common.seconds_ago")}</>;
 };
@@ -92,7 +95,6 @@ const Message = ({
   markAsRead: (id: string) => void;
 }) => {
   const t = useTranslations();
-
 
   const Text = () => Messages(notification, t);
 
@@ -132,60 +134,15 @@ export default function Notifications() {
 
   useEffect(() => {
     (async () => {
-      // const res = await fetch("/api/notifications", {
-      //   method: "GET",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //     Accept: "application/json",
-      //   },
-      // });
-      // const data = await res.json();
-      setNotifications([
-        {
-          ids: "0",
-          type: "property_approved",
-          data: {
-            property_id: "0",
-            property_title: "Test Property",
-          },
-          created_at: new Date().toISOString(),
-          is_read: false,
+      const res = await fetch("/api/notifications", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
         },
-        {
-          ids: "1",
-          type: "property_rejected",
-          data: {
-            property_id: "1",
-            property_title: "Test Property 2",
-            reason: "Test reason",
-          },
-          created_at: new Date().toISOString(),
-          is_read: false,
-        },
-        {
-          ids: "2",
-          type: "consultancy_meeting_date_changed",
-          data: {
-            consultancy_id: "2",
-            consultancy_name: "Test Consultancy",
-            new_date: new Date().toISOString(),
-            last_date: new Date().toISOString(),
-          },
-          created_at: new Date().toISOString(),
-          is_read: false,
-        },
-        {
-          ids: "3",
-          type: "consultancy_created",
-          data: {
-            consultancy_id: "3",
-            consultancy_name: "Test Consultancy 2",
-            date: new Date().toISOString(),
-          },
-          created_at: new Date().toISOString(),
-          is_read: false,
-        },
-      ]);
+      });
+      const data = await res.json();
+      setNotifications(data);
     })();
   }, []);
 
@@ -193,9 +150,14 @@ export default function Notifications() {
     const eventSource = new EventSource("/api/notifications/stream");
 
     eventSource.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      if (!data) return;
-      setNotifications((prev) => [data, ...prev]);
+      try {
+        let data = JSON.parse(event.data);
+        if (!data) return;
+        data = JSON.parse(data);
+        setNotifications((prev) => [data, ...prev]);
+      } catch (error) {
+        console.error("Failed to parse notification data:", error);
+      }
     };
 
     return () => {

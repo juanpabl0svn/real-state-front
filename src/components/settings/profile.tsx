@@ -52,10 +52,7 @@ export function ProfileForm() {
   async function onSubmit(data: ProfileFormValues) {
     setIsLoading(true);
     try {
-      console.log({data})
       const res = await updateProfile({ ...data, image: image[0] });
-
-      console.log({res})
 
       if (res.error) {
         throw new Error(res.message);
@@ -68,7 +65,6 @@ export function ProfileForm() {
         },
       });
 
-      console.log("Perfil actualizado:", res.data, session.data?.user);
       toast.success("Perfil actualizado con éxito.");
     } catch (error) {
       console.error("Error al actualizar el perfil:", error);
