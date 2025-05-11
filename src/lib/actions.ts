@@ -10,6 +10,7 @@ import { generateExpirationDate, generateRandomCode, hashPassword } from "./util
 import { sendOtpEmail, sendPropertyApprovedEmail, sendPropertyRejectedEmail } from "@/nodemailer"
 import { deleteImageFromKey, uploadImageFromFile } from "@/S3"
 import { v4 as uuidv4 } from 'uuid';
+import { sendNotification } from "./notifications"
 
 
 
@@ -314,7 +315,7 @@ export async function getFilteredProperties(filter: FilterOptions): Promise<Pagi
         },
         ...rest,
         is_approved: true,
-        photos: undefined, 
+        photos: undefined,
       },
       skip: (page - 1) * perPage,
       take: perPage
@@ -745,6 +746,8 @@ export async function approveProperty(id: string): Promise<Property | null> {
       updated.title
     )
 
+    await sendNotification(updated.user_id, { type: 'property_approved', data: { property_id: updated.id, property_title: updated.title } })
+
     const { user, ...property } = updated
     return property as Property
 
@@ -776,6 +779,8 @@ export async function rejectProperty(id: string, message: string): Promise<boole
       property.title,
       message
     )
+
+    await sendNotification(property.user_id, { type: 'property_rejected', data: { property_id: property.id, property_title: property.title, reason: message } })
 
     return true
   } catch (error) {

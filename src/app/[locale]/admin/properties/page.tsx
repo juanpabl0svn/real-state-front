@@ -53,7 +53,6 @@ export default function PropertiesAdminPage() {
     (async () => {
       const { data } = await getNotApprovedProperties();
       setProperties(data);
-      console.log(data);
     })();
   }, []);
 

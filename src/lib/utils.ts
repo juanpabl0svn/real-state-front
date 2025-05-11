@@ -4,7 +4,9 @@ import sha256 from 'crypto-js/sha256';
 import hmacSHA512 from 'crypto-js/hmac-sha512';
 import Base64 from 'crypto-js/enc-base64'
 
-const secret = process.env.AUTH_SECRET as string
+export const secret = process.env.AUTH_SECRET as string
+
+export const API_URL = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL as string
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
