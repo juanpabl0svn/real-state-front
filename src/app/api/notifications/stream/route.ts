@@ -3,7 +3,7 @@ import { secret } from "@/lib/utils";
 import { prisma } from "@/prisma";
 import { NextRequest } from "next/server";
 
-export const CLIENTS = new Map<string, (data: any) => void>();
+const CLIENTS = new Map<string, (data: any) => void>();
 
 
 export async function GET(req: NextRequest) {
