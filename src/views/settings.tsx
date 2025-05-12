@@ -10,12 +10,37 @@ import { ProfileForm } from "@/components/settings/profile";
 import { PasswordForm } from "@/components/settings/password-form";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import {
+  askForPermissionSeller,
+  getUserSellerPermissionResponse,
+} from "@/lib/actions";
+import toast from "react-hot-toast";
 
 export default function SettingsPage() {
   const session = useSession();
 
   const [petitionPending, setPetitionPending] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      const response = await getUserSellerPermissionResponse();
+      if (response.error) return;
+      if (!response.data) {
+        setPetitionPending(false);
+        return;
+      }
+      setPetitionPending(response.data.response == "waiting");
+    })();
+  }, []);
+
+  const askForPermission = async () => {
+    setPetitionPending(true);
+    await askForPermissionSeller();
+    toast.success(
+      "Tu solicitud ha sido enviada, por favor espera la respuesta del administrador"
+    );
+  };
 
   const text = petitionPending
     ? "Estas en revision para ser vendedor"
@@ -44,7 +69,11 @@ export default function SettingsPage() {
                 Actualiza tu información personal y detalles de contacto
                 <br />
                 {session.data?.user?.role !== "seller" && (
-                  <Button disabled={petitionPending} className="mt-4">
+                  <Button
+                    disabled={petitionPending}
+                    onClick={askForPermission}
+                    className="mt-4"
+                  >
                     {text}
                   </Button>
                 )}

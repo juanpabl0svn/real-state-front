@@ -38,21 +38,21 @@ export default function Header() {
       href: "/",
       icon: <Home className="h-4 w-4 mr-2" />,
       needsAuth: false,
-      adminOnly: false,
+      roles: [],
     },
     {
       label: t("my_properties"),
       href: "/properties",
       icon: <Search className="h-4 w-4 mr-2" />,
       needsAuth: true,
-      adminOnly: false,
+      roles: ["admin", "seller"],
     },
     {
       label: "Admin",
       href: "/admin/properties",
       icon: <UserCog className="h-4 w-4 mr-2" />,
       needsAuth: true,
-      adminOnly: true,
+      roles: ["admin"],
     },
   ];
 
@@ -69,7 +69,8 @@ export default function Header() {
             {navItems.map((item) => {
               if (
                 (item.needsAuth && !data?.user) ||
-                (item.adminOnly && data?.user?.role !== "admin")
+                (!item.roles.includes(data?.user?.role!) &&
+                  item.roles.length > 0)
               ) {
                 return null;
               }

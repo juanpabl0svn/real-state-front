@@ -453,7 +453,8 @@ export async function verifyOtpPassword(email: string, code: string, newPassword
           user_id: user.user_id
         },
         data: {
-          password: hashPassword(newPassword)
+          password: hashPassword(newPassword),
+          updated_at: new Date()
         }
       }),
       prisma.otp_codes.update({
@@ -563,7 +564,8 @@ export async function verifyOtp(user_id: string, code: string) {
           user_id: user_id
         },
         data: {
-          is_verified: true
+          is_verified: true,
+          updated_at: new Date()
         }
       })
     ])
@@ -631,7 +633,8 @@ export async function changePassword(currentPassword: string, newPassword: strin
         user_id: session.user.user_id
       },
       data: {
-        password: hashPassword(newPassword)
+        password: hashPassword(newPassword),
+        updated_at: new Date()
       }
     })
 
@@ -675,6 +678,8 @@ export async function updateProfile(data: Partial<User>) {
 
       data.image = uploadResult.data
     }
+
+    data.updated_at = new Date()
 
     const updatedUser = await prisma.users.update({
       where: {
@@ -788,3 +793,87 @@ export async function rejectProperty(id: string, message: string): Promise<boole
     return false
   }
 }
+
+
+export async function getUserSellerPermissionResponse() {
+  try {
+    const session = await auth()
+
+    if (!session?.user) {
+      throw new Error("User not authenticated")
+    }
+
+    const permission = await prisma.users_seller_permissions.findFirst({
+      where: {
+        user_id: session.user.user_id
+      }
+    })
+
+    return { error: false, message: "Solicitud enviada correctamente", data: permission }
+  } catch (error) {
+    console.error("Error fetching seller permission response:", error)
+    return {
+      error: true,
+      message: error instanceof Error ? error.message : "Failed to fetch seller permission response"
+    }
+  }
+}
+
+
+
+export async function askForPermissionSeller() {
+  try {
+    const session = await auth()
+
+    if (!session?.user) {
+      throw new Error("User not authenticated")
+    }
+
+    const userId = session.user.user_id as string
+
+    await prisma.users_seller_permissions.upsert({
+      where: {
+        user_id: userId
+      },
+      update: {
+        response: 'waiting',
+        updated_at: new Date()
+      },
+      create: {
+        user_id: userId,
+      }
+    })
+
+
+    return { error: false, message: "Solicitud enviada correctamente" }
+  } catch (error) {
+    console.error("Error sending seller request:", error)
+    return {
+      error: true,
+      message: error instanceof Error ? error.message : "Failed to send seller request"
+    }
+  }
+}
+
+
+export async function grantPermissionSeller(userId: string) {
+  try {
+    await prisma.users.update({
+      where: {
+        user_id: userId
+      },
+      data: {
+        role: 'seller',
+        updated_at: new Date()
+      }
+    })
+
+    return { error: false, message: "Permiso concedido correctamente" }
+  } catch (error) {
+    console.error("Error granting seller permission:", error)
+    return {
+      error: true,
+      message: error instanceof Error ? error.message : "Failed to grant seller permission"
+    }
+  }
+} 
