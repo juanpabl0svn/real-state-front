@@ -8,8 +8,19 @@ import {
 } from "@/components/ui/card";
 import { ProfileForm } from "@/components/settings/profile";
 import { PasswordForm } from "@/components/settings/password-form";
+import { useSession } from "next-auth/react";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 export default function SettingsPage() {
+  const session = useSession();
+
+  const [petitionPending, setPetitionPending] = useState(true);
+
+  const text = petitionPending
+    ? "Estas en revision para ser vendedor"
+    : "Solicitar ser vendedor";
+
   return (
     <div className="w-3/4 mx-auto py-10">
       <div className="mb-8">
@@ -31,6 +42,12 @@ export default function SettingsPage() {
               <CardTitle>Información Personal</CardTitle>
               <CardDescription>
                 Actualiza tu información personal y detalles de contacto
+                <br />
+                {session.data?.user?.role !== "seller" && (
+                  <Button disabled={petitionPending} className="mt-4">
+                    {text}
+                  </Button>
+                )}
               </CardDescription>
             </CardHeader>
             <CardContent>
