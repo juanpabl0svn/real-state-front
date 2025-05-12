@@ -188,7 +188,7 @@ export default function AdminUsers() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => handleAcceptClick(permission.user)}
+                          onClick={() => handleAcceptClick(permission)}
                           className="h-8 w-8 text-green-500 hover:text-green-700"
                         >
                           <Check className="h-4 w-4" />
@@ -196,7 +196,7 @@ export default function AdminUsers() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => handleRejectClick(permission.user)}
+                          onClick={() => handleRejectClick(permission)}
                           className="h-8 w-8 text-red-500 hover:text-red-700"
                         >
                           <X className="h-4 w-4" />

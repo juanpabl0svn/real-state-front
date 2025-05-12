@@ -93,6 +93,12 @@ const getNotificationIcon: Record<NotificationTypes, ReactElement> = {
     <div className="h-2 w-2 rounded-full bg-yellow-500" />
   ),
   consultancy_created: <div className="h-2 w-2 rounded-full bg-blue-500" />,
+  permission_seller_rejected: (
+    <div className="h-2 w-2 rounded-full bg-red-500" />
+  ),
+  permission_seller_approved: (
+    <div className="h-2 w-2 rounded-full bg-green-500" />
+  ),
 };
 
 const Message = ({
