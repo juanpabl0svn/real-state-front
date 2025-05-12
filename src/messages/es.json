@@ -8,6 +8,8 @@
     "property_rejected": "La propiedad {propertyTitle} ha sido rechazada por la razón: {reason}.",
     "consultancy_meeting_date_changed": "La reunión de consultoría que era {lastDate} ha sido cambiada a {newDate}.",
     "consultancy_created": "La consultoría para {date} ha sido creada.",
+    "permission_seller_approved": "¡Felicidades! El permiso para el vendedor ha sido aprobado.",
+    "permission_seller_rejected": "El permiso para el vendedor ha sido rechazado por: {reason}.",
     "mark_as_read": "Marcar como leído"
   },
   "common": {
