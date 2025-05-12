@@ -50,6 +50,14 @@ const Messages = (
       date: data.date,
     });
   }
+  if (type === "permission_seller_rejected") {
+    return t("notifications.permission_seller_rejected", {
+      reason: data.reason,
+    });
+  }
+  if (type === "permission_seller_approved") {
+    return t("notifications.permission_seller_approved");
+  }
 };
 
 const getTimeAgo = (

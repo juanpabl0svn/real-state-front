@@ -14,6 +14,8 @@ export type PropertyStatus = $Enums['PropertyStatus']
 
 export type NotificationTypes = $Enums['NotificationType']
 
+export type UserSellerPermissions = Prisma.users_seller_permissionsGetPayload<{}> & { user: User }
+
 export interface FilterOptions {
   minPrice?: number
   maxPrice?: number
@@ -29,7 +31,7 @@ export type NotificationTypeVariants = (
     type: 'property_approved'
     data: {
       property_id: string
-    property_title: string
+      property_title: string
     }
   }
   | {
@@ -55,6 +57,15 @@ export type NotificationTypeVariants = (
       consultancy_id: string
       consultancy_name: string
       date: string
+    }
+  } | {
+    type: 'permission_seller_rejected'
+    data: {
+      reason: string
+    }
+  } | {
+    type: 'permission_seller_approved'
+    data: {
     }
   }
 );

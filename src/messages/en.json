@@ -8,6 +8,8 @@
     "property_rejected": "The property {propertyTitle} has been rejected for the reason: {reason}.",
     "consultancy_meeting_date_changed": "The consultancy meeting that was {lastDate} has been changed to {newDate}.",
     "consultancy_created": "The consultancy for {date} has been created.",
+    "permission_seller_approved": "Congratulations! The permission for the seller has been approved.",
+    "permission_seller_rejected": "The permission for the seller has been rejected for: {reason}.",
     "mark_as_read": "Mark as read"
   },
   "common": {

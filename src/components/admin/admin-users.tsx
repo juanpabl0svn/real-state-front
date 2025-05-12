@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import { Search, Filter, Check, X, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -28,45 +26,40 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import type { Property, PropertyTypes } from "@/types";
+import type { User, UserSellerPermissions } from "@/types";
 import {
-  getNotApprovedProperties,
-  approveProperty,
-  rejectProperty,
+  approvePermissionSeller,
+  getUsersPermissionsSeller,
+  rejectPermissionSeller,
 } from "@/lib/actions";
 import { Link } from "@/i18n/navigation";
 
-export default function PropertiesAdminPage() {
-  const [properties, setProperties] = useState<Property[]>([]);
+export default function AdminUsers() {
+  const [users, setUsers] = useState<UserSellerPermissions[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [acceptDialogOpen, setAcceptDialogOpen] = useState(false);
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
-  const [propertyToAccept, setPropertyToAccept] = useState<Property | null>(
-    null
-  );
-  const [propertyToReject, setPropertyToReject] = useState<Property | null>(
-    null
-  );
+  const [userToAccept, setUserToAccept] =
+    useState<UserSellerPermissions | null>(null);
+  const [userToReject, setUserToReject] =
+    useState<UserSellerPermissions | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     (async () => {
-      const { data } = await getNotApprovedProperties();
-      setProperties(data);
+      const data = await getUsersPermissionsSeller();
+      if (data.error) return;
+      if (!data.data) {
+        console.error("No se devolvió la data");
+        return;
+      }
+      setUsers(data.data);
     })();
   }, []);
 
-  // Filter properties based on search query
-  const filteredProperties = properties.filter(
-    (property) =>
-      property.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      property.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      property.neighborhood.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
   // Handle property acceptance
-  const handleAcceptClick = (property: Property) => {
-    setPropertyToAccept(property);
+  const handleAcceptClick = (permission: UserSellerPermissions) => {
+    setUserToAccept(permission);
     setAcceptDialogOpen(true);
   };
 
@@ -74,10 +67,10 @@ export default function PropertiesAdminPage() {
     setIsSubmitting(true);
     try {
       // Llamamos a la acción que aprueba en back-end
-      const updated = await approveProperty(id);
+      const updated = await approvePermissionSeller(id);
       if (updated) {
         // Removemos la propiedad aprobada de la lista de no aprobadas
-        setProperties((prev) => prev.filter((p) => p.id !== id));
+        setUsers((prev) => prev.filter((p) => p.id !== id));
       } else {
         console.error("No se devolvió la propiedad aprobada");
       }
@@ -86,24 +79,24 @@ export default function PropertiesAdminPage() {
     } finally {
       setIsSubmitting(false);
       setAcceptDialogOpen(false);
-      setPropertyToAccept(null);
+      setUserToAccept(null);
     }
   };
 
   const [reason, setReason] = useState<string>("");
 
   // Handle property rejection
-  const handleRejectClick = (property: Property) => {
-    setPropertyToReject(property);
+  const handleRejectClick = (permission: UserSellerPermissions) => {
+    setUserToReject(permission);
     setRejectDialogOpen(true);
   };
 
   const handleRejectConfirm = async (id: string) => {
     setIsSubmitting(true);
     try {
-      const sent = await rejectProperty(id, reason);
+      const sent = await rejectPermissionSeller(id, reason);
       if (sent) {
-        setProperties((prev) => prev.filter((p) => p.id !== id));
+        setUsers((prev) => prev.filter((p) => p.id !== id));
       } else {
         console.error("No se pudo enviar el email de rechazo");
       }
@@ -112,30 +105,12 @@ export default function PropertiesAdminPage() {
     } finally {
       setIsSubmitting(false);
       setRejectDialogOpen(false);
-      setPropertyToReject(null);
+      setUserToReject(null);
     }
   };
 
-  const getStatusBadge = (status: PropertyTypes) => {
-    const statusStyles = {
-      available: "bg-green-100 text-green-800 hover:bg-green-100",
-      sold: "bg-red-100 text-red-800 hover:bg-red-100",
-      reserved: "bg-yellow-100 text-yellow-800 hover:bg-yellow-100",
-    };
-
-    return (
-      <Badge className={statusStyles[status as keyof typeof statusStyles]}>
-        {status.charAt(0).toUpperCase() + status.slice(1)}
-      </Badge>
-    );
-  };
-
   return (
-    <div className="container mx-auto py-8 px-4">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-        <h1 className="text-3xl font-bold mb-4 md:mb-0">Property Management</h1>
-      </div>
-
+    <>
       <Card className="mb-8">
         <CardHeader className="pb-2">
           <CardTitle>Properties</CardTitle>
@@ -145,7 +120,7 @@ export default function PropertiesAdminPage() {
             <div className="relative flex-1">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search properties..."
+                placeholder="Search users..."
                 className="pl-8"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -181,74 +156,55 @@ export default function PropertiesAdminPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Title</TableHead>
-                  <TableHead>Type</TableHead>
+                  <TableHead>Nombre</TableHead>
+                  <TableHead>Correo</TableHead>
                   <TableHead className="hidden md:table-cell">
                     Location
                   </TableHead>
-                  <TableHead className="hidden md:table-cell">Price</TableHead>
-                  <TableHead className="hidden md:table-cell">Status</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredProperties.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={6} className="text-center py-8">
-                      No properties found. Try a different search or add a new
-                      property.
+                {users.map((permission) => (
+                  <TableRow key={permission.id}>
+                    <TableCell className="font-medium capitalize">
+                      {permission.user.name}
+                    </TableCell>
+                    <TableCell>{permission.user.email}</TableCell>
+                    <TableCell className="hidden md:table-cell">
+                      {permission.user.city} / {permission.user.neighborhood}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-gray-500 hover:text-gray-700"
+                        >
+                          <Link href={`/user/${permission.user.user_id}`}>
+                            <Eye className="h-4 w-4" />
+                          </Link>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleAcceptClick(permission.user)}
+                          className="h-8 w-8 text-green-500 hover:text-green-700"
+                        >
+                          <Check className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleRejectClick(permission.user)}
+                          className="h-8 w-8 text-red-500 hover:text-red-700"
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
-                ) : (
-                  filteredProperties.map((property) => (
-                    <TableRow key={property.id}>
-                      <TableCell className="font-medium">
-                        {property.title}
-                      </TableCell>
-                      <TableCell className="capitalize">
-                        {property.property_type}
-                      </TableCell>
-                      <TableCell className="hidden md:table-cell">
-                        {property.city} / {property.neighborhood}
-                      </TableCell>
-                      <TableCell className="hidden md:table-cell">
-                        ${property.price.toLocaleString()}
-                      </TableCell>
-                      <TableCell className="hidden md:table-cell">
-                        {getStatusBadge(property.status)}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 text-gray-500 hover:text-gray-700"
-                          >
-                            <Link href={`/properties/${property.id}`}>
-                              <Eye className="h-4 w-4" />
-                            </Link>
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleAcceptClick(property)}
-                            className="h-8 w-8 text-green-500 hover:text-green-700"
-                          >
-                            <Check className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleRejectClick(property)}
-                            className="h-8 w-8 text-red-500 hover:text-red-700"
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
+                ))}
               </TableBody>
             </Table>
           </div>
@@ -256,14 +212,13 @@ export default function PropertiesAdminPage() {
       </Card>
 
       {/* Accept Property Dialog */}
-      {propertyToAccept && (
+      {userToAccept && (
         <Dialog open={acceptDialogOpen} onOpenChange={setAcceptDialogOpen}>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Confirmar aprobación</DialogTitle>
               <DialogDescription>
-                ¿Estás seguro de que deseas aprobar la propiedad{" "}
-                {propertyToAccept.title}?
+                ¿Estás seguro de que deseas aprobar a {userToAccept.user.name}?
               </DialogDescription>
             </DialogHeader>
             <DialogFooter className="flex justify-end gap-2 mt-4">
@@ -275,7 +230,7 @@ export default function PropertiesAdminPage() {
                 Cancelar
               </Button>
               <Button
-                onClick={() => handleAcceptConfirm(propertyToAccept.id)}
+                onClick={() => handleAcceptConfirm(userToAccept.id)}
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Aprobando..." : "Confirmar"}
@@ -286,14 +241,13 @@ export default function PropertiesAdminPage() {
       )}
 
       {/* Reject Property Dialog */}
-      {propertyToReject && (
+      {userToReject && (
         <Dialog open={rejectDialogOpen} onOpenChange={setRejectDialogOpen}>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Confirmar rechazo</DialogTitle>
               <DialogDescription>
-                ¿Estás seguro de que deseas rechazar la propiedad{" "}
-                {propertyToReject.title}?
+                ¿Estás seguro de que deseas rechazar a {userToReject.user.name}?
               </DialogDescription>
               <label htmlFor="">Razon</label>
               <Input
@@ -312,7 +266,7 @@ export default function PropertiesAdminPage() {
               </Button>
               <Button
                 variant="destructive"
-                onClick={() => handleRejectConfirm(propertyToReject.id)}
+                onClick={() => handleRejectConfirm(userToReject.id)}
                 disabled={isSubmitting || !reason}
               >
                 Rechazar
@@ -321,6 +275,6 @@ export default function PropertiesAdminPage() {
           </DialogContent>
         </Dialog>
       )}
-    </div>
+    </>
   );
 }
