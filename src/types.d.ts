@@ -6,6 +6,8 @@ export type Property = Prisma.propertiesGetPayload<{}> & { photos?: Photos[] }
 
 export type User = Prisma.UserGetPayload<{}>
 
+export type users_seller_permissions = Prisma.users_seller_permissionsGetPayload<{}>
+
 export type Notification = Prisma.NotificationGetPayload<{}>
 
 export type PropertyTypes = $Enums['PropertyType']
