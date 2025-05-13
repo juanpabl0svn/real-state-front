@@ -3,12 +3,15 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import type { Property } from "@/types";
 import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 
 interface PropertyCardProps {
   property: Property;
 }
 
 export function PropertyCard({ property }: PropertyCardProps) {
+  const t = useTranslations("property");
+
   const statusColor = {
     available: "bg-green-100 text-green-800",
     sold: "bg-red-100 text-red-800",
@@ -29,7 +32,7 @@ export function PropertyCard({ property }: PropertyCardProps) {
             className="object-cover w-full h-full transition-transform hover:scale-105"
           />
           <Badge className={`absolute top-2 right-2 ${statusColor}`}>
-            {property.status}
+            {t(property.status!)}
           </Badge>
         </div>
 
@@ -66,9 +69,10 @@ export function PropertyCard({ property }: PropertyCardProps) {
 
         <CardFooter className="p-4 pt-0 text-xs text-muted-foreground">
           <div className="flex justify-between w-full">
-            <span className="capitalize">{property.property_type}</span>
+            <span className="capitalize">{t(property.property_type)}</span>
             <span>
-              Created: {property?.created_at?.toLocaleDateString() ?? "N/A"}
+              {t("created_at")}{" "}
+              {property?.created_at?.toLocaleDateString() ?? "N/A"}
             </span>
           </div>
         </CardFooter>
