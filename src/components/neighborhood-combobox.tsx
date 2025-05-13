@@ -1,6 +1,7 @@
 "use client";
 
 import { SearchableCombobox } from "@/components/ui/searchable-combobox";
+import { useTranslations } from "next-intl";
 import { memo } from "react";
 
 interface NeighborhoodComboboxProps {
@@ -16,14 +17,16 @@ export const NeighborhoodCombobox = memo(function NeighborhoodCombobox({
   disabled = false,
   neighborhoods,
 }: NeighborhoodComboboxProps) {
+  const t = useTranslations("combobox");
+
   return (
     <SearchableCombobox
       options={neighborhoods}
       value={value}
       onSelect={onSelect}
-      placeholder="Select a neighborhood..."
-      emptyMessage="No neighborhoods found."
-      searchPlaceholder="Search neighborhood..."
+      placeholder={t("neighborhood")}
+      emptyMessage={t("no_neighborhood")}
+      searchPlaceholder={t("search_neighborhood")}
       disabled={disabled}
     />
   );
