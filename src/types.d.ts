@@ -98,6 +98,8 @@ export interface AppStore {
   setData: (data: any | null) => void
   properties: Property[]
   setProperties: (properties: Property[]) => void
+  sellers: User[]
+  setSellers: (sellers: User[]) => void
   notifications: Notification[]
   setNotifications: (notifications: Notification[] | ((prev: Notification[]) => Notification[])) => void
 }

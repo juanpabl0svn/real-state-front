@@ -41,6 +41,13 @@ export default function Header() {
       roles: [],
     },
     {
+      label: t("sellers"),
+      href: "/sellers",
+      icon: <Home className="h-4 w-4 mr-2" />,
+      needsAuth: false,
+      roles: [],
+    },
+    {
       label: t("my_properties"),
       href: "/properties",
       icon: <Search className="h-4 w-4 mr-2" />,

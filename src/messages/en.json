@@ -1,6 +1,7 @@
 {
   "header": {
     "home": "Home",
+    "sellers": "Sellers",
     "my_properties": "My Properties"
   },
   "notifications": {
@@ -32,7 +33,10 @@
     "hours_ago": " hours ago",
     "days_ago": " days ago",
     "months_ago": " months ago",
-    "years_ago": " years ago"
+    "years_ago": " years ago",
+    "contact": "Contact",
+    "not_specified": "Not specified",
+    "zone": "Zone"
   },
   "locale_switcher": {
     "label": "Change language",

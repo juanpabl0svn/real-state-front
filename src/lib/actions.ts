@@ -22,9 +22,7 @@ export async function fetchProperties(): Promise<Paginate<Property>> {
     if (!session?.user) {
       throw new Error("User not authenticated")
     }
-
-
-    const page = 1 // Default page number, you can pass this as a parameter
+    const page = 1
 
 
     const properties = await prisma.properties.findMany({

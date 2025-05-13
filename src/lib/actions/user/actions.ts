@@ -1,3 +1,4 @@
+"use server"
 import { auth } from "@/auth"
 import { perPage, prisma } from "@/prisma"
 
@@ -24,8 +25,6 @@ export async function getUserById(id: string): Promise<
             throw new Error('User not found')
         }
 
-        // quitamos la contraseña antes de devolver
-        // (esta línea es segura porque sabemos que existe la propiedad password en el objeto)
         // @ts-expect-error
         delete user.password
 
@@ -43,8 +42,9 @@ export async function fetchSellers(
     try {
         const sellers = await prisma.users.findMany({
             where: {
+                role: "seller",
                 users_seller_permissions: {
-                    some: {}      // “al menos uno”
+                    some: {}
                 }
             },
             select: {
@@ -58,7 +58,6 @@ export async function fetchSellers(
                 neighborhood: true,
                 is_verified: true,
                 created_at: true,
-                // incluyo los permisos para que sepas qué permisos tiene cada seller
                 users_seller_permissions: true
             },
             skip: (page - 1) * perPage,
@@ -67,6 +66,7 @@ export async function fetchSellers(
 
         const total = await prisma.users.count({
             where: {
+                role: "seller",
                 users_seller_permissions: {
                     some: {}
                 }
