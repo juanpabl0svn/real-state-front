@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import type { Property } from "@/types";
 import { getPropertyById } from "@/lib/actions";
 import { toast } from "react-hot-toast";
+import { useTranslations } from "next-intl";
 
 export default function PropertyDetailsPage() {
   const { id } = useParams();
@@ -20,6 +21,8 @@ export default function PropertyDetailsPage() {
   const [mainPhoto, setMainPhoto] = useState<string>(
     "https://kzmfrb706jqxywn2ntrn.lite.vusercontent.net/placeholder.svg?height=600&width=800"
   );
+
+  const t = useTranslations("property");
 
   const [otherPhotos, setOtherPhotos] = useState<string[]>([]);
 
@@ -38,8 +41,8 @@ export default function PropertyDetailsPage() {
           );
         }
       } catch (_e) {
-        console.error("Failed to fetch property details", _e);  
-        toast.error("Failed to fetch property details. Redirecting to home.");
+        console.error("Failed to fetch property details", _e);
+        toast.error(t("no_property"));
 
         setTimeout(() => {
           router.push("/");
@@ -63,7 +66,7 @@ export default function PropertyDetailsPage() {
   if (isLoading) {
     return (
       <div className="container mx-auto py-16 px-4 flex justify-center">
-        <div className="animate-pulse">Loading property details...</div>
+        <div className="animate-pulse">{t('loading')}</div>
       </div>
     );
   }
@@ -73,10 +76,10 @@ export default function PropertyDetailsPage() {
       <div className="container mx-auto py-16 px-4">
         <Link href="/" className="flex items-center text-primary mb-8">
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to listings
+          {t("back")}
         </Link>
         <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Property Not Found</h1>
+          <h1 className="text-2xl font-bold mb-4">{t("no_property")}</h1>
           <p>
             The property you are looking for does not exist or has been removed.
           </p>
@@ -95,7 +98,7 @@ export default function PropertyDetailsPage() {
     <div className="container mx-auto py-8 px-4">
       <Link href="/" className="flex items-center text-primary mb-8">
         <ArrowLeft className="mr-2 h-4 w-4" />
-        Back to listings
+        {t("back")}
       </Link>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -123,13 +126,13 @@ export default function PropertyDetailsPage() {
                   ))}
                 </div>
               ) : (
-                <p>No additional photos available</p>
+                <p>{t("no_photo")}</p>
               )}
             </div>
             <div className="flex flex-wrap items-center justify-between mb-4">
               <h1 className="text-3xl font-bold">{property.title}</h1>
               <div className="flex items-center">
-                <Badge className={statusColor}>{property.status}</Badge>
+                <Badge className={statusColor}>{t(property.status!)}</Badge>
               </div>
             </div>
 
@@ -144,15 +147,21 @@ export default function PropertyDetailsPage() {
             <div className="flex flex-wrap gap-4 my-6">
               <div className="flex items-center">
                 <BedDouble className="h-5 w-5 mr-2 text-muted-foreground" />
-                <span>{property.bedrooms} Bedrooms</span>
+                <span>
+                  {property.bedrooms} {t("bedrooms")}
+                </span>
               </div>
               <div className="flex items-center">
                 <Bath className="h-5 w-5 mr-2 text-muted-foreground" />
-                <span>{property.bathrooms} Bathrooms</span>
+                <span>
+                  {property.bathrooms} {t("bathrooms")}
+                </span>
               </div>
               <div className="flex items-center">
                 <Car className="h-5 w-5 mr-2 text-muted-foreground" />
-                <span>{property.parking_spaces} Parking</span>
+                <span>
+                  {property.parking_spaces} {t("parking_spaces")}
+                </span>
               </div>
               <div className="flex items-center">
                 <Ruler className="h-5 w-5 mr-2 text-muted-foreground" />
@@ -160,7 +169,7 @@ export default function PropertyDetailsPage() {
               </div>
               <div className="flex items-center">
                 <Home className="h-5 w-5 mr-2 text-muted-foreground" />
-                <span className="capitalize">{property.property_type}</span>
+                <span className="capitalize">{t(property.property_type)}</span>
               </div>
             </div>
           </div>
@@ -168,7 +177,7 @@ export default function PropertyDetailsPage() {
           <Separator className="my-6" />
 
           <div>
-            <h2 className="text-xl font-semibold mb-4">Description</h2>
+            <h2 className="text-xl font-semibold mb-4">{t("description")}</h2>
             <p className="text-muted-foreground whitespace-pre-line">
               {property.description}
             </p>
@@ -179,47 +188,44 @@ export default function PropertyDetailsPage() {
           <Card>
             <CardContent className="p-6">
               <h3 className="text-lg font-semibold mb-4">
-                Contact Information
+                {t("contact_info")}
               </h3>
-              <p className="mb-6">
-                Interested in this property? Contact the agent for more
-                information or to schedule a viewing.
-              </p>
+              <p className="mb-6">{t("info")}</p>
 
-              <Button className="w-full mb-3">Contact Agent</Button>
+              <Button className="w-full mb-3">{t("contact_seller")}</Button>
               <Button variant="outline" className="w-full">
-                Schedule Viewing
+                {t("schedule_advice")}
               </Button>
             </CardContent>
           </Card>
 
           <Card className="mt-6">
             <CardContent className="p-6">
-              <h3 className="text-lg font-semibold mb-4">Property Details</h3>
+              <h3 className="text-lg font-semibold mb-4">
+                {t("property_details")}
+              </h3>
 
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Property ID</span>
-                  <span className="font-medium">
-                    {property.id.substring(0, 8)}
+                  <span className="text-muted-foreground">
+                    {t("property_type")}
                   </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Property Type</span>
                   <span className="font-medium capitalize">
-                    {property.property_type}
+                    {t(property.property_type)}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Listed Date</span>
+                  <span className="text-muted-foreground">
+                    {t("created_at")}
+                  </span>
                   <span className="font-medium">
                     {property?.created_at?.toLocaleDateString() ?? "N/A"}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Status</span>
+                  <span className="text-muted-foreground">{t("status")}</span>
                   <span className="font-medium capitalize">
-                    {property.status}
+                    {t(property.status!)}
                   </span>
                 </div>
               </div>

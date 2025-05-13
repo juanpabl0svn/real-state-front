@@ -49,12 +49,15 @@
     "all": "Todos"
   },
   "property": {
+    "loading": "Cargando propiedades...",
+    "no_property_exists": "No existe esta propiedad o ya ha sido vendida",
     "description": "Descripción",
     "describe_property": "Describa la propiedad",
     "title": "Título",
     "price": "Precio",
     "location": "Ubicación",
     "contact_seller": "Contactar al vendedor",
+    "contact_info" : "Información de contacto",
     "created_at": "Creado el",
     "apartment": "Apartamento",
     "house": "Casa",
@@ -81,7 +84,9 @@
     "gallery": "Galería de imagenes",
     "status": "Estado",
     "select_property_type": "Seleccionar tipo de propiedad",
-    "select_status": "Seleccionar estado"
+    "select_status": "Seleccionar estado",
+    "no_property": "Propiedad no encontrada",
+    "no_photo" : "No hay fotos que mostrar"
   },
   "combobox": {
     "city": "Selecciona una ciudad",

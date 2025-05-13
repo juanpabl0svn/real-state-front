@@ -5,11 +5,11 @@
   },
   "notifications": {
     "property_approved": "The property {propertyTitle} has been approved.",
-    "property_rejected": "The property {propertyTitle} has been rejected for the following reason: {reason}.",
-    "consultancy_meeting_date_changed": "The consultancy meeting that was {lastDate} has been changed to {newDate}.",
+    "property_rejected": "The property {propertyTitle} has been rejected for the reason: {reason}.",
+    "consultancy_meeting_date_changed": "The consultancy meeting that was on {lastDate} has been changed to {newDate}.",
     "consultancy_created": "The consultancy for {date} has been created.",
     "permission_seller_approved": "Congratulations! The seller permission has been approved.",
-    "permission_seller_rejected": "The seller permission has been rejected for the following reason: {reason}.",
+    "permission_seller_rejected": "The seller permission has been rejected for: {reason}.",
     "mark_as_read": "Mark as read"
   },
   "common": {
@@ -49,12 +49,15 @@
     "all": "All"
   },
   "property": {
+    "loading": "Loading properties...",
+    "no_property_exists": "This property does not exist or has already been sold",
     "description": "Description",
     "describe_property": "Describe the property",
     "title": "Title",
     "price": "Price",
     "location": "Location",
-    "contact_seller": "Contact the seller",
+    "contact_seller": "Contact seller",
+    "contact_info": "Contact information",
     "created_at": "Created on",
     "apartment": "Apartment",
     "house": "House",
@@ -81,7 +84,9 @@
     "gallery": "Image gallery",
     "status": "Status",
     "select_property_type": "Select property type",
-    "select_status": "Select status"
+    "select_status": "Select status",
+    "no_property": "Property not found",
+    "no_photo": "No photos to display"
   },
   "combobox": {
     "city": "Select a city",
@@ -97,8 +102,8 @@
     "phone": "Enter a valid phone number",
     "password": "Password must be at least 6 characters",
     "confirm_password": "Passwords do not match",
-    "min_length": "Field must be at least {min} characters long",
-    "max_length": "Field cannot exceed {max} characters",
+    "min_length": "The field must be at least {min} characters long",
+    "max_length": "The field must not exceed {max} characters",
     "property_updated": "The property has been successfully updated",
     "property_created": "The property has been successfully created",
     "validation_error": "Validation error",
