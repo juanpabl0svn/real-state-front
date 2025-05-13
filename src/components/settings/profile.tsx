@@ -21,6 +21,7 @@ import { updateProfile } from "@/lib/actions";
 import usePhone from "@/hooks/use-phone";
 
 import { profileFormSchema, ProfileFormValues } from "@/lib/zod";
+import { useTranslations } from "next-intl";
 
 export function ProfileForm() {
   const session = useSession();
@@ -28,6 +29,8 @@ export function ProfileForm() {
   const [isLoading, setIsLoading] = useState(false);
 
   const [image, setImage] = useState<Array<File | string>>([]);
+
+  const t = useTranslations('settings');
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
@@ -65,12 +68,10 @@ export function ProfileForm() {
         },
       });
 
-      toast.success("Perfil actualizado con éxito.");
+      toast.success(t("profile_updated"));
     } catch (error) {
       console.error("Error al actualizar el perfil:", error);
-      toast.error(
-        "Hubo un error al actualizar tu perfil. Por favor intenta nuevamente."
-      );
+      toast.error(t("no_profile_updated"));
     } finally {
       setIsLoading(false);
     }
@@ -80,9 +81,7 @@ export function ProfileForm() {
     <div className="space-y-8 flex justify-between ">
       <div className="flex flex-col gap-6 ">
         <ImageUploaderProfile files={image} setFiles={setImage} />
-        <p className="text-muted-foreground text-xs">
-          Da click en la imagen o suelta una imagen para cambiarla
-        </p>
+        <p className="text-muted-foreground text-xs">{t("change_image")}</p>
       </div>
 
       <Form {...form}>
@@ -93,13 +92,13 @@ export function ProfileForm() {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nombre completo</FormLabel>
+                  <FormLabel>{t("fullname")}</FormLabel>
                   <FormControl>
                     <div className="relative">
                       <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
                         className="pl-10 w-full"
-                        placeholder="Tu nombre"
+                        placeholder={t("your_name")}
                         {...field}
                       />
                     </div>
@@ -114,14 +113,14 @@ export function ProfileForm() {
               name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Teléfono</FormLabel>
+                  <FormLabel>{t("phone")}</FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
                         className="pl-10 w-full"
                         type="tel"
-                        aria-label="phone"
+                        aria-label={t("phone")}
                         placeholder="3001231234"
                         {...field}
                       />
@@ -134,7 +133,7 @@ export function ProfileForm() {
           </div>
 
           <Button type="submit" disabled={isLoading} className="inline-block">
-            {isLoading ? "Guardando..." : "Guardar cambios"}
+            {isLoading ? t("saving") : t("save_changes")}
           </Button>
         </form>
       </Form>

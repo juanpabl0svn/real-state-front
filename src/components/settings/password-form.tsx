@@ -18,12 +18,15 @@ import { useState } from "react";
 import { Eye, EyeOff, Lock } from "lucide-react";
 import { changePassword } from "@/lib/actions";
 import { PasswordFormValues, passwordFormSchema } from "@/lib/zod";
+import { useTranslations } from "next-intl";
 
 export function PasswordForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const t = useTranslations("settings");
 
   const form = useForm<PasswordFormValues>({
     resolver: zodResolver(passwordFormSchema),
@@ -48,16 +51,12 @@ export function PasswordForm() {
         throw new Error(message);
       }
 
-      toast.success("Contraseña actualizada con éxito.");
+      toast.success(t("password_updated"));
 
       form.reset();
     } catch (error) {
       console.error("Error al cambiar la contraseña:", error);
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Error al cambiar la contraseña."
-      );
+      toast.error(t("no_password_updated"));
     } finally {
       setIsLoading(false);
     }
@@ -71,7 +70,7 @@ export function PasswordForm() {
           name="currentPassword"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Contraseña actual</FormLabel>
+              <FormLabel>{t("current_password")}</FormLabel>
               <FormControl>
                 <div className="relative">
                   <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -111,7 +110,7 @@ export function PasswordForm() {
           name="newPassword"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Nueva contraseña</FormLabel>
+              <FormLabel>{t("new_password")}</FormLabel>
               <FormControl>
                 <div className="relative">
                   <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -142,7 +141,7 @@ export function PasswordForm() {
                 </div>
               </FormControl>
               <FormDescription>
-                Usa al menos 8 caracteres con letras, números y símbolos.
+                {t('password_conditions')}
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -154,7 +153,7 @@ export function PasswordForm() {
           name="confirmPassword"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Confirmar nueva contraseña</FormLabel>
+              <FormLabel>{t("confirm_new_password")}</FormLabel>
               <FormControl>
                 <div className="relative">
                   <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -190,7 +189,7 @@ export function PasswordForm() {
         />
 
         <Button type="submit" disabled={isLoading} className="w-full sm:w-auto">
-          {isLoading ? "Actualizando..." : "Actualizar contraseña"}
+          {isLoading ? t('updating') : t("update_password_button")}	
         </Button>
       </form>
     </Form>
