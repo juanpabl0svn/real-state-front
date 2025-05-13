@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Bell, Settings, Home, Search, Menu, X, UserCog } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,24 +13,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
 
-import { signOut, useSession } from "next-auth/react";
-import { toast } from "react-hot-toast";
+import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { useAppStore } from "@/stores/app-store";
 import Notifications from "./notifications";
-
-// This would typically come from your API
-interface Notification {
-  id: string;
-  user_id: string;
-  type: string;
-  data: any;
-  is_read: boolean;
-  created_at: string;
-}
+import LocaleSwitcher from "./local-switcher";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -49,21 +38,21 @@ export default function Header() {
       href: "/",
       icon: <Home className="h-4 w-4 mr-2" />,
       needsAuth: false,
-      adminOnly: false,
+      roles: [],
     },
     {
-      label: "My properties",
+      label: t("my_properties"),
       href: "/properties",
       icon: <Search className="h-4 w-4 mr-2" />,
       needsAuth: true,
-      adminOnly: false,
+      roles: ["admin", "seller"],
     },
     {
       label: "Admin",
-      href: "/admin/properties",
+      href: "/admin",
       icon: <UserCog className="h-4 w-4 mr-2" />,
       needsAuth: true,
-      adminOnly: true,
+      roles: ["admin"],
     },
   ];
 
@@ -80,7 +69,8 @@ export default function Header() {
             {navItems.map((item) => {
               if (
                 (item.needsAuth && !data?.user) ||
-                (item.adminOnly && data?.user?.role !== "admin")
+                (!item.roles.includes(data?.user?.role!) &&
+                  item.roles.length > 0)
               ) {
                 return null;
               }
@@ -162,6 +152,7 @@ export default function Header() {
               </Button>
             </>
           )}
+          <LocaleSwitcher />
         </div>
       </div>
 
@@ -169,7 +160,7 @@ export default function Header() {
       {isMenuOpen && (
         <div className="md:hidden border-t">
           <div className="container py-4 space-y-4">
-            <nav className="flex flex-col space-y-4">
+            <nav className="flex flex-col space-y-4 px-3">
               {navItems.map((item) => (
                 <Link
                   key={item.href}
@@ -181,9 +172,12 @@ export default function Header() {
                   {item.label}
                 </Link>
               ))}
+              <div className="flex items-center justify-between">
+                <LocaleSwitcher />
+              </div>
             </nav>
 
-            <div className="flex items-center justify-between pt-4 border-t">
+            <div className="flex items-center justify-between pt-4 border-t px-4">
               <div className="flex items-center space-x-4">
                 <Avatar className="h-8 w-8">
                   {data?.user?.image ? (
@@ -195,7 +189,7 @@ export default function Header() {
                   )}
                 </Avatar>
                 <div>
-                  <p className="text-sm font-medium">User Name</p>
+                  <p className="text-sm font-medium">{data?.user.name}</p>
                   <p className="text-xs text-muted-foreground">
                     {data?.user.email}
                   </p>
@@ -203,32 +197,10 @@ export default function Header() {
               </div>
 
               <div className="flex items-center space-x-2">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="relative"
-                  onClick={() => {
-                    setIsMenuOpen(false);
-                    // Open notifications in mobile view
-                  }}
-                >
-                  <Bell className="h-5 w-5" />
-                  {unreadCount > 0 && (
-                    <Badge
-                      variant="destructive"
-                      className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
-                    >
-                      {unreadCount}
-                    </Badge>
-                  )}
-                </Button>
+                <Notifications />
 
-                <Link href="/settings">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
+                <Link href="/settings" onClick={() => setIsMenuOpen(false)}>
+                  <Button variant="ghost" size="icon">
                     <Settings className="h-5 w-5" />
                   </Button>
                 </Link>

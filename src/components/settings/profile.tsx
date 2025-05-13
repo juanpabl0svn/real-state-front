@@ -6,17 +6,15 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { toast } from "react-hot-toast";
 import { useEffect, useState } from "react";
-import { User, Mail, MapPin, Phone } from "lucide-react";
+import { User, Phone } from "lucide-react";
 import { useSession } from "next-auth/react";
 import ImageUploaderProfile from "./image-uploader-profile";
 import { updateProfile } from "@/lib/actions";
@@ -54,10 +52,7 @@ export function ProfileForm() {
   async function onSubmit(data: ProfileFormValues) {
     setIsLoading(true);
     try {
-      console.log({data})
       const res = await updateProfile({ ...data, image: image[0] });
-
-      console.log({res})
 
       if (res.error) {
         throw new Error(res.message);
@@ -70,7 +65,6 @@ export function ProfileForm() {
         },
       });
 
-      console.log("Perfil actualizado:", res.data, session.data?.user);
       toast.success("Perfil actualizado con éxito.");
     } catch (error) {
       console.error("Error al actualizar el perfil:", error);

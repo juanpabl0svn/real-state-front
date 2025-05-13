@@ -1,5 +1,41 @@
 {
   "header": {
-    "home": "Home"
+    "home": "Home",
+    "my_properties": "My Properties"
+  },
+  "notifications": {
+    "property_approved": "The property {propertyTitle} has been approved.",
+    "property_rejected": "The property {propertyTitle} has been rejected for the reason: {reason}.",
+    "consultancy_meeting_date_changed": "The consultancy meeting that was {lastDate} has been changed to {newDate}.",
+    "consultancy_created": "The consultancy for {date} has been created.",
+    "permission_seller_approved": "Congratulations! The permission for the seller has been approved.",
+    "permission_seller_rejected": "The permission for the seller has been rejected for: {reason}.",
+    "mark_as_read": "Mark as read"
+  },
+  "common": {
+    "yes": "Yes",
+    "no": "No",
+    "ok": "OK",
+    "cancel": "Cancel",
+    "close": "Close",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "update": "Update",
+    "search": "Search",
+    "clear": "Clear",
+    "select": "Select",
+    "deselect": "Deselect",
+    "seconds_ago": " seconds ago",
+    "minutes_ago": " minutes ago",
+    "hours_ago": " hours ago",
+    "days_ago": " days ago",
+    "months_ago": " months ago",
+    "years_ago": " years ago"
+  },
+  "locale_switcher": {
+    "label": "Change language",
+    "locale": "{locale, select, en {🇺🇸 English} es {🇪🇸 Spanish} other {Unknown}}"
   }
 }

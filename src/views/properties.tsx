@@ -4,7 +4,7 @@ import { PropertyForm } from "@/components/properties/property-form";
 import { Button } from "@/components/ui/button";
 import { PlusIcon } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { IPropertyForm, Property, ReturnTypeHandler } from "@/types";
+import { IPropertyForm, Property } from "@/types";
 import { useAppStore } from "@/stores/app-store";
 import { createProperty, updateProperty } from "@/lib/actions";
 

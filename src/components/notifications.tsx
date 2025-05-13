@@ -1,7 +1,7 @@
 "use client";
 
 import { useAppStore } from "@/stores/app-store";
-import { useEffect } from "react";
+import { ReactElement, useEffect } from "react";
 import toast from "react-hot-toast";
 import { Button } from "./ui/button";
 import { Bell } from "lucide-react";
@@ -16,41 +16,131 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { Notification, NotificationTypes } from "@/types";
+import { useTranslations } from "next-intl";
 
-const getTimeAgo = (dateString: string) => {
-  console.log(dateString);
+const Messages = (
+  notification: Notification,
+  t: ReturnType<typeof useTranslations>
+) => {
+  const { type, data } = notification;
+
+  if (type === "property_approved") {
+    return t("notifications.property_approved", {
+      propertyId: data.property_id,
+      propertyTitle: data.property_title,
+    });
+  }
+  if (type === "property_rejected") {
+    return t("notifications.property_rejected", {
+      propertyId: data.property_id,
+      propertyTitle: data.property_title,
+      reason: data.reason,
+    });
+  }
+  if (type === "consultancy_meeting_date_changed") {
+    return t("notifications.consultancy_meeting_date_changed", {
+      lastDate: data.last_date,
+      newDate: data.new_date,
+    });
+  }
+  if (type === "consultancy_created") {
+    return t("notifications.consultancy_created", {
+      consultancyName: data.consultancy_id,
+      date: data.date,
+    });
+  }
+  if (type === "permission_seller_rejected") {
+    return t("notifications.permission_seller_rejected", {
+      reason: data.reason,
+    });
+  }
+  if (type === "permission_seller_approved") {
+    return t("notifications.permission_seller_approved");
+  }
+};
+
+const getTimeAgo = (
+  dateString: string,
+  t: ReturnType<typeof useTranslations>
+) => {
   const date = new Date(dateString);
   const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
 
   let interval = seconds / 31536000;
-  if (interval > 1) return Math.floor(interval) + " years ago";
+  if (interval > 1) return <>{Math.floor(interval) + t("common.years_ago")}</>;
 
   interval = seconds / 2592000;
-  if (interval > 1) return Math.floor(interval) + " months ago";
+  if (interval > 1) return <>{Math.floor(interval) + t("common.months_ago")}</>;
 
   interval = seconds / 86400;
-  if (interval > 1) return Math.floor(interval) + " days ago";
+  if (interval > 1) return <>{Math.floor(interval) + t("common.days_ago")}</>;
 
   interval = seconds / 3600;
-  if (interval > 1) return Math.floor(interval) + " hours ago";
+  if (interval > 1) return <>{Math.floor(interval) + t("common.hours_ago")}</>;
 
   interval = seconds / 60;
-  if (interval > 1) return Math.floor(interval) + " minutes ago";
+  if (interval > 1)
+    return <>{Math.floor(interval) + t("common.minutes_ago")}</>;
 
-  return Math.floor(seconds) + " seconds ago";
+  return <>{Math.floor(seconds) + t("common.seconds_ago")}</>;
 };
 
-const getNotificationIcon = (type: string) => {
-  switch (type) {
-    case "message":
-      return <div className="h-2 w-2 rounded-full bg-blue-500" />;
-    case "alert":
-      return <div className="h-2 w-2 rounded-full bg-yellow-500" />;
-    case "system":
-      return <div className="h-2 w-2 rounded-full bg-green-500" />;
-    default:
-      return <div className="h-2 w-2 rounded-full bg-gray-500" />;
-  }
+const getNotificationIcon: Record<NotificationTypes, ReactElement> = {
+  property_approved: <div className="h-2 w-2 rounded-full bg-green-500" />,
+  property_rejected: <div className="h-2 w-2 rounded-full bg-red-500" />,
+  consultancy_meeting_date_changed: (
+    <div className="h-2 w-2 rounded-full bg-yellow-500" />
+  ),
+  consultancy_created: <div className="h-2 w-2 rounded-full bg-blue-500" />,
+  permission_seller_rejected: (
+    <div className="h-2 w-2 rounded-full bg-red-500" />
+  ),
+  permission_seller_approved: (
+    <div className="h-2 w-2 rounded-full bg-green-500" />
+  ),
+};
+
+const Message = ({
+  notification,
+  markAsRead,
+}: {
+  notification: Notification;
+  markAsRead: (id: string) => void;
+}) => {
+  const t = useTranslations();
+
+  const Text = () => Messages(notification, t);
+
+  const Icon = () => getNotificationIcon[notification.type];
+
+  const Timer = () => getTimeAgo(notification.created_at, t);
+
+  return (
+    <div className="flex items-start gap-3 w-full">
+      <div className="mt-1.5">
+        <Icon />
+      </div>
+      <div className="flex-1 space-y-1">
+        <p className={cn("text-sm", !notification.is_read && "font-medium")}>
+          <Text />
+        </p>
+        <p className="text-xs text-muted-foreground">
+          <Timer />
+        </p>
+      </div>
+      {!notification.is_read && (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-6 text-xs"
+          onClick={() => markAsRead(notification.id)}
+        >
+          {t("notifications.mark_as_read")}
+        </Button>
+      )}
+    </div>
+  );
 };
 
 export default function Notifications() {
@@ -74,9 +164,14 @@ export default function Notifications() {
     const eventSource = new EventSource("/api/notifications/stream");
 
     eventSource.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      if (!data) return;
-      setNotifications((prev) => [data, ...prev]);
+      try {
+        let data = JSON.parse(event.data);
+        if (!data) return;
+        data = JSON.parse(data);
+        setNotifications((prev) => [data, ...prev]);
+      } catch (error) {
+        console.error("Failed to parse notification data:", error);
+      }
     };
 
     return () => {
@@ -146,41 +241,14 @@ export default function Notifications() {
           ) : (
             notifications.map((notification) => (
               <DropdownMenuItem
-                key={notification.id + Math.random()}
+                key={notification.id}
                 className={cn(
                   "flex items-start p-3 cursor-default",
                   !notification.is_read && "bg-muted/50"
                 )}
                 onSelect={(e) => e.preventDefault()}
               >
-                <div className="flex items-start gap-3 w-full">
-                  <div className="mt-1.5">
-                    {getNotificationIcon(notification.type)}
-                  </div>
-                  <div className="flex-1 space-y-1">
-                    <p
-                      className={cn(
-                        "text-sm",
-                        !notification.is_read && "font-medium"
-                      )}
-                    >
-                      {notification.data.message}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {getTimeAgo(notification.created_at)}
-                    </p>
-                  </div>
-                  {!notification.is_read && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-6 text-xs"
-                      onClick={() => markAsRead(notification.id)}
-                    >
-                      Mark read
-                    </Button>
-                  )}
-                </div>
+                <Message notification={notification} markAsRead={markAsRead} />
               </DropdownMenuItem>
             ))
           )}

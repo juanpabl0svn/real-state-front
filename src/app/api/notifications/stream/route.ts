@@ -1,8 +1,10 @@
 import { auth } from "@/auth";
+import { secret } from "@/lib/utils";
+import { prisma } from "@/prisma";
 import { NextRequest } from "next/server";
-import { Notification as INotification } from "@/types";
 
-const clients = new Map<string, (data: any) => void>();
+const CLIENTS = new Map<string, (data: any) => void>();
+
 
 export async function GET(req: NextRequest) {
 
@@ -18,36 +20,15 @@ export async function GET(req: NextRequest) {
         controller.enqueue(`data: ${JSON.stringify(data)}\n\n`);
       };
 
-      clients.set(userId, send);
-
-      const mockNotifications: INotification =
-      {
-        id: "1",
-        user_id: "38cca713-07c5-4f56-b880-918e5c94a05c",
-        type: "message",
-        data: { message: "You have a new message from Alex", sender: "Alex" },
-        is_read: false,
-        created_at: new Date(Date.now() - 1000 * 60 * 5).toISOString(), // 5 minutes ago
-      }
-        ;
-
-      setTimeout(() => {
-        send(mockNotifications);
-      }, 1000)
-
+      CLIENTS.set(userId, send);
 
       const keepAlive = setInterval(() => {
-
-        // Simulate fetching notifications
-        // This would be replaced with an actual API call
         controller.enqueue(`:\n\n`);
-
-
       }, 15000);
 
       req.signal.addEventListener("abort", () => {
         clearInterval(keepAlive);
-        clients.delete(userId);
+        CLIENTS.delete(userId);
         controller.close();
       });
     },
@@ -63,3 +44,41 @@ export async function GET(req: NextRequest) {
   });
 }
 
+
+
+export async function POST(req: Request) {
+
+  const token = req.headers.get("Authorization")?.split(" ")[1];
+
+  if (!token || token !== secret) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
+  const body = await req.json();
+
+  const userId = body.user_id;
+
+  const notification = await prisma.notifications.create({
+    data: {
+      ...body,
+    },
+  })
+
+  if (CLIENTS.has(userId)) {
+    const client = CLIENTS.get(userId);
+    if (client) {
+      client(JSON.stringify(notification));
+    }
+  }
+
+  return new Response(JSON.stringify(notification), {
+    headers: {
+      "Content-Type": "application/json",
+      "Cache-Control": "no-cache",
+      Connection: "keep-alive",
+    },
+  });
+}
+
+
+export const dynamic = "force-dynamic";
