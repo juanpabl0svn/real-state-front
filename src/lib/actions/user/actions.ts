@@ -2,7 +2,7 @@
 import { auth } from "@/auth"
 import { perPage, prisma } from "@/prisma"
 
-import type { User, Paginate, users_seller_permissions} from "../../../types"
+import type { User, Paginate, users_seller_permissions } from "../../../types"
 
 
 export async function getUserById(id: string): Promise<
@@ -90,4 +90,84 @@ export async function fetchSellers(
             total_pages: 0
         }
     }
+}
+
+export async function getFavoriteSellers(userId: string) {
+    const user = await prisma.users.findUnique({
+        where: { user_id: userId },
+        select: { favoriteSellersId: true },
+    })
+    if (!user) {
+        throw new Error("User not found")
+    }
+
+    const favIds = user.favoriteSellersId
+    if (favIds.length === 0) {
+        return []
+    }
+
+    // 2) Trae los usuarios cuyo user_id esté en ese array
+    return prisma.users.findMany({
+        where: {
+            user_id: { in: favIds },
+        },
+        // Opcional: aquí puedes seleccionar solo los campos que necesites
+        select: {
+            user_id: true,
+            name: true,
+            email: true,
+            image: true,
+            phone: true,
+            city: true,
+            neighborhood: true,
+            role: true,
+            created_at: true,
+        },
+    })
+}
+
+export async function addFavoriteSellerOnce(
+    userId: string,
+    sellerId: string
+) {
+    const user = await prisma.users.findUnique({
+        where: { user_id: userId },
+        select: { favoriteSellersId: true },
+    })
+    if (!user) throw new Error('User not found')
+    if (user.favoriteSellersId.includes(sellerId)) {
+        return user
+    }
+    return prisma.users.update({
+        where: { user_id: userId },
+        data: {
+            favoriteSellersId: {
+                set: [...user.favoriteSellersId, sellerId],
+            },
+        },
+    })
+}
+
+export async function removeFavoriteSeller(
+    userId: string,
+    sellerId: string
+) {
+    const user = await prisma.users.findUnique({
+        where: { user_id: userId },
+        select: { favoriteSellersId: true },
+    })
+    if (!user) throw new Error("User not found")
+
+    if (!user.favoriteSellersId.includes(sellerId)) {
+        return user
+    }
+    const news = user.favoriteSellersId.filter((id) => id !== sellerId)
+    return prisma.users.update({
+        where: { user_id: userId },
+        data: {
+            favoriteSellersId: {
+                set: news,
+            },
+        },
+    })
 }
