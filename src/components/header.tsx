@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Bell, Settings, Home, Search, Menu, X, UserCog } from "lucide-react";
+import { Bell, Settings, Home, Search, Menu, X, UserCog, Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -42,8 +42,8 @@ export default function Header() {
     },
     {
       label: t("sellers"),
-      href: "/sellers",
-      icon: <Home className="h-4 w-4 mr-2" />,
+      href: "/seller",
+      icon: <Store  className="h-4 w-4 mr-2" />,
       needsAuth: false,
       roles: [],
     },

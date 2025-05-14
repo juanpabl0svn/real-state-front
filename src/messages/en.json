@@ -17,6 +17,8 @@
     "yes": "Yes",
     "no": "No",
     "ok": "OK",
+    "in": "in",
+    "and": "and",
     "cancel": "Cancel",
     "close": "Close",
     "save": "Save",
@@ -36,10 +38,28 @@
     "years_ago": " years ago",
     "contact": "Contact",
     "not_specified": "Not specified",
-    "zone": "Zone"
+    "zone": "Zone",
+    "expert": "Expert"
   },
   "locale_switcher": {
     "label": "Change language",
     "locale": "{locale, select, en {🇺🇸 English} es {🇪🇸 Spanish} other {Unknown}}"
+  },
+  "property": {
+    "title": "Title",
+    "description": "Description",
+    "price": "Price",
+    "location": "Location",
+    "type": "Type",
+    "house": "House",
+    "apartment": "Apartment",
+    "land": "Land",
+    "office": "Office",
+    "status": "Status",
+    "images": "Images",
+    "video": "Video",
+    "features": "Features",
+    "amenities": "Amenities",
+    "contact_info": "Contact information"
   }
 }

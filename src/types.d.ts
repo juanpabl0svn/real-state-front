@@ -12,6 +12,8 @@ export type Notification = Prisma.NotificationGetPayload<{}>
 
 export type PropertyTypes = $Enums['PropertyType']
 
+export type PropertyTypeCount = { type: PropertyTypes; count: number }
+
 export type PropertyStatus = $Enums['PropertyStatus']
 
 export type NotificationTypes = $Enums['NotificationType']
@@ -108,3 +110,16 @@ export type ReturnTypeHandler<T = any> =
   | { error: false; data: T | any | null; message?: string }
 
 
+export interface GetPropertiesOptions {
+  includeProperties?: boolean     // trae el array completo de propiedades
+  includeTotalCount?: boolean     // trae solo el número total
+  includeTypeCounts?: boolean     // trae el array con conteo por cada tipo
+  includeTopTypes?: boolean       // trae solo el/los tipo(s) con más propiedades
+}
+
+export interface GetPropertiesResult {
+  properties?: Property[]
+  totalCount?: number
+  typeCounts?: PropertyTypeCount[]
+  topTypes?: PropertyTypeCount[]
+}

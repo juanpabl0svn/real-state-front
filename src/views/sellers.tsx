@@ -13,12 +13,15 @@ import { fetchSellers } from "@/lib/actions/user/actions"
 import { getPropertiesByUserId } from "@/lib/actions/properties/actions"
 import { useTranslations } from "next-intl";
 
+import { PropertyTypes } from "@/types"
+
 export function SellersPage() {
 
   const [favoritos, setFavoritos] = useState<number[]>([])
   const { isLoading, setIsLoading, sellers, setSellers } = useAppStore();
 
   const t = useTranslations("common");
+  const tProperties = useTranslations("property");
 
   useEffect(() => {
     (async () => {
@@ -27,14 +30,20 @@ export function SellersPage() {
         const { data } = await fetchSellers();
         const sellersConConteo = await Promise.all(
           data.map(async (seller) => {
-            const count = await getPropertiesByUserId(seller.user_id, { countOnly: true })
+            const { totalCount = 0, topTypes = [] } =
+              await getPropertiesByUserId(seller.user_id, {
+                includeTotalCount: true,
+                includeTopTypes: true,
+              })
             return {
               ...seller,
-              propertyCount: count,  
+              totalCount,
+              topPropertyTypes: topTypes,
+              yearsExperience: new Date().getFullYear() - new Date(seller.created_at).getFullYear(),
             }
           })
         )
-        setSellers(data);
+        setSellers(sellersConConteo);
         console.log(data);
       } catch (error) {
         console.error("Failed to fetch properties:", error);
@@ -44,6 +53,12 @@ export function SellersPage() {
     })();
   }, []);
 
+  const propertyTypeTranslation: Record<PropertyTypes, string> = {
+    house: tProperties("house"),
+    apartment: tProperties("apartment"),
+    land: tProperties("land"),
+    office: tProperties("office"),
+  };
 
   const toggleFavorito = (id: number) => {
     setFavoritos((prev) => (prev.includes(id) ? prev.filter((favId) => favId !== id) : [...prev, id]))
@@ -68,7 +83,7 @@ export function SellersPage() {
                 alt={`Foto de ${seller.name}`}
                 width={400}
                 height={300}
-                className="w-full h-64 object-cover"
+                className="w-full h-64 object-contain"
               />
               {seller.destacado && (
                 <div className="absolute top-2 right-2">
@@ -86,7 +101,18 @@ export function SellersPage() {
               </CardTitle>
               <CardDescription className="flex items-center">
                 <Award className="h-4 w-4 mr-1" />
-                {seller.especialidad}
+                {(() => {
+                  if (seller.topPropertyTypes.length === 1) {
+                    return `${t("expert")} ${t("in")} ${propertyTypeTranslation[seller.topPropertyTypes[0].type as PropertyTypes]}`;
+                  } else if (seller.topPropertyTypes.length > 1) {
+                    const types = seller.topPropertyTypes
+                      .map((tp: PropertyTypes) => propertyTypeTranslation[tp.type as PropertyTypes])
+                      .join(` ${t("and")} `);
+                    return `${t("expert")} ${t("in")} ${types}`;
+                  } else {
+                    return "Especialidad no definida";
+                  }
+                })()}
               </CardDescription>
 
             </CardHeader>
@@ -98,9 +124,9 @@ export function SellersPage() {
                 </div>
                 <div className="flex items-center">
                   <Badge variant="outline" className="mr-2">
-                    {seller.experiencia} de experiencia
+                    {seller.yearsExperience} de experiencia
                   </Badge>
-                  <Badge variant="secondary">{seller.propertyCount} propiedades</Badge>
+                  <Badge variant="secondary">{seller.totalCount} propiedades</Badge>
                 </div>
               </div>
             </CardContent>
@@ -114,7 +140,7 @@ export function SellersPage() {
                 <span className="text-sm">+57 {seller.phone}</span>
               </div>
               <div className="flex w-full gap-2 mt-2">
-                <Button className="flex-1">{t('not_specified')}</Button>
+                <Button className="flex-1">{t('contact')}</Button>
                 <Button
                   variant={favoritos.includes(seller.id) ? "default" : "outline"}
                   size="icon"

@@ -147,6 +147,7 @@ model users {
   otp_codes     otp_codes[]
   properties    properties[]
 
+  favoriteSellersId        String[]                   @default([]) @db.Uuid
   user_providers           user_providers?
   users_seller_permissions users_seller_permissions[]
 }
@@ -167,7 +168,7 @@ enum response {
 
 model users_seller_permissions {
   id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  user_id    String    @db.Uuid @unique
+  user_id    String    @unique @db.Uuid
   response   response  @default(waiting)
   reason     String?
   created_at DateTime? @default(now()) @db.Timestamptz(6)

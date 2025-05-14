@@ -17,6 +17,8 @@
     "yes": "Sí",
     "no": "No",
     "ok": "OK",
+    "in": "en",
+    "and": "y",
     "cancel": "Cancelar",
     "close": "Cerrar",
     "save": "Guardar",
@@ -36,10 +38,28 @@
     "years_ago": " año(s) atrás",
     "contact": "Contactar",
     "not_specified": "No especificado",
-    "zone": "Zona"
+    "zone": "Zona",
+    "expert": "Experto"
   },
   "locale_switcher": {
     "label": "Cambiar idioma",
     "locale": "{locale, select, en {🇺🇸 Ingles} es {🇪🇸 Español} other {Unknown}}"
+  },
+  "property": {
+    "title": "Título",
+    "description": "Descripción",
+    "price": "Precio",
+    "location": "Ubicación",
+    "type": "Tipo",
+    "house": "Casa",
+    "apartment": "Apartamento",
+    "land": "Terreno",
+    "office": "Oficina",
+    "status": "Estado",
+    "images": "Imágenes",
+    "video": "Video",
+    "features": "Características",
+    "amenities": "Servicios",
+    "contact_info": "Información de contacto"
   }
 }
