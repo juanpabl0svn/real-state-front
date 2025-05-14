@@ -40,6 +40,7 @@
   },
   "filter": {
     "filters": "Filtros",
+    "filter" : "Filtro",
     "apply": "Aplicar",
     "reset": "Restablecer",
     "city": "Ciudad",
@@ -144,5 +145,39 @@
     "password_updated": "¡Contraseña actualizada con éxito!",
     "no_password_updated": "Algo salió mal al actualizar tu contraseña. Inténtalo de nuevo",
     "password_conditions": "La contraseña debe tener al menos 8 caracteres y contener al menos una letra mayúscula, una letra minúscula, un número y un carácter especial."
+  },
+  "admin" : {
+    "manage_properties": "Administrar propiedades",
+    "manage_users": "Administrar usuarios",
+    "properties" : "Propiedades",
+    "users" : "Usuarios",
+    "search_users": "Buscar usuarios",
+    "search_property": "Buscar propiedad",
+    "actions": "Acciones",
+    "confirm_approve" : "Confirmar aprobación",
+    "sure_approve_property" : "¿Estás seguro de que deseas aprobar la propiedad {propertyTitle} ?",
+    "sure_approve_seller" : "¿Estás seguro de que deseas aprobar al vendedor {userName} ?",
+    "approving" : "Aprobando...",
+    "approve" : "Aprobar",
+    "confirm_reject" : "Confirmar rechazo",
+    "sure_reject_property" : "¿Estás seguro de que deseas rechazar la propiedad {propertyTitle} ?",
+    "sure_reject_seller" : "¿Estás seguro de que deseas rechazar al vendedor {userName} ?",
+    "reason" : "Razón",
+    "reason_placeholder" : "Escribe la razón del rechazo",
+    "rejecting" : "Rechazando...",
+    "reject" : "Rechazar"
+  },
+  "user" : {
+    "name": "Nombre",
+    "email": "Correo electrónico",
+    "phone": "Teléfono",
+    "role": "Rol",
+    "created_at": "Creado el",
+    "updated_at": "Actualizado el",
+    "status": "Estado",
+    "active": "Activo",
+    "inactive": "Inactivo",
+    "location": "Ubicación",
+    "neighborhood": "Barrio"
   }
 }

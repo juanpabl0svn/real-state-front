@@ -177,6 +177,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.role = session.user.role;
         token.id = session.user.id;
         token.user_id = session.user.user_id;
+        token.has_provider = session.user.has_provider;
       }
 
       if (user) {
@@ -187,6 +188,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.email = user.email;
         token.phone = user.phone;
         token.image = user.image;
+        token.has_provider = user.has_provider;
       }
       return token;
     },
@@ -198,6 +200,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       session.user.email = token.email as string;
       session.user.phone = token.phone as string;
       session.user.image = token.image as string;
+      session.user.has_provider = token.has_provider as boolean;
       return session;
     },
   },

@@ -33,6 +33,7 @@ import {
   rejectProperty,
 } from "@/lib/actions";
 import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 
 export default function AdminProperties() {
   const [properties, setProperties] = useState<Property[]>([]);
@@ -47,6 +48,8 @@ export default function AdminProperties() {
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const t = useTranslations();
+
   useEffect(() => {
     (async () => {
       const { data } = await getNotApprovedProperties();
@@ -59,7 +62,8 @@ export default function AdminProperties() {
     (property) =>
       property.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       property.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      property.neighborhood.toLowerCase().includes(searchQuery.toLowerCase())
+      property.neighborhood.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      property.property_type.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   // Handle property acceptance
@@ -123,7 +127,7 @@ export default function AdminProperties() {
 
     return (
       <Badge className={statusStyles[status as keyof typeof statusStyles]}>
-        {status.charAt(0).toUpperCase() + status.slice(1)}
+        {t(`property.${status}`)}
       </Badge>
     );
   };
@@ -132,14 +136,14 @@ export default function AdminProperties() {
     <>
       <Card className="mb-8">
         <CardHeader className="pb-2">
-          <CardTitle>Properties</CardTitle>
+          <CardTitle>{t("admin.properties")}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col md:flex-row gap-4 mb-6">
             <div className="relative flex-1">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search properties..."
+                placeholder={t("admin.search_property")}
                 className="pl-8"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -148,24 +152,24 @@ export default function AdminProperties() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline">
-                  <Filter className="mr-2 h-4 w-4" /> Filter
+                  <Filter className="mr-2 h-4 w-4" /> {t("filter.filter")}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => setSearchQuery("")}>
-                  All Properties
+                  {t("filter.all")}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setSearchQuery("house")}>
-                  Houses
+                  {t("property.house")}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setSearchQuery("apartment")}>
-                  Apartments
+                  {t("property.apartment")}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setSearchQuery("land")}>
-                  Land
+                  {t("property.land")}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setSearchQuery("office")}>
-                  Offices
+                  {t("property.office")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -175,32 +179,37 @@ export default function AdminProperties() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Title</TableHead>
-                  <TableHead>Type</TableHead>
+                  <TableHead>{t("property.title")}</TableHead>
+                  <TableHead>{t("property.property_type")}</TableHead>
                   <TableHead className="hidden md:table-cell">
-                    Location
+                    {t("property.location")}
                   </TableHead>
-                  <TableHead className="hidden md:table-cell">Price</TableHead>
-                  <TableHead className="hidden md:table-cell">Status</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead className="hidden md:table-cell">
+                    {t("property.price")}
+                  </TableHead>
+                  <TableHead className="hidden md:table-cell">
+                    {t("property.status")}
+                  </TableHead>
+                  <TableHead className="text-right">
+                    {t("admin.actions")}
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredProperties.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={6} className="text-center py-8">
-                      No properties found. Try a different search or add a new
-                      property.
+                      {t("property.no_properties")}
                     </TableCell>
                   </TableRow>
                 ) : (
                   filteredProperties.map((property) => (
                     <TableRow key={property.id}>
-                      <TableCell className="font-medium">
+                      <TableCell className="font-medium text-pretty max-w-[200px] truncate">
                         {property.title}
                       </TableCell>
                       <TableCell className="capitalize">
-                        {property.property_type}
+                        {t(`property.${property.property_type}`)}
                       </TableCell>
                       <TableCell className="hidden md:table-cell">
                         {property.city} / {property.neighborhood}
@@ -254,10 +263,11 @@ export default function AdminProperties() {
         <Dialog open={acceptDialogOpen} onOpenChange={setAcceptDialogOpen}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Confirmar aprobación</DialogTitle>
+              <DialogTitle>{t("admin.confirm_approve")}</DialogTitle>
               <DialogDescription>
-                ¿Estás seguro de que deseas aprobar la propiedad{" "}
-                {propertyToAccept.title}?
+                {t("admin.sure_approve_property", {
+                  propertyTitle: propertyToAccept.title,
+                })}
               </DialogDescription>
             </DialogHeader>
             <DialogFooter className="flex justify-end gap-2 mt-4">
@@ -266,13 +276,13 @@ export default function AdminProperties() {
                 onClick={() => setAcceptDialogOpen(false)}
                 disabled={isSubmitting}
               >
-                Cancelar
+                {t("common.cancel")}
               </Button>
               <Button
                 onClick={() => handleAcceptConfirm(propertyToAccept.id)}
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "Aprobando..." : "Confirmar"}
+                {isSubmitting ? t("admin.approving") : t("admin.approve")}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -284,16 +294,18 @@ export default function AdminProperties() {
         <Dialog open={rejectDialogOpen} onOpenChange={setRejectDialogOpen}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Confirmar rechazo</DialogTitle>
+              <DialogTitle>{t('admin.confirm_reject')}</DialogTitle>
               <DialogDescription>
-                ¿Estás seguro de que deseas rechazar la propiedad{" "}
-                {propertyToReject.title}?
+                {t("admin.sure_reject_property", {
+                  propertyTitle: propertyToReject.title,
+                })}
               </DialogDescription>
-              <label htmlFor="">Razon</label>
+              <label htmlFor="reason">{t("admin.reason")}</label>
               <Input
-                placeholder="Escribe la razón del rechazo"
+                placeholder={t("admin.reason_placeholder")}
                 className="mt-2"
                 value={reason}
+                id="reason"
                 onChange={(e) => setReason(e.target.value)}
               />
             </DialogHeader>
@@ -302,14 +314,14 @@ export default function AdminProperties() {
                 variant="outline"
                 onClick={() => setRejectDialogOpen(false)}
               >
-                Cancelar
+                {t("common.cancel")}
               </Button>
               <Button
                 variant="destructive"
                 onClick={() => handleRejectConfirm(propertyToReject.id)}
                 disabled={isSubmitting || !reason}
               >
-                Rechazar
+                {isSubmitting ? t("admin.rejecting") : t("admin.reject")}
               </Button>
             </DialogFooter>
           </DialogContent>

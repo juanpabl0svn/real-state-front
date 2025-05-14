@@ -66,7 +66,7 @@ export default function SettingsPage() {
               <CardDescription>
                 {t("update_info")}
                 <br />
-                {session.data?.user?.role !== "seller" && (
+                {session.data?.user?.role === "user" && (
                   <Button
                     disabled={petitionPending}
                     onClick={askForPermission}
