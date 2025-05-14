@@ -1,5 +1,6 @@
 import { auth } from "@/auth"; 
 import { prisma } from "@/prisma";  
+import { createGoogleMeet, sendMeetByEmail } from "@/meet";
 import moment from "moment";
 
 export async function POST(req: Request) {
@@ -8,6 +9,8 @@ export async function POST(req: Request) {
     if (!session) return new Response("Unauthorized", { status: 401 });
 
     const userId = session.user.user_id!;
+    const email = session.user.email!;
+    const accessToken = session.user.access_token!;
 
     const { date, startTime } = await req.json();
     if (!date || !startTime) {
@@ -28,14 +31,25 @@ export async function POST(req: Request) {
       return new Response("Appointment already exists at this time", { status: 409 });
     }
 
+    const meetEvent = await createGoogleMeet(
+      accessToken,
+      "Reunión inmobiliaria",
+      date,
+      startTime,
+      endTime
+    )
+
     const newAppointment = await prisma.appoinments.create({
       data: {
         user_id: userId,
         date: new Date(date),  
         startTime,
         endTime,
+        meetEvent: meetEvent!
       },
     });
+
+    await sendMeetByEmail(newAppointment, email);
 
     return new Response(JSON.stringify(newAppointment), {
       headers: {
