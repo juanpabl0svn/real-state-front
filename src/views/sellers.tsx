@@ -26,6 +26,8 @@ export function SellersPage() {
 
   const t = useTranslations("common");
   const tProperties = useTranslations("property");
+  const tSellers = useTranslations("seller");
+
 
   const router = useRouter();
   useEffect(() => {
@@ -104,11 +106,11 @@ export function SellersPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="text-center mb-12">
-        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">Nuestro Equipo de Vendedores</h1>
+        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">{tSellers('title')}</h1>
         <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-          Profesionales inmobiliarios con experiencia para ayudarte a encontrar la propiedad perfecta
+          {tSellers('text1')}
         </p>
-      </div>c
+      </div>
       {isAuthenticated && (
 
         <div className="flex justify-center mb-8">
@@ -118,7 +120,7 @@ export function SellersPage() {
             className={showOnlyFavorites ? "bg-rose-500 hover:bg-rose-600" : ""}
           >
             <Heart className={`h-5 w-5 mr-2 ${showOnlyFavorites ? "fill-white" : ""}`} />
-            {showOnlyFavorites ? "Mostrando favoritos" : "Ver favoritos"}
+            {showOnlyFavorites ? `${tSellers('showing_favorites')}` : `${tSellers('show_favorites')}`}
           </Button>
         </div>
       )}
@@ -173,7 +175,7 @@ export function SellersPage() {
                           .join(` ${t("and")} `);
                         return `${t("expert")} ${t("in")} ${types}`;
                       } else {
-                        return "Especialidad no definida";
+                        return `${t("not_specified")}`;
                       }
                     })()}
                   </CardDescription>
@@ -187,9 +189,9 @@ export function SellersPage() {
                     </div>
                     <div className="flex items-center">
                       <Badge variant="outline" className="mr-2">
-                        {seller.yearsExperience} de experiencia
+                        {seller.yearsExperience} {tSellers("of_experece")}
                       </Badge>
-                      <Badge variant="secondary">{seller.totalCount} propiedades</Badge>
+                      <Badge variant="secondary">{seller.totalCount} {tSellers("properties")}</Badge>
                     </div>
                   </div>
                 </CardContent>
@@ -200,7 +202,7 @@ export function SellersPage() {
                   </div>
                   <div className="flex items-center w-full">
                     <Phone className="h-4 w-4 mr-2 text-muted-foreground" />
-                    <span className="text-sm">+57 {seller.phone}</span>
+                    <span className="text-sm"> {seller.phone ? `+57 ${seller.phone}` : t("not_specified")}</span>
                   </div>
                   <div className="flex w-full gap-2 mt-2">
                     <Button className="flex-1" onClick={() => router.push(`/seller/${seller.user_id}`)}>{t('contact')}</Button>

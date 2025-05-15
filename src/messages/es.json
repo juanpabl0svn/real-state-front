@@ -39,7 +39,8 @@
     "contact": "Contactar",
     "not_specified": "No especificado",
     "zone": "Zona",
-    "expert": "Experto"
+    "expert": "Experto",
+    "back": "Regresar"
   },
   "locale_switcher": {
     "label": "Cambiar idioma",
@@ -54,11 +55,20 @@
     "address": "Dirección",
     "company": "Compañía",
     "website": "Sitio web",
-    "social_media": "Redes sociales"
+    "social_media": "Redes sociales",
+    "of_experece": " de experiencia",
+    "properties_of": "Propiedades de",
+    "properties": "Propiedades",
+    "show_favorites": "Mostrar favoritos",
+    "showing_favorites": "Mostrando favoritos",
+    "current_properties": "Propiedades actuales",
+    "title": "Nuestro Equipo de Vendedores",
+    "text1": "Profesionales inmobiliarios con experiencia para ayudarte a encontrar la propiedad perfecta",
+    "text2": "Este vendedor no tiene propiedades disponibles actualmente."
   },
   "filter": {
     "filters": "Filtros",
-    "filter" : "Filtro",
+    "filter": "Filtro",
     "apply": "Aplicar",
     "reset": "Restablecer",
     "city": "Ciudad",
@@ -76,7 +86,7 @@
     "price": "Precio",
     "location": "Ubicación",
     "contact_seller": "Contactar al vendedor",
-    "contact_info" : "Información de contacto",
+    "contact_info": "Información de contacto",
     "created_at": "Creado el",
     "apartment": "Apartamento",
     "house": "Casa",
@@ -105,7 +115,7 @@
     "select_property_type": "Seleccionar tipo de propiedad",
     "select_status": "Seleccionar estado",
     "no_property": "Propiedad no encontrada",
-    "no_photo" : "No hay fotos que mostrar"
+    "no_photo": "No hay fotos que mostrar"
   },
   "combobox": {
     "city": "Selecciona una ciudad",
@@ -116,7 +126,10 @@
     "search_neighborhood": "Buscar barrio"
   },
   "form": {
+    "contact_with": "Contactar con",
     "required": "Este campo es obligatorio",
+    "fullname": "Nombre completo",
+    "name": "Nombre",
     "email": "Ingrese un correo electrónico válido",
     "phone": "Ingrese un número de teléfono válido",
     "password": "La contraseña debe tener al menos 6 caracteres",
@@ -132,7 +145,8 @@
     "info": "Información",
     "property_deleted": "La propiedad ha sido eliminada con éxito",
     "property_not_found": "Propiedad no encontrada",
-    "property_exists": "Ya existe una propiedad con este título"
+    "property_exists": "Ya existe una propiedad con este título",
+    "send_message": "Enviar mensaje"
   },
   "settings": {
     "user_config": "Configuración de usuario",
@@ -164,28 +178,28 @@
     "no_password_updated": "Algo salió mal al actualizar tu contraseña. Inténtalo de nuevo",
     "password_conditions": "La contraseña debe tener al menos 8 caracteres y contener al menos una letra mayúscula, una letra minúscula, un número y un carácter especial."
   },
-  "admin" : {
+  "admin": {
     "manage_properties": "Administrar propiedades",
     "manage_users": "Administrar usuarios",
-    "properties" : "Propiedades",
-    "users" : "Usuarios",
+    "properties": "Propiedades",
+    "users": "Usuarios",
     "search_users": "Buscar usuarios",
     "search_property": "Buscar propiedad",
     "actions": "Acciones",
-    "confirm_approve" : "Confirmar aprobación",
-    "sure_approve_property" : "¿Estás seguro de que deseas aprobar la propiedad {propertyTitle} ?",
-    "sure_approve_seller" : "¿Estás seguro de que deseas aprobar al vendedor {userName} ?",
-    "approving" : "Aprobando...",
-    "approve" : "Aprobar",
-    "confirm_reject" : "Confirmar rechazo",
-    "sure_reject_property" : "¿Estás seguro de que deseas rechazar la propiedad {propertyTitle} ?",
-    "sure_reject_seller" : "¿Estás seguro de que deseas rechazar al vendedor {userName} ?",
-    "reason" : "Razón",
-    "reason_placeholder" : "Escribe la razón del rechazo",
-    "rejecting" : "Rechazando...",
-    "reject" : "Rechazar"
+    "confirm_approve": "Confirmar aprobación",
+    "sure_approve_property": "¿Estás seguro de que deseas aprobar la propiedad {propertyTitle} ?",
+    "sure_approve_seller": "¿Estás seguro de que deseas aprobar al vendedor {userName} ?",
+    "approving": "Aprobando...",
+    "approve": "Aprobar",
+    "confirm_reject": "Confirmar rechazo",
+    "sure_reject_property": "¿Estás seguro de que deseas rechazar la propiedad {propertyTitle} ?",
+    "sure_reject_seller": "¿Estás seguro de que deseas rechazar al vendedor {userName} ?",
+    "reason": "Razón",
+    "reason_placeholder": "Escribe la razón del rechazo",
+    "rejecting": "Rechazando...",
+    "reject": "Rechazar"
   },
-  "user" : {
+  "user": {
     "name": "Nombre",
     "email": "Correo electrónico",
     "phone": "Teléfono",

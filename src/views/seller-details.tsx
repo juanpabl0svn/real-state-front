@@ -37,12 +37,13 @@ export function SellerDetailsPage() {
         telefono: "",
         mensaje: "",
     })
-    const [enviado, setEnviado] = useState(false)
+    const [sended, setSended] = useState(false)
     const [seller, setSeller] = useState<User | null>(null)
 
     const t = useTranslations("common");
     const tProperties = useTranslations("property");
     const tSeller = useTranslations("seller");
+    const tForm = useTranslations("form");
 
 
     useEffect(() => {
@@ -126,7 +127,7 @@ export function SellerDetailsPage() {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
         console.log("Formulario enviado:", formData)
-        setEnviado(true)
+        setSended(true)
     }
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -146,10 +147,9 @@ export function SellerDetailsPage() {
 
     return (
         <div className="container mx-auto px-4 py-8">
-            {/* Botón de volver */}
             <div className="mb-6">
                 <Button variant="outline" onClick={() => router.push("/seller")}>
-                    <ArrowLeft className="mr-2 h-4 w-4" /> Volver a vendedores
+                    <ArrowLeft className="mr-2 h-4 w-4" /> {t("back")}
                 </Button>
             </div>
 
@@ -202,7 +202,7 @@ export function SellerDetailsPage() {
                                 }
                             })()}
                         </Badge>
-                        <Badge variant="outline">{seller.yearsExperience} de experiencia</Badge>
+                        <Badge variant="outline">{seller.yearsExperience} {tSeller('of_experece')}</Badge>
 
                     </div>
 
@@ -213,7 +213,7 @@ export function SellerDetailsPage() {
                         </div>
                         <div className="flex items-center">
                             <Building className="h-5 w-5 mr-2 text-muted-foreground" />
-                            <span>{seller.totalCount} propiedades</span>
+                            <span>{seller.totalCount} {tSeller('properties')}</span>
                         </div>
                         <div className="flex items-center">
                             <Mail className="h-5 w-5 mr-2 text-muted-foreground" />
@@ -221,7 +221,7 @@ export function SellerDetailsPage() {
                         </div>
                         <div className="flex items-center">
                             <Phone className="h-5 w-5 mr-2 text-muted-foreground" />
-                            <span>+57 {seller.phone || t("not_specified")}</span>
+                            <span>{seller.phone ? `+57 ${seller.phone}` : t("not_specified")}</span>
                         </div>
                     </div>
 
@@ -233,16 +233,14 @@ export function SellerDetailsPage() {
 
                 </div>
             </div>
-
-            {/* Pestañas para propiedades y contacto */}
             <Tabs defaultValue="propiedades" className="mt-8">
                 <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="propiedades">Propiedades actuales</TabsTrigger>
-                    <TabsTrigger value="contacto">Contactar</TabsTrigger>
+                    <TabsTrigger value="propiedades">{tSeller('current_properties')}</TabsTrigger>
+                    <TabsTrigger value="contacto">{t("contact")}</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="propiedades" className="mt-6">
-                    <h2 className="text-2xl font-semibold mb-4">Propiedades de {seller.nombre}</h2>
+                    <h2 className="text-2xl font-semibold mb-4">{tSeller('properties_of')} {seller.name}</h2>
                     {seller.properties.length > 0 ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {seller.properties.map((property: Property) => (
@@ -252,7 +250,7 @@ export function SellerDetailsPage() {
                         </div>
                     ) : (
                         <p className="text-center py-8 text-muted-foreground">
-                            Este vendedor no tiene propiedades disponibles actualmente.
+                            {tSeller("text2")}
                         </p>
                     )}
                 </TabsContent>
@@ -260,21 +258,21 @@ export function SellerDetailsPage() {
                 <TabsContent value="contacto" className="mt-6">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Contactar con {seller.nombre}</CardTitle>
+                            <CardTitle>{tForm('contact_with')} {seller.name}</CardTitle>
                             <CardDescription>
-                                Completa el formulario y {seller.nombre} se pondrá en contacto contigo lo antes posible.
+                                Completa el formulario y {seller.name} se pondrá en contacto contigo lo antes posible.
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
-                            {!enviado ? (
+                            {!sended ? (
                                 <form onSubmit={handleSubmit} className="space-y-4">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <Label htmlFor="nombre">Nombre completo</Label>
+                                            <Label htmlFor="nombre">{tForm('fullname')}</Label>
                                             <Input
                                                 id="nombre"
                                                 name="nombre"
-                                                placeholder="Tu nombre"
+                                                placeholder={tForm('name')}
                                                 value={formData.nombre}
                                                 onChange={handleInputChange}
                                                 required
@@ -317,7 +315,7 @@ export function SellerDetailsPage() {
                                         />
                                     </div>
                                     <Button type="submit" className="w-full">
-                                        <Send className="mr-2 h-4 w-4" /> Enviar mensaje
+                                        <Send className="mr-2 h-4 w-4" /> {tForm('send_message')}
                                     </Button>
                                 </form>
                             ) : (
@@ -337,7 +335,7 @@ export function SellerDetailsPage() {
                                     <p className="text-muted-foreground mb-4">
                                         Gracias por contactar con {seller.nombre}. Te responderá lo antes posible.
                                     </p>
-                                    <Button variant="outline" onClick={() => setEnviado(false)}>
+                                    <Button variant="outline" onClick={() => setSended(false)}>
                                         Enviar otro mensaje
                                     </Button>
                                 </div>
