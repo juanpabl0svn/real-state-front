@@ -7,11 +7,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { IPropertyForm, Property } from "@/types";
 import { useAppStore } from "@/stores/app-store";
 import { createProperty, updateProperty } from "@/lib/actions";
+import { useTranslations } from "next-intl";
 
 export function PropertiesPage() {
   const [editingProperty, setEditingProperty] = useState<Property | null>(null);
 
   const { tab, setTab } = useAppStore();
+
+  const t = useTranslations()
 
   const handleEdit = (property: Property) => {
     setEditingProperty(property);
@@ -31,17 +34,17 @@ export function PropertiesPage() {
   return (
     <div className="container mx-auto py-10">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Property Management</h1>
+        <h1 className="text-3xl font-bold">{t('property.property_managment')}</h1>
         <Button onClick={handleCreateNew}>
           <PlusIcon className="mr-2 h-4 w-4" />
-          Add New Property
+          {t('property.add_new_property')}
         </Button>
       </div>
       <Tabs value={tab ?? "list"} onValueChange={setTab} className="w-full">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="list">Properties List</TabsTrigger>
+          <TabsTrigger value="list">{t('property_list')}</TabsTrigger>
           <TabsTrigger value="form">
-            {editingProperty ? "Edit Property" : "Add New Property"}
+            {editingProperty ? t('edit_property') : t('add_property')}
           </TabsTrigger>
         </TabsList>
         <TabsContent value="list">

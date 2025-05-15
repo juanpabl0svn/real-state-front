@@ -138,7 +138,7 @@ export default function Header() {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem>
                     <Link href="/logout" className="flex w-full">
-                      {t("logout")}
+                      {t("log_out")}
                     </Link>
                   </DropdownMenuItem>
                 </DropdownMenuContent>

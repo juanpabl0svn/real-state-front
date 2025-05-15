@@ -122,7 +122,16 @@
     "no_property": "Property not found",
     "no_photo": "No photos to display",
     "are_you_sure": "Are you sure?",
-    "delete_property": "This will permanently delete the property {propertyTitle}. This action cannot be undone."
+    "delete_property": "This will permanently delete the property {propertyTitle}. This action cannot be undone.",
+    "main_photo": "Main photo",
+    "updating": "Updating...",
+    "creating": "Creating...",
+    "saving": "Saving...",
+    "property_managment": "Property management",
+    "add_new_property": "Add new property",
+    "property_list" : "Property list",
+    "edit_property": "Edit property",
+    "add_property": "Add property"
   },
   "auth": {
     "mail_already_in_use": "This email is already in use. Try another one.",

@@ -119,7 +119,16 @@
     "no_property": "Propiedad no encontrada",
     "no_photo": "No hay fotos que mostrar",
     "are_you_sure": "¿Estás seguro?",
-    "delete_property": "Esto eliminará permanentemente la propiedad {propertyTitle}. Esta acción no se puede deshacer."
+    "delete_property": "Esto eliminará permanentemente la propiedad {propertyTitle}. Esta acción no se puede deshacer.",
+    "main_photo": "Foto principal",
+    "updating": "Actualizando...",
+    "creating": "Creando...",
+    "saving": "Guardando...",
+    "property_managment": "Gestión de propiedades",
+    "add_new_property": "Agregar nueva propiedad",
+    "property_list" : "Lista de propiedades",
+    "edit_property": "Editar propiedad",
+    "add_property": "Agregar propiedad"
   },
   "auth": {
     "mail_already_in_use": "Este correo electrónico ya está en uso. Intenta con otro.",

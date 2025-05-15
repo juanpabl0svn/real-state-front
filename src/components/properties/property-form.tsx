@@ -144,7 +144,7 @@ export function PropertyForm({
       <CardContent className="pt-6">
         <div className="space-y-4">
           <div>
-            <label className="block font-medium mb-1">Imagen principal</label>
+            <label className="block font-medium mb-1">{t('property.main_photo')}</label>
             <ImageUploader
               files={mainPhoto}
               setFiles={setMainPhoto}
@@ -377,7 +377,7 @@ export function PropertyForm({
 
             <div className="flex justify-end gap-4">
               <Button variant="outline" type="button" asChild>
-                <Link href="/admin/properties">Cancel</Link>
+                <Link href="/admin/properties">{t('common.cancel')}</Link>
               </Button>
               <Button
                 type="submit"
@@ -385,10 +385,10 @@ export function PropertyForm({
                 onClick={() => form.trigger()}
               >
                 {isLoading
-                  ? "Saving..."
+                  ? t('property.saving')
                   : property
-                  ? "Update Property"
-                  : "Create Property"}
+                  ? t('property.updating')
+                  : t('property.creating')}
               </Button>
             </div>
           </form>
