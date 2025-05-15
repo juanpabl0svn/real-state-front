@@ -1,6 +1,7 @@
 {
   "header": {
     "home": "Inicio",
+    "sellers": "Vendedores",
     "my_properties": "Mis Propiedades"
   },
   "notifications": {
@@ -16,6 +17,8 @@
     "yes": "Sí",
     "no": "No",
     "ok": "OK",
+    "in": "en",
+    "and": "y",
     "cancel": "Cancelar",
     "close": "Cerrar",
     "save": "Guardar",
@@ -32,11 +35,26 @@
     "hours_ago": " hora(s) atrás",
     "days_ago": " día(s) atrás",
     "months_ago": " mese(s) atrás",
-    "years_ago": " año(s) atrás"
+    "years_ago": " año(s) atrás",
+    "contact": "Contactar",
+    "not_specified": "No especificado",
+    "zone": "Zona",
+    "expert": "Experto"
   },
   "locale_switcher": {
     "label": "Cambiar idioma",
     "locale": "{locale, select, en {🇺🇸 Ingles} es {🇪🇸 Español} other {Unknown}}"
+  },
+  "seller": {
+    "favorite": "Agregar a favoritos",
+    "unfavorite": "Eliminar de favoritos",
+    "name": "Nombre",
+    "email": "Correo electrónico",
+    "phone": "Teléfono",
+    "address": "Dirección",
+    "company": "Compañía",
+    "website": "Sitio web",
+    "social_media": "Redes sociales"
   },
   "filter": {
     "filters": "Filtros",

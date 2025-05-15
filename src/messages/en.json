@@ -1,6 +1,7 @@
 {
   "header": {
     "home": "Home",
+    "sellers": "Sellers",
     "my_properties": "My Properties"
   },
   "notifications": {
@@ -16,6 +17,8 @@
     "yes": "Yes",
     "no": "No",
     "ok": "OK",
+    "in": "in",
+    "and": "and",
     "cancel": "Cancel",
     "close": "Close",
     "save": "Save",
@@ -37,6 +40,17 @@
   "locale_switcher": {
     "label": "Change language",
     "locale": "{locale, select, en {🇺🇸 English} es {🇪🇸 Spanish} other {Unknown}}"
+  },
+  "seller": {
+    "favorite": "Add to favorites",
+    "unfavorite": "Remove from favorites",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "company": "Company",
+    "website": "Website",
+    "social_media": "Social media"
   },
   "filter": {
     "filters": "Filters",

@@ -6,9 +6,13 @@ export type Property = Prisma.propertiesGetPayload<{}> & { photos?: Photos[] }
 
 export type User = Prisma.UserGetPayload<{}>
 
-export type INotification = Prisma.NotificationGetPayload<{}>
+export type users_seller_permissions = Prisma.users_seller_permissionsGetPayload<{}>
+
+export type Notification = Prisma.NotificationGetPayload<{}>
 
 export type PropertyTypes = $Enums['PropertyType']
+
+export type PropertyTypeCount = { type: PropertyTypes; count: number }
 
 export type PropertyStatus = $Enums['PropertyStatus']
 
@@ -96,6 +100,8 @@ export interface AppStore {
   setData: (data: any | null) => void
   properties: Property[]
   setProperties: (properties: Property[]) => void
+  sellers: User[]
+  setSellers: (sellers: User[]) => void
   notifications: Notification[]
   setNotifications: (notifications: Notification[] | ((prev: Notification[]) => Notification[])) => void
 }
@@ -104,3 +110,16 @@ export type ReturnTypeHandler<T = any> =
   | { error: false; data: T | any | null; message?: string }
 
 
+export interface GetPropertiesOptions {
+  includeProperties?: boolean     // trae el array completo de propiedades
+  includeTotalCount?: boolean     // trae solo el número total
+  includeTypeCounts?: boolean     // trae el array con conteo por cada tipo
+  includeTopTypes?: boolean       // trae solo el/los tipo(s) con más propiedades
+}
+
+export interface GetPropertiesResult {
+  properties?: Property[]
+  totalCount?: number
+  typeCounts?: PropertyTypeCount[]
+  topTypes?: PropertyTypeCount[]
+}

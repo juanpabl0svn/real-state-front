@@ -12,6 +12,8 @@ export const useAppStore = create<AppStore>((set, get) => ({
   setData: (data) => set(() => ({ data })),
   properties: [],
   setProperties: (properties) => set(() => ({ properties })),
+  sellers: [],
+  setSellers: (sellers) => set(() => ({ sellers })),
   notifications: [],
   setNotifications: (notifications) => {
     if (typeof notifications === 'function') {
