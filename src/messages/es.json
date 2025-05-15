@@ -187,7 +187,8 @@
     "property_exists": "Ya existe una propiedad con este título",
     "send_message": "Enviar mensaje",
     "send_another_message": "Enviar otro mensaje",
-    "sended_message": "¡Mensaje enviado!"
+    "sended_message": "¡Mensaje enviado!",
+    "text1": "Completa el formulario y {seller.name} se pondrá en contacto contigo lo antes posible."
   },
   "settings": {
     "user_config": "Configuración de usuario",

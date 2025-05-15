@@ -190,7 +190,8 @@
     "property_exists": "A property with this title already exists",
     "send_message": "Send message",
     "send_another_message": "Send another message",
-    "sended_message": "Message sent!"
+    "sended_message": "Message sent!",
+    "text1": "Completa el formulario y {seller.name} se pondrá en contacto contigo lo antes posible."
   },
   "settings": {
     "user_config": "User settings",

@@ -260,7 +260,7 @@ export function SellerDetailsPage() {
                         <CardHeader>
                             <CardTitle>{tForm('contact_with')} {seller.name}</CardTitle>
                             <CardDescription>
-                                {/* {tForm('text1')} */}
+                                {tForm('text1')}
                                 Completa el formulario y {seller.name} se pondrá en contacto contigo lo antes posible.
                             </CardDescription>
                         </CardHeader>
@@ -292,7 +292,6 @@ export function SellerDetailsPage() {
                                         </div>
                                     </div>
                                     <div className="space-y-2">
-
                                         <Input
                                             id="email"
                                             name="email"
