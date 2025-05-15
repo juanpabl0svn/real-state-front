@@ -16,10 +16,13 @@ import {
 import { useLocations } from "@/hooks/use-locations";
 import { NeighborhoodCombobox } from "../neighborhood-combobox";
 import { CityCombobox } from "../city-combobox";
+import { useTranslations } from "next-intl";
 
 export function PropertyFilters() {
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  const t = useTranslations();
 
   // Initialize state from URL params
   const [propertyType, setPropertyType] = useState(
@@ -34,7 +37,6 @@ export function PropertyFilters() {
   const [currentNeighborhood, setCurrentNeighborhood] = useState(
     searchParams.get("currentNeighborhood") || ""
   );
-
 
   const { cities, getNeighborhoods } = useLocations();
 
@@ -71,27 +73,29 @@ export function PropertyFilters() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-2xl">Filters</CardTitle>
+        <CardTitle className="text-2xl">{t("filter.filters")}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="space-y-2">
-          <Label htmlFor="property-type">Property Type</Label>
+          <Label htmlFor="property-type">{t("property.property_type")}</Label>
           <Select value={propertyType} onValueChange={setPropertyType}>
             <SelectTrigger id="property-type">
-              <SelectValue placeholder="All Types" />
+              <SelectValue placeholder={t("filter.all")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Types</SelectItem>
-              <SelectItem value="house">House</SelectItem>
-              <SelectItem value="apartment">Apartment</SelectItem>
-              <SelectItem value="land">Land</SelectItem>
-              <SelectItem value="office">Office</SelectItem>
+              <SelectItem value="all">{t("filter.all")}</SelectItem>
+              <SelectItem value="house">{t("property.house")}</SelectItem>
+              <SelectItem value="apartment">
+                {t("property.apartment")}
+              </SelectItem>
+              <SelectItem value="land">{t("property.land")}</SelectItem>
+              <SelectItem value="office">{t("property.office")}</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
         <div className="space-y-2">
-          <Label>Price Range</Label>
+          <Label>{t("filter.price_range")}</Label>
           <div className="grid grid-cols-2 gap-2">
             <div>
               <Input
@@ -113,7 +117,7 @@ export function PropertyFilters() {
         </div>
 
         <div className="space-y-2">
-          <Label>City</Label>
+          <Label>{t("filter.city")}</Label>
           <CityCombobox
             cities={cities}
             value={currentCity}
@@ -122,7 +126,7 @@ export function PropertyFilters() {
         </div>
 
         <div className="space-y-2">
-          <Label>Neighborhood</Label>
+          <Label>{t("filter.neighborhood")}</Label>
           <NeighborhoodCombobox
             key={currentCity}
             neighborhoods={currentNeighborhoods}
@@ -133,9 +137,9 @@ export function PropertyFilters() {
         </div>
 
         <div className="flex flex-col gap-2">
-          <Button onClick={applyFilters}>Apply Filters</Button>
+          <Button onClick={applyFilters}>{t("filter.apply")}</Button>
           <Button variant="outline" onClick={resetFilters}>
-            Reset
+            {t("filter.reset")}
           </Button>
         </div>
       </CardContent>

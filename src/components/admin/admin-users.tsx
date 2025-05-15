@@ -26,13 +26,14 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import type { User, UserSellerPermissions } from "@/types";
+import type { UserSellerPermissions } from "@/types";
 import {
   approvePermissionSeller,
   getUsersPermissionsSeller,
   rejectPermissionSeller,
 } from "@/lib/actions";
 import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 
 export default function AdminUsers() {
   const [users, setUsers] = useState<UserSellerPermissions[]>([]);
@@ -44,6 +45,8 @@ export default function AdminUsers() {
   const [userToReject, setUserToReject] =
     useState<UserSellerPermissions | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const t = useTranslations();
 
   useEffect(() => {
     (async () => {
@@ -113,14 +116,14 @@ export default function AdminUsers() {
     <>
       <Card className="mb-8">
         <CardHeader className="pb-2">
-          <CardTitle>Properties</CardTitle>
+          <CardTitle>{t("admin.users")}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col md:flex-row gap-4 mb-6">
             <div className="relative flex-1">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search users..."
+                placeholder={t("admin.search_users")}
                 className="pl-8"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -129,24 +132,24 @@ export default function AdminUsers() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline">
-                  <Filter className="mr-2 h-4 w-4" /> Filter
+                  <Filter className="mr-2 h-4 w-4" /> {t("filter.filter")}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => setSearchQuery("")}>
-                  All Properties
+                  {t("filter.all")}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setSearchQuery("house")}>
-                  Houses
+                  {t("property.house")}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setSearchQuery("apartment")}>
-                  Apartments
+                  {t("property.apartment")}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setSearchQuery("land")}>
-                  Land
+                  {t("property.land")}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setSearchQuery("office")}>
-                  Offices
+                  {t("property.office")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -156,12 +159,14 @@ export default function AdminUsers() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Nombre</TableHead>
-                  <TableHead>Correo</TableHead>
+                  <TableHead>{t("user.name")}</TableHead>
+                  <TableHead>{t("user.email")}</TableHead>
                   <TableHead className="hidden md:table-cell">
-                    Location
+                    {t("user.location")}
                   </TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead className="text-right">
+                    {t("admin.actions")}
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -216,9 +221,11 @@ export default function AdminUsers() {
         <Dialog open={acceptDialogOpen} onOpenChange={setAcceptDialogOpen}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Confirmar aprobación</DialogTitle>
+              <DialogTitle>{t("admin.confirm_approve")}</DialogTitle>
               <DialogDescription>
-                ¿Estás seguro de que deseas aprobar a {userToAccept.user.name}?
+                {t("admin.sure_approve_seller", {
+                  userName: userToAccept.user.name,
+                })}
               </DialogDescription>
             </DialogHeader>
             <DialogFooter className="flex justify-end gap-2 mt-4">
@@ -227,13 +234,13 @@ export default function AdminUsers() {
                 onClick={() => setAcceptDialogOpen(false)}
                 disabled={isSubmitting}
               >
-                Cancelar
+                {t("common.cancel")}
               </Button>
               <Button
                 onClick={() => handleAcceptConfirm(userToAccept.id)}
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "Aprobando..." : "Confirmar"}
+                {isSubmitting ? t("admin.approving") : t("admin.approve")}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -245,13 +252,16 @@ export default function AdminUsers() {
         <Dialog open={rejectDialogOpen} onOpenChange={setRejectDialogOpen}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Confirmar rechazo</DialogTitle>
+              <DialogTitle>{t("admin.confirm_reject")}</DialogTitle>
               <DialogDescription>
-                ¿Estás seguro de que deseas rechazar a {userToReject.user.name}?
+                {t("admin.sure_reject_seller", {
+                  userName: userToReject.user.name,
+                })}
               </DialogDescription>
-              <label htmlFor="">Razon</label>
+              <label htmlFor="reason">{t("admin.reason")}</label>
               <Input
-                placeholder="Escribe la razón del rechazo"
+                placeholder={t("admin.reason_placeholder")}
+                id="reason"
                 className="mt-2"
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
@@ -262,14 +272,14 @@ export default function AdminUsers() {
                 variant="outline"
                 onClick={() => setRejectDialogOpen(false)}
               >
-                Cancelar
+                {t("common.cancel")}
               </Button>
               <Button
                 variant="destructive"
                 onClick={() => handleRejectConfirm(userToReject.id)}
                 disabled={isSubmitting || !reason}
               >
-                Rechazar
+                {isSubmitting ? t("admin.rejecting") : t("admin.reject")}
               </Button>
             </DialogFooter>
           </DialogContent>

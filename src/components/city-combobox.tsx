@@ -1,6 +1,7 @@
 "use client";
 
 import { SearchableCombobox } from "@/components/ui/searchable-combobox";
+import { useTranslations } from "next-intl";
 
 interface CityComboboxProps {
   value: string;
@@ -15,14 +16,16 @@ export function CityCombobox({
   disabled = false,
   cities,
 }: CityComboboxProps) {
+  const t = useTranslations("combobox");
+
   return (
     <SearchableCombobox
       options={cities}
       value={value}
       onSelect={onSelect}
-      placeholder="Select a city..."
-      emptyMessage="No cities found."
-      searchPlaceholder="Search city..."
+      placeholder={t("city")}
+      emptyMessage={t("no_city")}
+      searchPlaceholder={t("search_city")}
       disabled={disabled}
     />
   );

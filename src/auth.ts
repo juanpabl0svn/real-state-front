@@ -17,6 +17,7 @@ declare module "next-auth" {
       is_verified?: boolean;
       user_id?: string;
       has_provider?: boolean;
+      access_token?: string;
     } & DefaultSession["user"];
   }
 
@@ -168,7 +169,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     })
   ],
   callbacks: {
-    async jwt({ token, user, trigger, session }) {
+    async jwt({ token, user, trigger, session, account }) {
       if (trigger === "update" && session) {
         token.name = session.user.name;
         token.image = session.user.image;
@@ -177,6 +178,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.role = session.user.role;
         token.id = session.user.id;
         token.user_id = session.user.user_id;
+        token.has_provider = session.user.has_provider;
+      }
+
+      if (account?.provider === "google") {
+        token.access_token = account.access_token;
+        token.refresh_token = account.refresh_token;
+        token.expires_at = account.expires_at;
       }
 
       if (user) {
@@ -187,6 +195,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.email = user.email;
         token.phone = user.phone;
         token.image = user.image;
+        token.has_provider = user.has_provider;
       }
       return token;
     },
@@ -198,6 +207,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       session.user.email = token.email as string;
       session.user.phone = token.phone as string;
       session.user.image = token.image as string;
+      session.user.has_provider = token.has_provider as boolean;
+      session.user.access_token = token.access_token as string;
       return session;
     },
   },

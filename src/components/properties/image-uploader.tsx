@@ -23,7 +23,7 @@ export default function ImageUploader({
       setFiles(newFiles);
     },
     [files, multiple, setFiles]
-  );  
+  );
 
   const removeImage = (index: number) => {
     const newList = [...files];

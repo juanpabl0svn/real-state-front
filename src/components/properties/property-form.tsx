@@ -39,6 +39,7 @@ import { CityCombobox } from "@/components/city-combobox";
 import { NeighborhoodCombobox } from "@/components/neighborhood-combobox";
 import { useLocations } from "@/hooks/use-locations";
 import { useWatch } from "react-hook-form";
+import { useTranslations } from "next-intl";
 
 export function PropertyForm({
   property,
@@ -54,6 +55,8 @@ export function PropertyForm({
   const { isLoading, setIsLoading } = useAppStore();
 
   const { cities, getNeighborhoods } = useLocations();
+
+  const t = useTranslations();
 
   useNumber();
 
@@ -106,7 +109,7 @@ export function PropertyForm({
     try {
       const validatedFields = propertySchema.safeParse(values);
       if (!validatedFields.success) {
-        throw new Error("Invalid form data. Please check your inputs.");
+        throw new Error(t("form.validation_error"));
       }
 
       const data = {
@@ -122,9 +125,7 @@ export function PropertyForm({
       }
 
       toast.success(
-        property
-          ? "Property updated successfully!"
-          : "Property created successfully!"
+        property ? t("form.property_updated") : t("form.property_created")
       );
     } catch (e) {
       console.error("Form submission error:", e);
@@ -153,7 +154,7 @@ export function PropertyForm({
 
           <div>
             <label className="block font-medium mb-1">
-              Galería de imágenes
+              {t("property.gallery")}
             </label>
             <ImageUploader files={photos} setFiles={setPhotos} multiple />
           </div>
@@ -170,9 +171,9 @@ export function PropertyForm({
                 name="title"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Title*</FormLabel>
+                    <FormLabel>{t("property.title")}*</FormLabel>
                     <FormControl>
-                      <Input placeholder="Property title" {...field} />
+                      <Input placeholder={t("property.title")} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -184,7 +185,7 @@ export function PropertyForm({
                 name="city"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>City*</FormLabel>
+                    <FormLabel>{t("filter.city")}*</FormLabel>
                     <FormControl>
                       <CityCombobox
                         cities={cities}
@@ -202,7 +203,7 @@ export function PropertyForm({
                 name="neighborhood"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>Neighborhood*</FormLabel>
+                    <FormLabel>{t("filter.neighborhood")}*</FormLabel>
                     <FormControl>
                       <NeighborhoodCombobox
                         key={cityValue}
@@ -222,7 +223,7 @@ export function PropertyForm({
                 name="price"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Price*</FormLabel>
+                    <FormLabel>{t("property.price")}*</FormLabel>
                     <FormControl>
                       <Input type="number" placeholder="0.00" {...field} />
                     </FormControl>
@@ -236,7 +237,7 @@ export function PropertyForm({
                 name="area"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Area (m²)*</FormLabel>
+                    <FormLabel>{t("property.area")}(m²)*</FormLabel>
                     <FormControl>
                       <Input type="number" placeholder="0.00" {...field} />
                     </FormControl>
@@ -250,7 +251,7 @@ export function PropertyForm({
                 name="bedrooms"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Bedrooms*</FormLabel>
+                    <FormLabel>{t("property.bedrooms")}*</FormLabel>
                     <FormControl>
                       <Input type="number" {...field} />
                     </FormControl>
@@ -264,7 +265,7 @@ export function PropertyForm({
                 name="bathrooms"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Bathrooms*</FormLabel>
+                    <FormLabel>{t("property.bathrooms")}*</FormLabel>
                     <FormControl>
                       <Input type="number" {...field} />
                     </FormControl>
@@ -278,7 +279,7 @@ export function PropertyForm({
                 name="parking_spaces"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Parking Spaces</FormLabel>
+                    <FormLabel>{t("property.parking_spaces")}</FormLabel>
                     <FormControl>
                       <Input type="number" {...field} />
                     </FormControl>
@@ -292,21 +293,29 @@ export function PropertyForm({
                 name="property_type"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Property Type*</FormLabel>
+                    <FormLabel>{t("property.property_type")}*</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select property type" />
+                          <SelectValue placeholder={t('property.select_property_type')}/>
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="house">House</SelectItem>
-                        <SelectItem value="apartment">Apartment</SelectItem>
-                        <SelectItem value="land">Land</SelectItem>
-                        <SelectItem value="office">Office</SelectItem>
+                        <SelectItem value="house">
+                          {t("property.house")}
+                        </SelectItem>
+                        <SelectItem value="apartment">
+                          {t("property.apartment")}
+                        </SelectItem>
+                        <SelectItem value="land">
+                          {t("property.land")}
+                        </SelectItem>
+                        <SelectItem value="office">
+                          {t("property.office")}
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -319,20 +328,26 @@ export function PropertyForm({
                   name="status"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Status*</FormLabel>
+                      <FormLabel>{t("property.status")}*</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select status" />
+                            <SelectValue placeholder={t('property.select_status')} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="available">Available</SelectItem>
-                          <SelectItem value="reserved">Reserved</SelectItem>
-                          <SelectItem value="sold">Sold</SelectItem>
+                          <SelectItem value="available">
+                            {t("property.available")}
+                          </SelectItem>
+                          {/* <SelectItem value="reserved">
+                            {t("property.reserved")}
+                          </SelectItem> */}
+                          <SelectItem value="sold">
+                            {t("property.sold")}
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -347,10 +362,10 @@ export function PropertyForm({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>{t("property.description")}</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Describe the property..."
+                      placeholder={t("property.describe_property")}
                       className="min-h-[120px]"
                       {...field}
                     />

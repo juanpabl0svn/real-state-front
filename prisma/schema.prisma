@@ -146,6 +146,7 @@ model users {
   notifications notifications[]
   otp_codes     otp_codes[]
   properties    properties[]
+  appointments  appoinments[]
 
   favoriteSellersId        String[]                   @default([]) @db.Uuid
   user_providers           user_providers?
@@ -174,4 +175,16 @@ model users_seller_permissions {
   created_at DateTime? @default(now()) @db.Timestamptz(6)
   updated_at DateTime? @default(now()) @db.Timestamptz(6)
   user       users     @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model appoinments {
+  id         Int       @id @default(autoincrement())
+  user_id    String    @db.Uuid @unique
+  date       DateTime 
+  startTime  String
+  endTime    String   
+  created_at DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at DateTime? @default(now()) @db.Timestamptz(6)
+  user       users     @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
+  meetEvent  String
 }
