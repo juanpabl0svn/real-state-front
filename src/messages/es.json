@@ -34,6 +34,11 @@
     "minutes_ago": " minuto(s) atrás",
     "hours_ago": " hora(s) atrás",
     "days_ago": " día(s) atrás",
+    "contact": "Contactar",
+    "not_specified": "No especificado",
+    "zone": "Zona",
+    "expert": "Experto",
+    "back": "Regresar",
     "months_ago": " mes(es) atrás",
     "years_ago": " año(s) atrás"
   },
@@ -50,7 +55,16 @@
     "address": "Dirección",
     "company": "Empresa",
     "website": "Sitio web",
-    "social_media": "Redes sociales"
+    "social_media": "Redes sociales",
+    "of_experece": " de experiencia",
+    "properties_of": "Propiedades de",
+    "properties": "Propiedades",
+    "show_favorites": "Mostrar favoritos",
+    "showing_favorites": "Mostrando favoritos",
+    "current_properties": "Propiedades actuales",
+    "title": "Nuestro Equipo de Vendedores",
+    "text1": "Profesionales inmobiliarios con experiencia para ayudarte a encontrar la propiedad perfecta",
+    "text2": "Este vendedor no tiene propiedades disponibles actualmente."
   },
   "filter": {
     "filters": "Filtros",
@@ -101,7 +115,7 @@
     "select_property_type": "Selecciona tipo de propiedad",
     "select_status": "Selecciona estado",
     "no_property": "Propiedad no encontrada",
-    "no_photo": "No hay fotos para mostrar",
+    "no_photo": "No hay fotos que mostrar",
     "are_you_sure": "¿Estás seguro?",
     "delete_property": "Esto eliminará permanentemente la propiedad {propertyTitle}. Esta acción no se puede deshacer."
   },
@@ -150,8 +164,12 @@
     "search_neighborhood": "Buscar barrio"
   },
   "form": {
+    "contact_with": "Contactar con",
     "required": "Este campo es obligatorio",
-    "email": "Ingresa un correo válido",
+    "fullname": "Nombre completo",
+    "name": "Nombre",
+    "message": "Mensaje",
+    "email": "Ingrese un correo electrónico válido",
     "phone": "Ingresa un número de teléfono válido",
     "password": "La contraseña debe tener al menos 6 caracteres",
     "confirm_password": "Las contraseñas no coinciden",
@@ -166,7 +184,11 @@
     "info": "Información",
     "property_deleted": "Propiedad eliminada exitosamente",
     "property_not_found": "Propiedad no encontrada",
-    "property_exists": "Ya existe una propiedad con este título"
+    "property_exists": "Ya existe una propiedad con este título",
+    "send_message": "Enviar mensaje",
+    "send_another_message": "Enviar otro mensaje",
+    "sended_message": "¡Mensaje enviado!",
+    "text1": "Completa el formulario y {seller.name} se pondrá en contacto contigo lo antes posible."
   },
   "settings": {
     "user_config": "Configuración de usuario",

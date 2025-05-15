@@ -35,7 +35,12 @@
     "hours_ago": " hour(s) ago",
     "days_ago": " day(s) ago",
     "months_ago": " month(s) ago",
-    "years_ago": " year(s) ago"
+    "years_ago": " year(s) ago",
+    "contact": "Contact",
+    "not_specified": "Not specified",
+    "zone": "Zone",
+    "expert": "Expert",
+    "back": "Back"
   },
   "locale_switcher": {
     "label": "Change language",
@@ -50,7 +55,19 @@
     "address": "Address",
     "company": "Company",
     "website": "Website",
-    "social_media": "Social media"
+    "social_media": "Social media",
+    "of_experece": " of experience",
+    "properties_of": "Properties of",
+    "properties": "Properties",
+    "show_favorites": "Show favorites",
+    "showing_favorites": "Showing favorites",
+    "current_properties": "Current properties",
+    "title": "Our Sales Team",
+    "text1": "Real estate professionals with experience to help you find the perfect property",
+    "text2": "This seller does not have any properties available at the moment."
+
+
+
   },
   "filter": {
     "filters": "Filters",
@@ -150,7 +167,11 @@
     "search_neighborhood": "Search neighborhood"
   },
   "form": {
+    "contact_with": "Contact with",
     "required": "This field is required",
+    "fullname": "Full name",
+    "name": "Name",
+    "message": "Message",
     "email": "Enter a valid email address",
     "phone": "Enter a valid phone number",
     "password": "Password must be at least 6 characters",
@@ -166,7 +187,11 @@
     "info": "Info",
     "property_deleted": "Property deleted successfully",
     "property_not_found": "Property not found",
-    "property_exists": "A property with this title already exists"
+    "property_exists": "A property with this title already exists",
+    "send_message": "Send message",
+    "send_another_message": "Send another message",
+    "sended_message": "Message sent!",
+    "text1": "Completa el formulario y {seller.name} se pondrá en contacto contigo lo antes posible."
   },
   "settings": {
     "user_config": "User settings",

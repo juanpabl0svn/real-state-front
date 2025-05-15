@@ -2,6 +2,6 @@
 
 import { SellersPage } from "@/views/sellers";
 
-export default function Properties() {
+export default function Sellers() {
     return <SellersPage />;
 }
