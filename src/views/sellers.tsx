@@ -7,25 +7,27 @@ import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Link } from "@/i18n/navigation"
+import { Link, useRouter } from "@/i18n/navigation"
 import { useAppStore } from "@/stores/app-store"
 import { fetchSellers, addFavoriteSellerOnce, getFavoriteSellers, removeFavoriteSeller } from "@/lib/actions/user/actions"
 import { getPropertiesByUserId } from "@/lib/actions/properties/actions"
 import { useTranslations } from "next-intl";
 import { useSession } from "next-auth/react";
 import { PropertyTypes } from "@/types"
-import { set } from "zod"
 
 export function SellersPage() {
   const { data: session, status } = useSession()
   const isAuthenticated = status === "authenticated"
+
   const [favorites, setFavorites] = useState<string[]>([])
   const [showOnlyFavorites, setShowOnlyFavorites] = useState(false)
   const { isLoading, setIsLoading, sellers, setSellers } = useAppStore();
 
+
   const t = useTranslations("common");
   const tProperties = useTranslations("property");
 
+  const router = useRouter();
   useEffect(() => {
     (async () => {
       setIsLoading(true);
@@ -47,7 +49,6 @@ export function SellersPage() {
           })
         )
         setSellers(sellersCount);
-        console.log(data);
       } catch (error) {
         console.error("Failed to fetch properties:", error);
       } finally {
@@ -78,19 +79,6 @@ export function SellersPage() {
       })()
   }, [isAuthenticated, session?.user?.id])
 
-  async function handleFavorite(sellerId: string) {
-    if (!session?.user?.user_id) return
-    try {
-      const updated = await addFavoriteSellerOnce(
-        session.user.user_id,
-        sellerId
-      )
-      setFavorites(updated.favoriteSellersId)
-    } catch (err) {
-      console.error("Error al añadir favorito:", err)
-    }
-  }
-
   async function handleToggleFavorite(sellerId: string) {
     if (!session?.user?.user_id) return
 
@@ -120,18 +108,20 @@ export function SellersPage() {
         <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
           Profesionales inmobiliarios con experiencia para ayudarte a encontrar la propiedad perfecta
         </p>
-      </div>
+      </div>c
+      {isAuthenticated && (
 
-      <div className="flex justify-center mb-8">
-        <Button
-          variant={showOnlyFavorites ? "default" : "outline"}
-          onClick={() => setShowOnlyFavorites(!showOnlyFavorites)}
-          className={showOnlyFavorites ? "bg-rose-500 hover:bg-rose-600" : ""}
-        >
-          <Heart className={`h-5 w-5 mr-2 ${showOnlyFavorites ? "fill-white" : ""}`} />
-          {showOnlyFavorites ? "Mostrando favoritos" : "Ver favoritos"}
-        </Button>
-      </div>
+        <div className="flex justify-center mb-8">
+          <Button
+            variant={showOnlyFavorites ? "default" : "outline"}
+            onClick={() => setShowOnlyFavorites(!showOnlyFavorites)}
+            className={showOnlyFavorites ? "bg-rose-500 hover:bg-rose-600" : ""}
+          >
+            <Heart className={`h-5 w-5 mr-2 ${showOnlyFavorites ? "fill-white" : ""}`} />
+            {showOnlyFavorites ? "Mostrando favoritos" : "Ver favoritos"}
+          </Button>
+        </div>
+      )}
 
       {showOnlyFavorites && sellers.filter((seller) => favorites.includes(seller.user_id)).length === 0 && (
         <div className="text-center py-12">
@@ -146,90 +136,89 @@ export function SellersPage() {
 
       {sellers.filter((seller) => (showOnlyFavorites ? favorites.includes(seller.user_id) : true)).length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* {sellers.map((seller) => ( */}
-              {sellers
+          {sellers
             .filter((seller) => (showOnlyFavorites ? favorites.includes(seller.user_id) : true))
             .map((seller) => (
-            <Card key={seller.user_id} className="overflow-hidden h-full flex flex-col">
-              <div className="relative">
-                <Image
-                  src={seller.image || "/vivea.svg"}
-                  alt={`Foto de ${seller.name}`}
-                  width={400}
-                  height={300}
-                  className="w-full h-64 object-contain"
-                />
-                {seller.destacado && (
-                  <div className="absolute top-2 right-2">
-                    <Badge className="bg-amber-500 hover:bg-amber-600">
-                      <Star className="h-3 w-3 mr-1 fill-current" /> Destacado
-                    </Badge>
-                  </div>
-                )}
-              </div>
-              <CardHeader>
-                <CardTitle className="text-xl">
-                  <Link href={`/seller/${seller.user_id}`}>
-                    {seller.name}
-                  </Link>
-                </CardTitle>
-                <CardDescription className="flex items-center">
-                  <Award className="h-4 w-4 mr-1" />
-                  {(() => {
-                    if (seller.topPropertyTypes.length === 1) {
-                      return `${t("expert")} ${t("in")} ${propertyTypeTranslation[seller.topPropertyTypes[0].type as PropertyTypes]}`;
-                    } else if (seller.topPropertyTypes.length > 1) {
-                      const types = seller.topPropertyTypes
-                        .map((tp: PropertyTypes) => propertyTypeTranslation[tp.type as PropertyTypes])
-                        .join(` ${t("and")} `);
-                      return `${t("expert")} ${t("in")} ${types}`;
-                    } else {
-                      return "Especialidad no definida";
-                    }
-                  })()}
-                </CardDescription>
-
-              </CardHeader>
-              <CardContent className="flex-grow">
-                <div className="space-y-3 text-sm">
-                  <div className="flex items-center">
-                    <MapPin className="h-4 w-4 mr-2 text-muted-foreground" />
-                    <span>{t('zone')}: {seller.neighborhood || t("not_specified")}</span>
-                  </div>
-                  <div className="flex items-center">
-                    <Badge variant="outline" className="mr-2">
-                      {seller.yearsExperience} de experiencia
-                    </Badge>
-                    <Badge variant="secondary">{seller.totalCount} propiedades</Badge>
-                  </div>
-                </div>
-              </CardContent>
-              <CardFooter className="border-t pt-4 flex flex-col items-start space-y-2">
-                <div className="flex items-center w-full">
-                  <Mail className="h-4 w-4 mr-2 text-muted-foreground" />
-                  <span className="text-sm truncate">{seller.email}</span>
-                </div>
-                <div className="flex items-center w-full">
-                  <Phone className="h-4 w-4 mr-2 text-muted-foreground" />
-                  <span className="text-sm">+57 {seller.phone}</span>
-                </div>
-                <div className="flex w-full gap-2 mt-2">
-                  <Button className="flex-1">{t('contact')}</Button>
-                  {isAuthenticated && (
-                    <Button
-                      variant={favorites.includes(seller.user_id) ? "default" : "outline"}
-                      size="icon"
-                      onClick={() => handleToggleFavorite(seller.user_id)}
-                      className={favorites.includes(seller.user_id) ? "bg-rose-500 hover:bg-rose-600" : ""}
-                      title={favorites.includes(seller.user_id) ? "Quitar de favoritos" : "Añadir a favoritos"}
-                    >
-                      <Heart className={`h-5 w-5 ${favorites.includes(seller.user_id) ? "fill-white" : ""}`} />
-                    </Button>
+              <Card key={seller.user_id} className="overflow-hidden h-full flex flex-col">
+                <div className="relative">
+                  <Image
+                    src={seller.image || "/vivea.svg"}
+                    alt={`Foto de ${seller.name}`}
+                    width={400}
+                    height={300}
+                    className="w-full h-64 object-contain"
+                  />
+                  {seller.destacado && (
+                    <div className="absolute top-2 right-2">
+                      <Badge className="bg-amber-500 hover:bg-amber-600">
+                        <Star className="h-3 w-3 mr-1 fill-current" /> Destacado
+                      </Badge>
+                    </div>
                   )}
                 </div>
-              </CardFooter>
-            </Card>
-          ))}
+                <CardHeader>
+                  <CardTitle className="text-xl">
+                    <Link href={`/seller/${seller.user_id}`}>
+                      {seller.name}
+                    </Link>
+                  </CardTitle>
+                  <CardDescription className="flex items-center">
+                    <Award className="h-4 w-4 mr-1" />
+                    {(() => {
+                      if (seller.topPropertyTypes.length === 1) {
+                        return `${t("expert")} ${t("in")} ${propertyTypeTranslation[seller.topPropertyTypes[0].type as PropertyTypes]}`;
+                      } else if (seller.topPropertyTypes.length > 1) {
+                        const types = seller.topPropertyTypes
+                          .map((tp: PropertyTypes) => propertyTypeTranslation[tp.type as PropertyTypes])
+                          .join(` ${t("and")} `);
+                        return `${t("expert")} ${t("in")} ${types}`;
+                      } else {
+                        return "Especialidad no definida";
+                      }
+                    })()}
+                  </CardDescription>
+
+                </CardHeader>
+                <CardContent className="flex-grow">
+                  <div className="space-y-3 text-sm">
+                    <div className="flex items-center">
+                      <MapPin className="h-4 w-4 mr-2 text-muted-foreground" />
+                      <span>{t('zone')}: {seller.neighborhood || t("not_specified")}</span>
+                    </div>
+                    <div className="flex items-center">
+                      <Badge variant="outline" className="mr-2">
+                        {seller.yearsExperience} de experiencia
+                      </Badge>
+                      <Badge variant="secondary">{seller.totalCount} propiedades</Badge>
+                    </div>
+                  </div>
+                </CardContent>
+                <CardFooter className="border-t pt-4 flex flex-col items-start space-y-2">
+                  <div className="flex items-center w-full">
+                    <Mail className="h-4 w-4 mr-2 text-muted-foreground" />
+                    <span className="text-sm truncate">{seller.email}</span>
+                  </div>
+                  <div className="flex items-center w-full">
+                    <Phone className="h-4 w-4 mr-2 text-muted-foreground" />
+                    <span className="text-sm">+57 {seller.phone}</span>
+                  </div>
+                  <div className="flex w-full gap-2 mt-2">
+                    <Button className="flex-1" onClick={() => router.push(`/seller/${seller.user_id}`)}>{t('contact')}</Button>
+                    {isAuthenticated && (
+                      <Button
+                        variant={favorites.includes(seller.user_id) ? "default" : "outline"}
+                        size="icon"
+                        onClick={() => handleToggleFavorite(seller.user_id)}
+                        className={favorites.includes(seller.user_id) ? "bg-rose-500 hover:bg-rose-600" : ""}
+                        title={favorites.includes(seller.user_id) ? "Quitar de favoritos" : "Añadir a favoritos"}
+                      >
+                        <Heart className={`h-5 w-5 ${favorites.includes(seller.user_id) ? "fill-white" : ""}`} />
+                      </Button>
+                    )}
+                  </div>
+                </CardFooter>
+              </Card>
+            ))}
         </div>
       )}
     </div>

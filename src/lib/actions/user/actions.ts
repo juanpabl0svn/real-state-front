@@ -106,12 +106,10 @@ export async function getFavoriteSellers(userId: string) {
         return []
     }
 
-    // 2) Trae los usuarios cuyo user_id esté en ese array
     return prisma.users.findMany({
         where: {
             user_id: { in: favIds },
         },
-        // Opcional: aquí puedes seleccionar solo los campos que necesites
         select: {
             user_id: true,
             name: true,

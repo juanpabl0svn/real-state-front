@@ -11,9 +11,7 @@ export function PropertyList() {
   const [properties, setProperties] = useState<Property[]>([]);
 
   useEffect(() => {
-    // Create a function to fetch properties
     (async () => {
-      // Get filter values from URL params
       const property_type = searchParams.get("propertyType") || undefined;
       const minPrice = searchParams.get("minPrice")
         ? Number(searchParams.get("minPrice"))

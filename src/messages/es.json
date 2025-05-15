@@ -61,5 +61,16 @@
     "features": "Características",
     "amenities": "Servicios",
     "contact_info": "Información de contacto"
+  },
+  "seller": {
+    "favorite": "Agregar a favoritos",
+    "unfavorite": "Eliminar de favoritos",
+    "name": "Nombre",
+    "email": "Correo electrónico",
+    "phone": "Teléfono",
+    "address": "Dirección",
+    "company": "Compañía",
+    "website": "Sitio web",
+    "social_media": "Redes sociales"
   }
 }

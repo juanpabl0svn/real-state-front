@@ -61,5 +61,16 @@
     "features": "Features",
     "amenities": "Amenities",
     "contact_info": "Contact information"
+  },
+  "seller": {
+    "favorite": "Add to favorites",
+    "unfavorite": "Remove from favorites",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "company": "Company",
+    "website": "Website",
+    "social_media": "Social media"
   }
 }
