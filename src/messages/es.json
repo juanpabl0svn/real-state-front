@@ -148,7 +148,8 @@
     "property_not_found": "Propiedad no encontrada",
     "property_exists": "Ya existe una propiedad con este título",
     "send_message": "Enviar mensaje",
-    "send_another_message": "Enviar otro mensaje"
+    "send_another_message": "Enviar otro mensaje",
+    "sended_message": "¡Mensaje enviado!"
   },
   "settings": {
     "user_config": "Configuración de usuario",

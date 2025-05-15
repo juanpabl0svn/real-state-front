@@ -151,7 +151,8 @@
     "property_not_found": "Property not found",
     "property_exists": "A property with this title already exists",
     "send_message": "Send message",
-    "send_another_message": "Send another message"
+    "send_another_message": "Send another message",
+    "sended_message": "Message sent!"
   },
   "settings": {
     "user_config": "User settings",

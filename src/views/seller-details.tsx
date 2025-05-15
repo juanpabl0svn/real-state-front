@@ -292,7 +292,7 @@ export function SellerDetailsPage() {
                                         </div>
                                     </div>
                                     <div className="space-y-2">
-                                        
+
                                         <Input
                                             id="email"
                                             name="email"
@@ -331,7 +331,7 @@ export function SellerDetailsPage() {
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                         </svg>
                                     </div>
-                                    <h3 className="text-xl font-medium mb-2">¡Mensaje enviado!</h3>
+                                    <h3 className="text-xl font-medium mb-2">{tForm('sended_message')}</h3>
                                     <p className="text-muted-foreground mb-4">
                                         Gracias por contactar con {seller.name}. Te responderá lo antes posible.
                                     </p>
