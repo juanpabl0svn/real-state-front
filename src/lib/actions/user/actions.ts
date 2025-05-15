@@ -1,5 +1,5 @@
 "use server"
-import { auth } from "@/auth"
+
 import { perPage, prisma } from "@/prisma"
 
 import type { User, Paginate, users_seller_permissions } from "../../../types"
@@ -25,7 +25,8 @@ export async function getUserById(id: string): Promise<
             throw new Error('User not found')
         }
 
-        // @ts-expect-error
+        // @ts-expect-error: We are intentionally removing the 'password' field from the user object.
+
         delete user.password
 
         return user

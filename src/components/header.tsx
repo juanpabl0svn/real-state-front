@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Bell, Settings, Home, Search, Menu, X, UserCog, Store } from "lucide-react";
+import { Settings, Home, Search, Menu, X, UserCog, Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+
 
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
@@ -27,10 +27,6 @@ export default function Header() {
   const { data } = useSession();
 
   const t = useTranslations("header");
-
-  const { notifications } = useAppStore();
-
-  const unreadCount = notifications?.filter?.((n) => !n.is_read)?.length ?? 0;
 
   const navItems = [
     {

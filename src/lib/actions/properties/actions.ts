@@ -1,17 +1,7 @@
 "use server"
+import type { GetPropertiesOptions, GetPropertiesResult, PropertyTypeCount } from "../../../types"
 
-import { revalidatePath } from "next/cache"
-import type { FilterOptions, IPropertyForm, Paginate, Property, GetPropertiesOptions, GetPropertiesResult, PropertyTypeCount, User } from "../../../types"
-
-import { auth } from "@/auth"
-import { perPage, prisma } from "@/prisma"
-import { userSchema, propertySchema } from "../../zod"
-import { generateExpirationDate, generateRandomCode, hashPassword } from "../../utils"
-import { sendEmail, sendOtpEmail, sendPropertyApprovedEmail, sendPropertyRejectedEmail } from "@/nodemailer"
-import { deleteImageFromKey, uploadImageFromFile } from "@/S3"
-import { v4 as uuidv4 } from 'uuid';
-import { sendNotification } from "../../notifications"
-
+import { prisma } from "@/prisma"
 export async function getPropertiesByUserId(
     userId: string,
     options: GetPropertiesOptions = {}
