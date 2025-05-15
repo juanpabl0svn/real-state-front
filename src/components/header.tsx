@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
@@ -39,7 +38,7 @@ export default function Header() {
     {
       label: t("sellers"),
       href: "/seller",
-      icon: <Store  className="h-4 w-4 mr-2" />,
+      icon: <Store className="h-4 w-4 mr-2" />,
       needsAuth: false,
       roles: [],
     },
@@ -133,13 +132,13 @@ export default function Header() {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem>
                     <Link href="/settings" className="flex w-full">
-                      View Profile
+                      {t("view_profile")}
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem>
                     <Link href="/logout" className="flex w-full">
-                      Logout
+                      {t("logout")}
                     </Link>
                   </DropdownMenuItem>
                 </DropdownMenuContent>

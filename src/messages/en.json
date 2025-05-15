@@ -2,7 +2,9 @@
   "header": {
     "home": "Home",
     "sellers": "Sellers",
-    "my_properties": "My Properties"
+    "my_properties": "My Properties",
+    "view_profile": "View profile",
+    "log_out": "Log out"
   },
   "notifications": {
     "property_approved": "The property {propertyTitle} has been approved.",
