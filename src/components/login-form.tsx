@@ -21,13 +21,17 @@ import { AlertCircle, Loader2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useAppStore } from "@/stores/app-store";
 import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 
 export default function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  const t = useTranslations("auth");
+
   const [error, setError] = useState<string | null>(
     searchParams.get("error") === "Configuration"
-      ? "Correo ya en uso. Para ingresar utiliza tus credenciales"
+      ? t("mail_already_in_use")
       : null
   );
 
@@ -56,9 +60,7 @@ export default function LoginForm() {
       });
 
       if (result?.error) {
-        setError(
-          "Usuario o contraseña incorrectos. Por favor intenta de nuevo."
-        );
+        setError(t("username_or_password_incorrect"));
         return;
       }
 
@@ -82,9 +84,7 @@ export default function LoginForm() {
       await signIn("google", { callbackUrl: "/" });
     } catch (_err) {
       console.error("Error signing in with Google:", _err);
-      setError(
-        "Este correo ya esta en uso y para ingresar digite sus credenciales"
-      );
+      setError(t("username_or_password_incorrect"));
       setIsLoading(false);
     }
   };
@@ -92,10 +92,8 @@ export default function LoginForm() {
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>Iniciar Sesión</CardTitle>
-        <CardDescription>
-          Ingresa tus credenciales para acceder a tu cuenta
-        </CardDescription>
+        <CardTitle>{t("login")}</CardTitle>
+        <CardDescription>{t("join_credentials")}</CardDescription>
       </CardHeader>
       <CardContent>
         {error && (
@@ -106,7 +104,7 @@ export default function LoginForm() {
         )}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">Usuario o Email</Label>
+            <Label htmlFor="email">{t("email")}</Label>
             <Input
               id="email"
               name="email"
@@ -119,12 +117,12 @@ export default function LoginForm() {
           </div>
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="password">Contraseña</Label>
+              <Label htmlFor="password">{t("password")}</Label>
               <Link
                 href="/forgot-password"
                 className="text-xs text-primary hover:text-primary/90"
               >
-                ¿Olvidaste tu contraseña?
+                {t("forgot_password")}
               </Link>
             </div>
             <Input
@@ -141,10 +139,10 @@ export default function LoginForm() {
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Iniciando sesión...
+                {t("logining")}
               </>
             ) : (
-              "Iniciar sesión"
+              t("login")
             )}
           </Button>
         </form>
@@ -155,7 +153,7 @@ export default function LoginForm() {
           </div>
           <div className="relative flex justify-center text-xs uppercase">
             <span className="bg-card px-2 text-muted-foreground">
-              O continuar con
+              {t("or_continue_with")}
             </span>
           </div>
         </div>
@@ -186,14 +184,14 @@ export default function LoginForm() {
             />
             <path d="M1 1h22v22H1z" fill="none" />
           </svg>
-          Iniciar sesión con Google
+          {t("login_with_google")}
         </Button>
       </CardContent>
       <CardFooter className="flex justify-center">
         <p className="text-sm text-muted-foreground">
-          ¿No tienes una cuenta?{" "}
+          {t("dont_have_an_account")} {" "}
           <Link href="/register" className="text-primary hover:text-primary/90">
-            Regístrate
+            {t("register")}
           </Link>
         </p>
       </CardFooter>

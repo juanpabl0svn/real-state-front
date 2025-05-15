@@ -185,7 +185,7 @@ export function SellerDetailsPage() {
                 </div>
 
                 <div className="md:col-span-2">
-                    <h1 className="text-3xl font-bold mb-2">{seller.nombre}</h1>
+                    <h1 className="text-3xl font-bold mb-2">{seller.name}</h1>
                     <div className="flex items-center mb-4">
                         <Badge variant="secondary" className="mr-2">
                             <Award className="h-4 w-4 mr-1" />

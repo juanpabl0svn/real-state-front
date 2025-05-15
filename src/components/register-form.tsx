@@ -29,11 +29,18 @@ import {
 import { useAppStore } from "@/stores/app-store";
 import { toast } from "react-hot-toast";
 import usePhone from "@/hooks/use-phone";
+import { useTranslations } from "next-intl";
 
 export function RegisterForm() {
   const router = useRouter();
   const [seeOtp, setSeeOtp] = useState(false);
   const { isLoading, setIsLoading, setData, data } = useAppStore();
+
+  const t = useTranslations();
+
+  const tCommon = (text: string, obj = {}) => t(`common.${text}`, obj);
+
+  const tAuth = (text: string, obj = {}) => t(`auth.${text}`, obj);
 
   const formOtp = useForm<OtpFormSchema>({
     resolver: zodResolver(otpSchema),
@@ -58,11 +65,9 @@ export function RegisterForm() {
     setIsLoading(true);
     try {
       const user = await registerUser(values);
-      if (user.error) throw new Error("User with this email already exists.");
+      if (user.error) throw new Error(tAuth("user_already_exists"));
 
-      toast.success(
-        "Registered successfully! Please check your email for the OTP."
-      );
+      toast.success(tAuth("registered"));
 
       setSeeOtp(true);
       setData({
@@ -89,7 +94,7 @@ export function RegisterForm() {
 
       if (otp.error) throw new Error(otp.message);
 
-      toast.success("Email verified successfully!");
+      toast.success(tAuth("otp_verified"));
       router.push("/login");
     } catch (error) {
       toast.error(
@@ -112,16 +117,16 @@ export function RegisterForm() {
           onClick={() => setSeeOtp(false)}
           className="w-16"
         >
-          <span className="mr-2 text-gray">← Back</span>
+          <span className="mr-2 text-gray">← {tCommon("back")}</span>
         </Button>
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
-          <h2 className="text-2xl font-bold">Verify your email number</h2>
+          <h2 className="text-2xl font-bold">{tAuth("verify_your_code")}</h2>
           <p className="text-muted-foreground">
-            We have sent a verification code to your email{" "}
-            <span className="text-gray-400">{data?.email}</span> . Please enter
-            it below.
+            {tAuth("otp_sent", {
+              email: data?.email,
+            })}
           </p>
           <Form {...formOtp}>
             <form
@@ -142,7 +147,7 @@ export function RegisterForm() {
                 )}
               />
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Verifying..." : "Verify"}
+                {isLoading ? tAuth("verifying") : tAuth("verify")}
               </Button>
             </form>
           </Form>
@@ -162,7 +167,7 @@ export function RegisterForm() {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>{tAuth("name")}</FormLabel>
                   <FormControl>
                     <Input placeholder="John Doe" {...field} />
                   </FormControl>
@@ -175,7 +180,7 @@ export function RegisterForm() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>{tAuth("email")}</FormLabel>
                   <FormControl>
                     <Input
                       type="email"
@@ -192,12 +197,12 @@ export function RegisterForm() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel>{tAuth("password")}</FormLabel>
                   <FormControl>
                     <Input type="password" {...field} />
                   </FormControl>
                   <FormDescription>
-                    Password must be at least 8 characters long.
+                    {tAuth("password_conditions")}
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -208,7 +213,7 @@ export function RegisterForm() {
               name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Phone</FormLabel>
+                  <FormLabel>{tAuth("phone")}</FormLabel>
                   <FormControl>
                     <Input
                       type="tel"
@@ -222,7 +227,7 @@ export function RegisterForm() {
               )}
             />
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Creating account..." : "Create account"}
+              {isLoading ? tAuth("creating") : tAuth("create_account")}
             </Button>
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
@@ -230,7 +235,7 @@ export function RegisterForm() {
               </div>
               <div className="relative flex justify-center text-xs uppercase">
                 <span className="bg-card px-2 text-muted-foreground">
-                  O continuar con
+                  {tAuth("or_continue_with")}
                 </span>
               </div>
             </div>
@@ -261,7 +266,7 @@ export function RegisterForm() {
                 />
                 <path d="M1 1h22v22H1z" fill="none" />
               </svg>
-              Iniciar sesión con Google
+              {tAuth("sign_in_with_google")}
             </Button>
           </form>
         </Form>
