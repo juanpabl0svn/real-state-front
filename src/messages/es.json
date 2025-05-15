@@ -130,6 +130,7 @@
     "required": "Este campo es obligatorio",
     "fullname": "Nombre completo",
     "name": "Nombre",
+    "message": "Mensaje",
     "email": "Ingrese un correo electrónico válido",
     "phone": "Ingrese un número de teléfono válido",
     "password": "La contraseña debe tener al menos 6 caracteres",
@@ -146,7 +147,8 @@
     "property_deleted": "La propiedad ha sido eliminada con éxito",
     "property_not_found": "Propiedad no encontrada",
     "property_exists": "Ya existe una propiedad con este título",
-    "send_message": "Enviar mensaje"
+    "send_message": "Enviar mensaje",
+    "send_another_message": "Enviar otro mensaje"
   },
   "settings": {
     "user_config": "Configuración de usuario",

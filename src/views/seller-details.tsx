@@ -260,6 +260,7 @@ export function SellerDetailsPage() {
                         <CardHeader>
                             <CardTitle>{tForm('contact_with')} {seller.name}</CardTitle>
                             <CardDescription>
+                                {/* {tForm('text1')} */}
                                 Completa el formulario y {seller.name} se pondrá en contacto contigo lo antes posible.
                             </CardDescription>
                         </CardHeader>
@@ -268,7 +269,7 @@ export function SellerDetailsPage() {
                                 <form onSubmit={handleSubmit} className="space-y-4">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <Label htmlFor="nombre">{tForm('fullname')}</Label>
+
                                             <Input
                                                 id="nombre"
                                                 name="nombre"
@@ -279,11 +280,11 @@ export function SellerDetailsPage() {
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label htmlFor="telefono">Teléfono</Label>
+
                                             <Input
                                                 id="telefono"
                                                 name="telefono"
-                                                placeholder="Tu teléfono"
+                                                placeholder={tSeller('phone')}
                                                 value={formData.telefono}
                                                 onChange={handleInputChange}
                                                 required
@@ -291,7 +292,7 @@ export function SellerDetailsPage() {
                                         </div>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label htmlFor="email">Email</Label>
+                                        
                                         <Input
                                             id="email"
                                             name="email"
@@ -303,7 +304,6 @@ export function SellerDetailsPage() {
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label htmlFor="mensaje">Mensaje</Label>
                                         <Textarea
                                             id="mensaje"
                                             name="mensaje"
@@ -333,10 +333,10 @@ export function SellerDetailsPage() {
                                     </div>
                                     <h3 className="text-xl font-medium mb-2">¡Mensaje enviado!</h3>
                                     <p className="text-muted-foreground mb-4">
-                                        Gracias por contactar con {seller.nombre}. Te responderá lo antes posible.
+                                        Gracias por contactar con {seller.name}. Te responderá lo antes posible.
                                     </p>
                                     <Button variant="outline" onClick={() => setSended(false)}>
-                                        Enviar otro mensaje
+                                        {tForm('send_another_message')}
                                     </Button>
                                 </div>
                             )}

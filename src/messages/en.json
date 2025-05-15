@@ -133,6 +133,7 @@
     "required": "This field is required",
     "fullname": "Full name",
     "name": "Name",
+    "message": "Message",
     "email": "Enter a valid email address",
     "phone": "Enter a valid phone number",
     "password": "Password must be at least 6 characters",
@@ -149,7 +150,8 @@
     "property_deleted": "Property deleted successfully",
     "property_not_found": "Property not found",
     "property_exists": "A property with this title already exists",
-    "send_message": "Send message"
+    "send_message": "Send message",
+    "send_another_message": "Send another message"
   },
   "settings": {
     "user_config": "User settings",
