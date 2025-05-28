@@ -71,10 +71,7 @@ export function PropertyFilters() {
   );
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-2xl">{t("filter.filters")}</CardTitle>
-      </CardHeader>
+    <Card className="sticky top-20">
       <CardContent className="space-y-6">
         <div className="space-y-2">
           <Label htmlFor="property-type">{t("property.property_type")}</Label>
